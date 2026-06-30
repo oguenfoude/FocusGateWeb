@@ -106,6 +106,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (action === 'archive') {
       const userObj = await User.findById(userId).lean()
       if (userObj) {
+        if (String(session.user.id) === String(userId)) {
+          return Response.json({ error: 'Cannot archive yourself' }, { status: 400 })
+        }
         await User.updateOne({ _id: userId }, { $set: { archivedAt: new Date(), updatedAt: new Date() } })
         return Response.json({ ok: true })
       }

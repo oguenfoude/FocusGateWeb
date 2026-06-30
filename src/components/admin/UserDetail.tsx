@@ -82,7 +82,7 @@ export function UserDetail({ userId }: { userId: string }) {
 
   if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('common.loading')}</div>
   if (error || data?.error) return <div className="p-8 text-center text-red-500">{t('common.error')}</div>
-  if (!data) return null
+  if (!data || !data.user) return null
 
   const { user, assignments = [], balanceHistories = [], userBalanceHistories = [], smsRecords = [] } = data
 
@@ -139,7 +139,7 @@ export function UserDetail({ userId }: { userId: string }) {
     }
   }
 
-  const avatarLetter = user.displayName ? user.displayName[0].toUpperCase() : user.username[0].toUpperCase()
+  const avatarLetter = user.displayName ? user.displayName[0].toUpperCase() : user.username?.[0]?.toUpperCase() || 'U'
 
   return (
     <div className="space-y-6">
@@ -159,7 +159,7 @@ export function UserDetail({ userId }: { userId: string }) {
           </div>
           <div className="sm:text-right">
             <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">{t('users.detail.walletBalance')}</p>
-            <p className="text-2xl font-bold text-brand-600 mt-1">{user.balance.toLocaleString()} DA</p>
+            <p className="text-2xl font-bold text-brand-600 mt-1">{(user.balance || 0).toLocaleString()} DA</p>
           </div>
         </div>
       </div>

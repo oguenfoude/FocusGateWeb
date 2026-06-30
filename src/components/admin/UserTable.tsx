@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Search, Plus, Trash2, Eye, X, Loader2, Edit2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
+import { useSession } from 'next-auth/react'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -21,6 +22,7 @@ interface UserRowType {
 
 export function UserTable() {
   const { t } = useLanguage()
+  const { data: session } = useSession()
   const [searchTerm, setSearchTerm] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -224,7 +226,7 @@ export function UserTable() {
                       <td className="px-5 py-3.5 text-right">
                         <div className="flex justify-end gap-1.5">
                           <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm" title={t('users.viewDetails')}><Eye className="h-3.5 w-3.5" /></Link>
-                          {!isArchived && (
+                          {!isArchived && session?.user?.id !== user._id && (
                             <>
                               <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm" title="Edit User">
                                 <Edit2 className="h-3.5 w-3.5" />
@@ -285,7 +287,7 @@ export function UserTable() {
                   <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]">
                     <Eye className="h-3.5 w-3.5" /> {t('common.view')}
                   </Link>
-                  {!isArchived && (
+                  {!isArchived && session?.user?.id !== user._id && (
                     <>
                       <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]" title="Edit User">
                         <Edit2 className="h-3.5 w-3.5" />
