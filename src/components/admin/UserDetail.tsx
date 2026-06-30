@@ -221,7 +221,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   <select value={selectedModemId} onChange={(e) => setSelectedModemId(e.target.value)} className="input" disabled={isAssigning}>
                     <option value="">{t('users.detail.chooseModem')}</option>
                     {freeModems.map((m) => (
-                      <option key={m._id} value={m._id}>{m.phoneNumber || 'No SIM'} - {m.model || 'Unknown'} (IMEI: {m.imei.slice(-6)})</option>
+                      <option key={m._id} value={m._id}>{m.phoneNumber || 'No SIM'} - {m.model || 'Unknown'} (IMEI: {m.imei?.slice(-6) || '?'})</option>
                     ))}
                   </select>
                 </div>
