@@ -1,0 +1,81 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import { useLanguage } from '@/components/language-provider'
+import { useMobileMenu } from '@/components/shared/mobile-menu-provider'
+import { Menu } from 'lucide-react'
+
+const ROUTE_TITLES: Record<string, string> = {
+  '/admin': 'nav.dashboard',
+  '/admin/modems': 'nav.modems',
+  '/admin/users': 'nav.users',
+  '/admin/sms': 'nav.sms',
+  '/admin/withdrawals': 'nav.withdrawals',
+  '/admin/warnings': 'nav.warnings',
+  '/admin/settings': 'nav.settings',
+  '/dashboard': 'nav.dashboard',
+  '/dashboard/sims': 'nav.mySims',
+  '/dashboard/sms': 'nav.mySms',
+  '/dashboard/history': 'nav.history',
+  '/dashboard/withdraw': 'nav.withdraw',
+}
+
+export function TopBar() {
+  const { data: session } = useSession()
+  const { t } = useLanguage()
+  const pathname = usePathname()
+  const { toggle } = useMobileMenu()
+  const [time, setTime] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTime(new Date().toLocaleTimeString())
+    }, 0)
+    const interval = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000)
+    return () => {
+      clearTimeout(timer)
+      clearInterval(interval)
+    }
+  }, [])
+
+  // Match route to title, handle dynamic [id] segments
+  let titleKey = ROUTE_TITLES[pathname]
+  if (!titleKey) {
+    // Check for dynamic routes like /admin/modems/[id]
+    const segments = pathname.split('/')
+    if (segments.length >= 4) {
+      const basePath = `/${segments[1]}/${segments[2]}`
+      titleKey = ROUTE_TITLES[basePath]
+    }
+  }
+  const displayTitle = titleKey ? t(titleKey) : t('app.adminTitle')
+
+  return (
+    <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-20 shrink-0">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Hamburger on mobile */}
+          <button
+            onClick={toggle}
+            className="lg:hidden text-gray-400 hover:text-gray-600 transition-colors p-1"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+            {displayTitle}
+          </h2>
+        </div>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="text-xs text-gray-400 font-medium tracking-wide hidden sm:block">
+            {time}
+          </div>
+          <div className="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-sm">
+            {session?.user?.name?.[0] || session?.user?.email?.[0] || 'U'}
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
