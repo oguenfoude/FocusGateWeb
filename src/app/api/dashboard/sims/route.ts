@@ -23,13 +23,17 @@ export async function GET() {
     }).lean()
 
     const modemIds = assignments.map(a => a.modemId)
-    const modems = await Modem.find({ _id: { $in: modemIds }, archivedAt: null }).lean()
+    const [modems, sims] = await Promise.all([
+      Modem.find({ _id: { $in: modemIds }, archivedAt: null }).lean(),
+      SimCard.find({ modemId: { $in: modemIds }, isActive: true, archivedAt: null })
+        .select('modemId phoneNumber status lastSeen balance').lean(),
+    ])
+
+    const simMap = new Map(sims.map(s => [s.modemId, s]))
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000)
 
-    const result = await Promise.all(modems.map(async m => {
-      const sim = await SimCard.findOne({ modemId: m._id, isActive: true, archivedAt: null })
-        .select('phoneNumber status lastSeen balance')
-        .lean()
+    const result = modems.map(m => {
+      const sim = simMap.get(m._id) ?? null
       return {
         modemId: String(m._id),
         imei: m.imei,
@@ -41,7 +45,7 @@ export async function GET() {
         lastSeen: sim?.lastSeen ?? null,
         balance: sim?.balance ?? 0,
       }
-    }))
+    })
 
     return Response.json(result)
   } catch (err) {

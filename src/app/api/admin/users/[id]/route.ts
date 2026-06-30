@@ -29,22 +29,30 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const user = await User.findOne({ _id: userId, archivedAt: null }).select('-password').lean()
     if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
-    const assignments = await UserModem.find({ userId: user._id, removedAt: null, archivedAt: null }).lean()
+    // Phase 1: queries that only need userId
+    const [assignments, balanceHistories, userBalanceHistories, withdrawals] = await Promise.all([
+      UserModem.find({ userId: user._id, removedAt: null, archivedAt: null }).lean(),
+      BalanceHistory.find({ userId: user._id, archivedAt: null })
+        .sort({ updatedAt: -1 }).limit(20).lean(),
+      UserBalanceHistory.find({ userId: user._id, archivedAt: null })
+        .sort({ updatedAt: -1 }).limit(50).lean(),
+      WithdrawalRequest.find({ userId: user._id, archivedAt: null })
+        .sort({ updatedAt: -1 }).lean(),
+    ])
+
+    // Phase 2: modem + sim queries (need modemIds from phase 1)
     const modemIds = assignments.map(a => a.modemId)
-    const modems = await Modem.find({ _id: { $in: modemIds }, archivedAt: null }).lean()
-    const sims = await SimCard.find({ modemId: { $in: modemIds }, archivedAt: null }).lean()
+    const [modems, sims] = await Promise.all([
+      Modem.find({ _id: { $in: modemIds }, archivedAt: null }).lean(),
+      SimCard.find({ modemId: { $in: modemIds }, archivedAt: null }).lean(),
+    ])
     const simMap = new Map(sims.map(s => [s.modemId, s]))
     const populatedAssignments = modems.map(m => ({
       modem: { ...m, _id: String(m._id) },
       sim: simMap.get(m._id) ?? null
     }))
 
-    const balanceHistories = await BalanceHistory.find({ userId: user._id, archivedAt: null })
-      .sort({ updatedAt: -1 }).limit(20).lean()
-      
-    const userBalanceHistories = await UserBalanceHistory.find({ userId: user._id, archivedAt: null })
-      .sort({ updatedAt: -1 }).limit(50).lean()
-
+    // Phase 3: SMS (needs simIds from phase 2)
     const simIds = sims.map(s => s._id)
     const smsRecords = await SmsRecord.find({ simCardId: { $in: simIds }, archivedAt: null })
       .sort({ receivedAt: -1 }).limit(50).lean()
@@ -59,9 +67,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         isOffer: type === 'offer'
       }
     })
-
-    const withdrawals = await WithdrawalRequest.find({ userId: user._id, archivedAt: null })
-      .sort({ updatedAt: -1 }).lean()
 
     return Response.json({
       user: { ...user, _id: String(user._id), balance: Number(user.balance) || 0 },

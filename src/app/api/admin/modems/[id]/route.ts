@@ -31,31 +31,29 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000)
     const isOnline = modem.status === 4 && modem.updatedAt && new Date(modem.updatedAt) > fiveMinAgo
 
-    const sim = await SimCard.findOne({ modemId: modem._id, isActive: true, archivedAt: null }).lean()
+    // Phase 1: sim + userModem (both need modem._id)
+    const [sim, userModem] = await Promise.all([
+      SimCard.findOne({ modemId: modem._id, isActive: true, archivedAt: null }).lean(),
+      UserModem.findOne({ modemId: modem._id, removedAt: null, archivedAt: null }).lean(),
+    ])
 
-    let assignedUser = null
-    if (sim) {
-      const userModem = await UserModem.findOne({ modemId: modem._id, removedAt: null, archivedAt: null }).lean()
-      if (userModem) {
-        assignedUser = await User.findOne({ _id: userModem.userId }).select('-password').lean()
-      }
-    }
+    // Phase 2: assigned user (needs userModem) + sim-dependent queries (need sim)
+    const assignedUserPromise = userModem
+      ? User.findOne({ _id: userModem.userId }).select('-password').lean()
+      : Promise.resolve(null)
 
     let balanceHistory: Record<string, unknown>[] = []
     let smsRecords: Record<string, unknown>[] = []
     let smsCount = 0
 
     if (sim) {
-      const [bh, count, sms] = await Promise.all([
+      const [assignedUser, bh, count, sms] = await Promise.all([
+        assignedUserPromise,
         BalanceHistory.find({ simCardId: sim._id, archivedAt: null })
-          .sort({ recordedAt: -1 })
-          .limit(50)
-          .lean(),
+          .sort({ recordedAt: -1 }).limit(50).lean(),
         SmsRecord.countDocuments({ simCardId: sim._id, archivedAt: null }),
         SmsRecord.find({ simCardId: sim._id, archivedAt: null })
-          .sort({ receivedAt: -1 })
-          .limit(20)
-          .lean(),
+          .sort({ receivedAt: -1 }).limit(20).lean(),
       ])
 
       balanceHistory = bh.map((b: Record<string, unknown>) => {
@@ -72,22 +70,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
       smsCount = count
       smsRecords = sms.map(s => ({ ...s, _id: String(s._id) }))
+
+      return Response.json({
+        modem: { ...modem, _id: String(modem._id), isOnline },
+        sim: { ...sim, _id: String(sim._id), balance: sim.balance != null ? Number(sim.balance.toString()) : 0 },
+        assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: Number(assignedUser.balance) || 0 } : null,
+        balanceHistory,
+        smsRecords: smsRecords.map(s => ({ ...s, _id: String(s._id) })),
+        smsCount,
+      })
     }
 
+    // No sim — still resolve assigned user if present
+    const assignedUser = await assignedUserPromise
+
     return Response.json({
-      modem: {
-        ...modem,
-        _id: String(modem._id),
-        isOnline,
-      },
-      sim: sim ? { 
-        ...sim, 
-        _id: String(sim._id), 
-        balance: sim.balance != null ? Number(sim.balance.toString()) : 0 
-      } : null,
+      modem: { ...modem, _id: String(modem._id), isOnline },
+      sim: null,
       assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: Number(assignedUser.balance) || 0 } : null,
       balanceHistory,
-      smsRecords: smsRecords.map(s => ({ ...s, _id: String(s._id) })),
+      smsRecords,
       smsCount,
     })
   } catch (err) {

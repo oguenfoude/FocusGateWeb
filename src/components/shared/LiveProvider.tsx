@@ -1,15 +1,10 @@
 'use client'
 
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { smsTypeLabel } from '@/lib/sms-classifier'
 import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'
-
-interface LiveCtx { unreadSms: number }
-const Ctx = createContext<LiveCtx>({ unreadSms: 0 })
-
-export const useLive = () => useContext(Ctx)
 
 export function LiveProvider({ children }: { children: React.ReactNode }) {
   const esRef = useRef<EventSource | null>(null)
@@ -62,5 +57,5 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
     return () => es.close()
   }, [status])
 
-  return <Ctx.Provider value={{ unreadSms: 0 }}>{children}</Ctx.Provider>
+  return <>{children}</>
 }

@@ -33,7 +33,7 @@ export function TopBar() {
     const timer = setTimeout(() => {
       setTime(new Date().toLocaleTimeString())
     }, 0)
-    const interval = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000)
+    const interval = setInterval(() => setTime(new Date().toLocaleTimeString()), 60000)
     return () => {
       clearTimeout(timer)
       clearInterval(interval)
