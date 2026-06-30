@@ -133,10 +133,7 @@ export function Sidebar() {
           <LogOut className="h-4 w-4 text-brand-400" />
           {t('auth.logout')}
         </button>
-        <div className="flex items-center gap-2 text-[11px] text-slate-500">
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-400" />
-          v1.0.0 &middot; localhost:3000
-        </div>
+
       </div>
     </div>
   )
