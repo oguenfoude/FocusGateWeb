@@ -19,6 +19,7 @@ interface ModemData {
   isOnline: boolean
   status: number
   updatedAt: string | null
+  simLastSeen: string | null
   balance: number | null
   assignedTo: string | null
   brand: number | null
@@ -39,6 +40,12 @@ export function ModemTable() {
   if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('common.loading')}</div>
   if (error) return <div className="p-8 text-center text-red-500">{t('common.error')}</div>
   if (!data || !Array.isArray(data)) return <div className="p-8 text-center text-gray-400">{t('modems.noModemsFound')}</div>
+
+  const lastSeenOf = (modem: ModemData): string | null => modem.simLastSeen ?? modem.updatedAt
+  const formatLastSeen = (modem: ModemData) => {
+    const ts = lastSeenOf(modem);
+    return ts ? formatDistanceToNow(new Date(ts), { addSuffix: true }) : t('modems.never');
+  };
 
   const counts = {
     all: data.length,
@@ -160,7 +167,7 @@ export function ModemTable() {
                       )}
                     </td>
                     <td className="px-6 py-3.5 text-xs text-gray-400">
-                      {modem.updatedAt ? formatDistanceToNow(new Date(modem.updatedAt), { addSuffix: true }) : t('modems.never')}
+                      {formatLastSeen(modem)}
                     </td>
                   </tr>
                 ))
@@ -201,7 +208,7 @@ export function ModemTable() {
                   )}
                 </div>
                 <span className="text-xs text-gray-400">
-                  {modem.updatedAt ? formatDistanceToNow(new Date(modem.updatedAt), { addSuffix: true }) : t('modems.never')}
+                  {formatLastSeen(modem)}
                 </span>
               </div>
               <div className="flex items-center justify-between">

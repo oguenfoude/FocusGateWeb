@@ -6,8 +6,17 @@ export const BALANCE_SOURCE_LABELS: Record<number, string> = {
   4: 'Withdrawal',
 }
 
+export const USER_BALANCE_TYPE_LABELS: Record<number, string> = {
+  0: 'Credit',
+  1: 'Withdrawal',
+}
+
 export function getBalanceSourceLabel(source: number): string {
   return BALANCE_SOURCE_LABELS[source] ?? 'Unknown'
+}
+
+export function getUserBalanceTypeLabel(type: number): string {
+  return USER_BALANCE_TYPE_LABELS[type] ?? 'Unknown'
 }
 
 export function formatBalance(amount: number): string {

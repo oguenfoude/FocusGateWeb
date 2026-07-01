@@ -1,13 +1,13 @@
 export const MODEM_BRANDS: Record<number, string> = {
-  1: 'Huawei',
-  2: 'ZTE',
-  3: 'Sierra Wireless',
-  4: 'TP-Link',
-  5: 'Netgear',
-  6: 'D-Link',
-  7: 'Qualcomm',
-  8: 'MediaTek',
-  9: 'Samsung',
+  0: 'Unknown',
+  1: 'ZTE',
+  2: 'Huawei',
+  3: 'Quectel',
+  4: 'SIMCom',
+  5: 'Sierra Wireless',
+  6: 'Ericsson',
+  7: 'MediaTek',
+  99: 'Other',
 }
 
 export function getModemBrand(brand: number | null | undefined): string {

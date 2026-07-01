@@ -3,6 +3,7 @@
 import useSWR from 'swr'
 import { formatDistanceToNow, format } from 'date-fns'
 import { useLanguage } from '@/components/language-provider'
+import { getUserBalanceTypeLabel } from '@/lib/balance-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -45,16 +46,18 @@ export function HistoryList() {
               {!isLoading && !error && Array.isArray(data) && data.map((h: HistoryItemType) => {
                 const dateStr = h.recordedAt || h.updatedAt
                 const displayDate = dateStr ? new Date(dateStr) : null
-                const isCredit = h.type === 0 || h.amount > 0
+                const typeLabel = getUserBalanceTypeLabel(h.type)
+                const isCredit = h.type === 0
+                const displayAmount = Math.abs(h.amount)
 
                 return (
                   <tr key={h._id} className="table-row-hover">
                     <td className="px-5 py-3 text-gray-900 text-xs font-medium max-w-[250px] truncate">
-                      {h.note || (isCredit ? t('history.credit') : t('history.debit'))}
+                      {h.note || typeLabel}
                     </td>
                     <td className="px-5 py-3">
                       <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs`}>
-                        {isCredit ? '+' : ''}{h.amount.toLocaleString()} DA
+                        {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} DA
                       </span>
                     </td>
                     <td className="px-5 py-3 text-gray-500 text-xs font-medium">
@@ -79,18 +82,20 @@ export function HistoryList() {
         {!isLoading && !error && Array.isArray(data) && data.length > 0 && data.map((h: HistoryItemType) => {
           const dateStr = h.recordedAt || h.updatedAt
           const displayDate = dateStr ? new Date(dateStr) : null
-          const isCredit = h.type === 0 || h.amount > 0
+          const typeLabel = getUserBalanceTypeLabel(h.type)
+          const isCredit = h.type === 0
+          const displayAmount = Math.abs(h.amount)
 
           return (
             <div key={h._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs`}>
-                  {isCredit ? '+' : ''}{h.amount.toLocaleString()} DA
+                  {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} DA
                 </span>
                 <span className="text-[11px] text-gray-400">{displayDate ? formatDistanceToNow(displayDate, { addSuffix: true }) : '-'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-900 font-medium">{h.note || (isCredit ? 'Credit' : 'Debit')}</span>
+                <span className="text-xs text-gray-900 font-medium">{h.note || typeLabel}</span>
                 <span className="text-[10px] text-gray-400">{t('users.detail.walletBalance')}: {h.balanceAfter?.toLocaleString()} DA</span>
               </div>
             </div>

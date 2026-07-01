@@ -30,7 +30,7 @@ export async function GET() {
     ])
 
     const simMap = new Map(sims.map(s => [s.modemId, s]))
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000)
+    const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000)
 
     const result = modems.map(m => {
       const sim = simMap.get(m._id) ?? null
@@ -39,7 +39,7 @@ export async function GET() {
         imei: m.imei,
         brand: m.brand,
         model: m.model,
-        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > fiveMinAgo,
+        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > twoMinAgo,
         phoneNumber: sim?.phoneNumber ?? null,
         simStatus: sim?.status ?? null,
         lastSeen: sim?.lastSeen ?? null,

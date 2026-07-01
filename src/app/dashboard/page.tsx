@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData(userId: string | number) {
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
 
   const assignments = await UserModem.find({
     userId,
@@ -29,7 +29,7 @@ async function getDashboardData(userId: string | number) {
   const onlineModems = await Modem.countDocuments({
     _id: { $in: modemIds },
     status: 4,
-    updatedAt: { $gte: fiveMinutesAgo }
+    updatedAt: { $gte: twoMinutesAgo }
   })
 
   const user = await User.findOne({ _id: userId }).lean()
@@ -62,18 +62,18 @@ async function getDashboardData(userId: string | number) {
   })
     .sort({ receivedAt: -1 })
     .limit(20)
-    .populate({
-      path: 'simCardId',
-      populate: {
-        path: 'modemId',
-        model: 'Modem'
-      }
-    })
     .lean()
 
+  const simLookupMap = new Map(activeSims.map(s => [String(s._id), s]))
+  const modemLookupIds = [...new Set(activeSims.map(s => s.modemId))]
+  const modemLookupDocs = modemLookupIds.length > 0
+    ? await Modem.find({ _id: { $in: modemLookupIds } }).select('imei').lean()
+    : []
+  const modemLookupMap = new Map(modemLookupDocs.map(m => [String(m._id), m]))
+
   const recentSms = recentSmsRaw.map(sms => {
-    const sc = sms.simCardId as Record<string, unknown> | null | undefined
-    const modem = sc?.modemId as Record<string, unknown> | null | undefined
+    const sc = simLookupMap.get(String(sms.simCardId))
+    const modem = sc ? modemLookupMap.get(String(sc.modemId)) : null
     return {
       _id: String(sms._id),
       receivedAt: sms.receivedAt instanceof Date ? sms.receivedAt.toISOString() : String(sms.receivedAt ?? ''),
