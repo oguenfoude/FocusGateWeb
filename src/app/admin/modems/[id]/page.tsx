@@ -24,7 +24,7 @@ interface ModemDetailData {
   sim: {
     _id: string
     imsi: string
-    phoneNumber: string
+    phoneNumber: number
     balance: number
     isActive: boolean
     firstSeen: string

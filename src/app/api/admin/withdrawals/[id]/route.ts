@@ -6,6 +6,7 @@ import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 import { BalanceHistory } from '@/lib/models/BalanceHistory'
+import { nextId } from '@/lib/id-generator'
 
 export const dynamic = 'force-dynamic'
 
@@ -60,7 +61,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       await user.save()
 
       await UserBalanceHistory.create({
-        _id: Date.now(),
+        _id: nextId(),
         userId: user._id,
         amount: -request.amount,
         balanceAfter: user.balance,
@@ -72,7 +73,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       })
 
       await BalanceHistory.create({
-        _id: Date.now() + 1,
+        _id: nextId(),
         userId: user._id,
         simCardId: null,
         modemId: null,

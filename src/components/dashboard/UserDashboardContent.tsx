@@ -10,7 +10,7 @@ interface SmsWithRelations {
   senderNumber?: string
   content?: string
   simCardId?: {
-    phoneNumber?: string
+    phoneNumber?: number
     modemId?: {
       imei?: string
     }

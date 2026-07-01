@@ -43,7 +43,7 @@ interface AssignmentItem {
     comPort: string | null
   }
   sim: {
-    phoneNumber?: string
+    phoneNumber?: number
     balance?: number
     isActive?: boolean
   } | null
@@ -54,7 +54,7 @@ interface ModemItem {
   imei: string
   model: string | null
   comPort: string | null
-  phoneNumber?: string | null
+  phoneNumber?: number | null
   assignedTo?: string | null
 }
 

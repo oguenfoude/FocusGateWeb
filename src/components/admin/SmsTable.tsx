@@ -8,7 +8,7 @@ import { useLanguage } from '@/components/language-provider'
 
 interface ModemRowType {
   _id: string
-  phoneNumber?: string
+  phoneNumber?: number
   imei?: string
 }
 

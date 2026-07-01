@@ -9,7 +9,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 interface SimCardData {
   modemId: string
-  phoneNumber: string | null
+  phoneNumber: number | null
   isOnline: boolean
   lastSeen: string | null
   model: string | null

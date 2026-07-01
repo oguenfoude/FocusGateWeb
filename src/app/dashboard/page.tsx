@@ -81,7 +81,7 @@ async function getDashboardData(userId: string | number) {
       senderNumber: sms.senderNumber as string | undefined,
       content: sms.content as string | undefined,
       simCardId: sc ? {
-        phoneNumber: sc.phoneNumber as string | undefined,
+        phoneNumber: Number(sc.phoneNumber) || undefined,
         modemId: modem ? { imei: modem.imei as string | undefined } : undefined,
       } : undefined,
     }

@@ -15,7 +15,7 @@ interface ModemData {
   imei: string
   model: string | null
   comPort: string | null
-  phoneNumber: string | null
+  phoneNumber: number | null
   isOnline: boolean
   status: number
   updatedAt: string | null

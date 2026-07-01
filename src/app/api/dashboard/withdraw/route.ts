@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
+import { nextId } from '@/lib/id-generator'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     }
 
     await WithdrawalRequest.create({
-      _id: Date.now(),
+      _id: nextId(),
       userId: session.user.id,
       amount,
       note: note || null,

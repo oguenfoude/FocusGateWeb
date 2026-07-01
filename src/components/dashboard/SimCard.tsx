@@ -4,7 +4,7 @@ import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'
 import { AlertTriangle, Info } from 'lucide-react'
 
 interface SimCardProps {
-  phoneNumber: string | null
+  phoneNumber: number | null
   isOnline: boolean
   lastSeen: string | null
   balance?: number

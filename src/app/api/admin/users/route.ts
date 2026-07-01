@@ -66,8 +66,6 @@ export async function POST(req: NextRequest) {
     const lastUser = await User.findOne().sort({ _id: -1 }).lean()
     const nextId = lastUser ? lastUser._id + 1 : 1
 
-    const machineId = '419c0cfc97666753'
-
     const newUser = await User.create({
       _id: nextId,
       username,
@@ -75,7 +73,7 @@ export async function POST(req: NextRequest) {
       displayName: displayName || username,
       role: 1,
       balance: 0,
-      machineId,
+      machineId: '',
       createdAt: new Date(),
       updatedAt: new Date(),
       archivedAt: null,

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 interface WarningItem {
   _id: number
-  phoneNumber?: string
+  phoneNumber?: number
   balance: number
   modemId: number
 }

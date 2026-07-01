@@ -6,7 +6,7 @@ import { Inbox, Eye } from 'lucide-react'
 
 interface WarningItem {
   _id: number
-  phoneNumber?: string
+  phoneNumber?: number
   balance: number
   modemId: number
 }

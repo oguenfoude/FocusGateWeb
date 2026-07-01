@@ -42,12 +42,8 @@ export default function LoginPage() {
         toast.success(t('auth.login'))
         const sessionRes = await fetch('/api/auth/session')
         const session = await sessionRes.json()
-        if (session?.user?.role === 'admin') {
-          router.push('/admin')
-        } else {
-          router.push('/dashboard')
-        }
-        router.refresh()
+        const dest = session?.user?.role === 'admin' ? '/admin' : '/dashboard'
+        router.replace(dest)
       }
     } finally {
       setLoading(false)

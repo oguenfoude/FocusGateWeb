@@ -129,7 +129,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       }
 
       const modemObj = await Modem.findById(parsedModemId).lean()
-      const machineId = modemObj?.machineId || '419c0cfc97666753'
+      const machineId = modemObj?.machineId || ''
 
       const lastAssignment = await UserModem.findOne().sort({ _id: -1 }).lean()
       const nextId = lastAssignment ? lastAssignment._id + 1 : 1

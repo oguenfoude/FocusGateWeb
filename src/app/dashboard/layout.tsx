@@ -8,7 +8,7 @@ import { LayoutContent } from '@/components/shared/LayoutContent'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions)
-  if (!session) redirect('/login')
+  if (!session || !session.user?.role) redirect('/login')
 
   return (
     <MobileMenuProvider>
