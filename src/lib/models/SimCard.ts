@@ -4,7 +4,7 @@ const SimCardSchema = new Schema({
   _id: { type: Number, required: true },
   modemId: { type: Number, required: true },
   imsi: { type: String, required: true },
-  phoneNumber: { type: String },
+  phoneNumber: { type: Number },
   balance: { type: Number, default: 0 },
   verifiedAt: { type: Date },
   isActive: { type: Boolean, default: true },

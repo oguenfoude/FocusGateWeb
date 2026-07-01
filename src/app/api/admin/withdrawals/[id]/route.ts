@@ -5,6 +5,7 @@ import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
+import { BalanceHistory } from '@/lib/models/BalanceHistory'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,6 +68,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         note: note || request.note || 'Withdrawal approved',
         recordedAt: now,
         updatedAt: now,
+        machineId: request.machineId || user.machineId
+      })
+
+      await BalanceHistory.create({
+        _id: Date.now() + 1,
+        userId: user._id,
+        simCardId: null,
+        modemId: null,
+        balance: Number(user.balance),
+        previousBalance: Number(user.balance) + Number(request.amount),
+        source: 4,
+        recordedAt: now,
+        updatedAt: now,
+        archivedAt: null,
         machineId: request.machineId || user.machineId
       })
 

@@ -52,7 +52,7 @@ export function ModemTable() {
     const query = searchTerm.toLowerCase()
     const matchesSearch =
       (m.imei || '').toLowerCase().includes(query) ||
-      (m.phoneNumber || '').toLowerCase().includes(query) ||
+      (String(m.phoneNumber || '')).toLowerCase().includes(query) ||
       (m.model || '').toLowerCase().includes(query) ||
       (m.assignedTo || '').toLowerCase().includes(query)
 
