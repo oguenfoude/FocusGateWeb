@@ -35,12 +35,11 @@ async function getDashboardData(userId: string | number) {
   const user = await User.findOne({ _id: userId }).lean()
   const balance = user?.balance || 0
 
-  const walletHistories = await UserBalanceHistory.find({
-    userId,
-    type: 0,
-    archivedAt: null
-  }).lean()
-  const totalCredits = walletHistories.reduce((sum, h) => sum + (h.amount ?? 0), 0)
+  const creditAggr = await UserBalanceHistory.aggregate([
+    { $match: { userId: userId, type: 0, archivedAt: null } },
+    { $group: { _id: null, total: { $sum: '$amount' } } }
+  ])
+  const totalCredits = creditAggr.length > 0 ? Number(creditAggr[0].total) : 0
 
   const pendingRequest = await WithdrawalRequest.findOne({
     userId,

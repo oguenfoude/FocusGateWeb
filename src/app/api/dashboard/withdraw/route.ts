@@ -63,12 +63,15 @@ export async function POST(req: NextRequest) {
 
     await connectDB()
 
-    const user = await User.findById(session.user.id).lean()
-    if (!user) {
-      return Response.json({ error: 'User not found' }, { status: 404 })
-    }
+    const now = new Date()
 
-    if (amount > user.balance) {
+    const atomicCheck = await User.findOneAndUpdate(
+      { _id: session.user.id, balance: { $gte: amount }, archivedAt: null },
+      { $set: { updatedAt: now } },
+      { new: false }
+    ).lean()
+
+    if (!atomicCheck) {
       return Response.json({ error: 'Amount exceeds available balance' }, { status: 400 })
     }
 
@@ -88,10 +91,10 @@ export async function POST(req: NextRequest) {
       amount,
       note: note || null,
       status: 0,
-      requestedAt: new Date(),
-      machineId: user.machineId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      requestedAt: now,
+      machineId: atomicCheck.machineId || '',
+      createdAt: now,
+      updatedAt: now,
     })
 
     return Response.json({ ok: true })

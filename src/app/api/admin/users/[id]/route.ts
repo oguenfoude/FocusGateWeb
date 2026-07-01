@@ -11,6 +11,7 @@ import { SmsRecord } from '@/lib/models/SmsRecord'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 import { classifySms, smsTypeLabel } from '@/lib/sms-classifier'
+import { nextId } from '@/lib/id-generator'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,11 +132,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       const modemObj = await Modem.findById(parsedModemId).lean()
       const machineId = modemObj?.machineId || ''
 
-      const lastAssignment = await UserModem.findOne().sort({ _id: -1 }).lean()
-      const nextId = lastAssignment ? lastAssignment._id + 1 : 1
+      const id = nextId()
 
       await UserModem.create({
-        _id: nextId,
+        _id: id,
         userId,
         modemId: parsedModemId,
         assignedAt: new Date(),

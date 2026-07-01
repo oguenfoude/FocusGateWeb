@@ -58,13 +58,12 @@ export async function GET(req: NextRequest) {
 
           let simIds: (string | number)[] = []
           if (!isAdmin) {
-            const [assignments, allSims] = await Promise.all([
-              UserModem.find({ userId, removedAt: null, archivedAt: null }).lean(),
-              SimCard.find({ archivedAt: null, isActive: true }).lean(),
-            ])
+            const assignments = await UserModem.find({ userId, removedAt: null, archivedAt: null }).lean()
             const modemIds = assignments.map(a => a.modemId)
-            const sims = allSims.filter(s => modemIds.includes(s.modemId))
-            simIds = sims.map(s => s._id)
+            if (modemIds.length > 0) {
+              const sims = await SimCard.find({ modemId: { $in: modemIds }, archivedAt: null, isActive: true }).lean()
+              simIds = sims.map(s => s._id)
+            }
           }
 
           if (isClosed) return

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { UserModem } from '@/lib/models/UserModem'
+import { nextId } from '@/lib/id-generator'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,11 +64,10 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Username already exists' }, { status: 409 })
     }
 
-    const lastUser = await User.findOne().sort({ _id: -1 }).lean()
-    const nextId = lastUser ? lastUser._id + 1 : 1
+    const id = nextId()
 
     const newUser = await User.create({
-      _id: nextId,
+      _id: id,
       username,
       password,
       displayName: displayName || username,

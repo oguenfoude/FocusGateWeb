@@ -45,9 +45,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const adminId = Number(session.user.id)
 
     if (action === 'approve') {
-      if (user.balance < request.amount) {
+      const updateResult = await User.updateOne(
+        { _id: request.userId, balance: { $gte: request.amount } },
+        { $inc: { balance: -request.amount }, $set: { updatedAt: now } }
+      )
+      if (updateResult.modifiedCount === 0) {
         return Response.json({ error: 'Insufficient user balance' }, { status: 400 })
       }
+
+      const updatedUser = await User.findById(request.userId).lean()
+      const newBalance = Number(updatedUser?.balance ?? 0)
 
       request.status = 1
       request.processedAt = now
@@ -56,34 +63,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       request.updatedAt = now
       await request.save()
 
-      user.balance -= request.amount
-      user.updatedAt = now
-      await user.save()
-
       await UserBalanceHistory.create({
         _id: nextId(),
-        userId: user._id,
+        userId: request.userId,
         amount: -request.amount,
-        balanceAfter: user.balance,
+        balanceAfter: newBalance,
         type: 1,
         note: note || request.note || 'Withdrawal approved',
         recordedAt: now,
         updatedAt: now,
-        machineId: request.machineId || user.machineId
+        machineId: request.machineId || ''
       })
 
       await BalanceHistory.create({
         _id: nextId(),
-        userId: user._id,
+        userId: request.userId,
         simCardId: null,
         modemId: null,
-        balance: Number(user.balance),
-        previousBalance: Number(user.balance) + Number(request.amount),
+        balance: newBalance,
+        previousBalance: newBalance + Number(request.amount),
         source: 4,
         recordedAt: now,
         updatedAt: now,
         archivedAt: null,
-        machineId: request.machineId || user.machineId
+        machineId: request.machineId || ''
       })
 
     } else if (action === 'reject') {
