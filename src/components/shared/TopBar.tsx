@@ -27,10 +27,12 @@ export function TopBar() {
   const { t } = useLanguage()
   const pathname = usePathname()
   const { toggle } = useMobileMenu()
-  const [time, setTime] = useState(() => new Date().toLocaleTimeString())
+  const [time, setTime] = useState('')
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(new Date().toLocaleTimeString()), 60000)
+    const tick = () => setTime(new Date().toLocaleTimeString())
+    tick()
+    const interval = setInterval(tick, 60000)
     return () => clearInterval(interval)
   }, [])
 
