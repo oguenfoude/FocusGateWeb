@@ -171,7 +171,7 @@ export function UserDashboardContent({ data }: { data: DashboardData }) {
           <span className="text-xs text-gray-400">{data.recentSms.length} {t('dashboard.messages')}</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm hidden lg:table">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
@@ -184,7 +184,7 @@ export function UserDashboardContent({ data }: { data: DashboardData }) {
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
                   const date = new Date(sms.receivedAt)
-                  const senderStr = sms.senderNumber || 'Unknown'
+                  const senderStr = sms.senderNumber || t('common.unknown')
                   const initials = senderStr.length >= 2 ? senderStr.slice(-2) : senderStr
                   const simCard = sms.simCardId
 
@@ -221,6 +221,34 @@ export function UserDashboardContent({ data }: { data: DashboardData }) {
               )}
             </tbody>
           </table>
+          <div className="lg:hidden space-y-3 p-4">
+            {data.recentSms.length > 0 ? (
+              data.recentSms.map((sms) => {
+                const date = new Date(sms.receivedAt)
+                const senderStr = sms.senderNumber || t('common.unknown')
+                const simCard = sms.simCardId
+
+                return (
+                  <div key={sms._id.toString()} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-xs text-gray-900">{senderStr}</span>
+                      <span className="text-[11px] text-gray-400">
+                        {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
+                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 truncate mb-1">{sms.content}</p>
+                    <span className="text-[10px] text-gray-400">{simCard?.phoneNumber || 'N/A'}</span>
+                  </div>
+                )
+              })
+            ) : (
+              <div className="text-center py-8">
+                <Inbox className="h-6 w-6 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-400">{t('dashboard.noSms')}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

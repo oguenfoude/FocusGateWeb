@@ -47,7 +47,8 @@
     "recentSms": "SMS Récents",
     "messages": "messages",
     "noSms": "Aucun SMS enregistré",
-    "viewModemDetail": "Voir les détails du modem"
+    "viewModemDetail": "Voir les détails du modem",
+    "rechargeInstruction": "Pour recharger, envoyez Mobilis Flexy directement à ce numéro."
   },
   "modems": {
     "title": "Modems Actifs",
@@ -95,6 +96,80 @@
       "firstSeen": "Première vue",
       "lastSeen": "Dernière vue"
     }
+  },
+  "modemDetail": {
+    "loading": "Chargement des détails du modem...",
+    "loadError": "Échec du chargement des détails.",
+    "backToModems": "Retour aux Modems",
+    "unassignConfirm": "Êtes-vous sûr de vouloir désassigner ce modem?",
+    "unassignFailed": "Échec de la désassignation",
+    "unassignedSuccess": "Modem désassigné avec succès!",
+    "somethingWrong": "Quelque chose a mal tourné",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "info": "Info",
+    "balanceHistory": "Historique du Solde",
+    "sms": "SMS",
+    "modemInformation": "Informations du Modem",
+    "imei": "IMEI",
+    "comPort": "Port COM",
+    "brandModel": "Marque / Modèle",
+    "created": "Créé",
+    "machineId": "ID Machine",
+    "simCard": "Carte SIM",
+    "imsi": "IMSI",
+    "phone": "Téléphone",
+    "balance": "Solde",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "firstSeen": "Première Vue",
+    "lastSeen": "Dernière Vue",
+    "assignedUser": "Utilisateur Assigné",
+    "noUserAssigned": "Aucun utilisateur assigné",
+    "noSimConnected": "Aucune carte SIM connectée.",
+    "ussdCheck": "Vérification USSD",
+    "smsCredit": "Crédit SMS",
+    "settlement": "Règlement",
+    "withdrawal": "Retrait",
+    "other": "Autre",
+    "was": "était",
+    "noBalanceHistory": "Aucun historique de solde trouvé.",
+    "smsMessages": "Messages SMS",
+    "total": "total",
+    "noSmsRecords": "Aucun enregistrement SMS trouvé.",
+    "showingOf": "Affichage de 20 sur {count}",
+    "editUser": "Modifier l'utilisateur",
+    "newPasswordOptional": "Nouveau mot de passe (optionnel)",
+    "leaveBlank": "Laisser vide pour garder le mot de passe actuel",
+    "saveChanges": "Enregistrer les modifications",
+    "failedToUpdate": "Échec de la mise à jour",
+    "userUpdated": "Utilisateur mis à jour avec succès!",
+    "confirmArchive": "Êtes-vous sûr de vouloir archiver cet utilisateur?"
+  },
+  "modemDetail": {
+    "loading": "Chargement des détails du modem...",
+    "loadError": "Échec du chargement des détails du modem.",
+    "backToModems": "Retour aux Modems",
+    "selectModem": "Veuillez sélectionner un modem",
+    "assignFailed": "Échec de l'assignation",
+    "assignSuccess": "Modem assigné avec succès!",
+    "unassignConfirm": "Êtes-vous sûr de vouloir désassigner ce modem?",
+    "unassignFailed": "Échec de la désassignation",
+    "unassignedSuccess": "Modem désassigné!",
+    "somethingWrong": "Erreur",
+    "ussdCheck": "Vérification USSD",
+    "smsCredit": "Crédit SMS",
+    "settlement": "Règlement",
+    "withdrawal": "Retrait",
+    "other": "Autre",
+    "editUser": "Modifier",
+    "newPasswordOptional": "Nouveau mot de passe (optionnel)",
+    "leaveBlank": "Laisser vide pour conserver",
+    "saveChanges": "Enregistrer",
+    "failedToUpdate": "Échec de la mise à jour",
+    "userUpdated": "Utilisateur mis à jour",
+    "confirmArchive": "Êtes-vous sûr d'archiver cet utilisateur?"
   },
   "users": {
     "title": "Utilisateurs",
@@ -153,7 +228,8 @@
       "noWalletHistory": "Aucun historique de portefeuille",
       "noBalanceHistory": "Aucun historique de solde SIM trouvé",
       "noSmsRecords": "Aucun enregistrement SMS trouvé",
-      "userDetails": "Détails Utilisateur",
+      "userDetails": "Détails",
+      "userDetailsSubtitle": "Voir le portefeuille et l'historique.",
       "viewUserWallet": "Voir le portefeuille, l'historique SIM et les SMS.",
       "simId": "ID SIM",
       "delta": "Crédit",
@@ -164,7 +240,13 @@
       "role": "Rôle",
       "balance": "Solde",
       "status": "Statut"
-    }
+    },
+    "editUser": "Modifier",
+    "newPasswordOptional": "Nouveau mot de passe (optionnel)",
+    "leaveBlank": "Laisser vide pour conserver",
+    "saveChanges": "Enregistrer",
+    "failedToUpdate": "Échec de la mise à jour",
+    "userUpdated": "Utilisateur mis à jour"
   },
   "sms": {
     "title": "Logs SMS Globaux",
@@ -222,7 +304,9 @@
     "loading": "Chargement des retraits...",
     "failedToLoad": "Échec du chargement des retraits",
     "noWithdrawals": "Aucun retrait trouvé",
-    "balance": "Solde : {{amount}} DA"
+    "balance": "Solde : {{amount}} DA",
+    "failedProcess": "Échec du traitement",
+    "unknownError": "Erreur inconnue"
   },
   "warnings": {
     "title": "Alertes Solde Élevé",
@@ -243,7 +327,8 @@
     "currentPassword": "Mot de Passe Actuel",
     "newPassword": "Nouveau Mot de Passe",
     "confirmPassword": "Confirmer le Mot de Passe",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "language": "Langue"
   },
   "mySims": {
     "title": "Mes Cartes SIM",
@@ -261,7 +346,9 @@
     "loading": "Chargement de l'historique...",
     "failedToLoad": "Échec du chargement de l'historique",
     "noHistoryEvents": "Aucun événement de crédit trouvé",
-    "noHistoryFound": "Aucun historique trouvé"
+    "noHistoryFound": "Aucun historique trouvé",
+    "credit": "Créance",
+    "debit": "Débit"
   },
   "withdraw": {
     "title": "Retirer des Fonds",
@@ -315,7 +402,8 @@
     "da": "DA",
     "search": "Rechercher...",
     "archived": "Archivé",
-    "view": "Voir"
+    "view": "Voir",
+    "unknown": "Inconnu"
   },
   "balanceSource": {
     "0": "Vérification USSD",

@@ -67,13 +67,13 @@ export function WithdrawalTable() {
       const json = await res.json()
 
       if (!res.ok) {
-        throw new Error(json.error || 'Failed to process request')
+        throw new Error(json.error || t('withdrawals.failedProcess'))
       }
 
       toast.success(t(`withdrawals.${confirmDialog.action === 'approve' ? 'approved' : 'rejected'}`) + '!')
       mutate()
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      const errorMessage = err instanceof Error ? err.message : t('withdrawals.unknownError')
       toast.error(errorMessage)
     } finally {
       setIsProcessing(false)
@@ -132,7 +132,7 @@ export function WithdrawalTable() {
             onClick={() => setActiveTab(tab)}
             className={`filter-pill ${activeTab === tab ? 'active' : ''}`}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)} ({counts[tab]})
+            {t(`withdrawals.${tab}`)} ({counts[tab]})
           </button>
         ))}
       </div>
@@ -156,7 +156,7 @@ export function WithdrawalTable() {
                 filtered.map((req: WithdrawalRequestType) => (
                   <tr key={req._id} className="table-row-hover">
                     <td className="px-5 py-3.5">
-                      <div className="font-bold text-xs text-gray-900">{req.userId?.username || 'Unknown'}</div>
+                      <div className="font-bold text-xs text-gray-900">{req.userId?.username || t('common.unknown')}</div>
                       {req.userId?.balance !== undefined && (
                         <div className="text-[10px] text-gray-400 mt-0.5">{t('withdrawals.balance', { amount: req.userId.balance.toLocaleString() })}</div>
                       )}
@@ -191,7 +191,7 @@ export function WithdrawalTable() {
           filtered.map((req: WithdrawalRequestType) => (
             <div key={req._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-sm text-gray-900">{req.userId?.username || 'Unknown'}</span>
+                <span className="font-bold text-sm text-gray-900">{req.userId?.username || t('common.unknown')}</span>
                 {req.status === 0 ? <span className="badge badge-warning">{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
               </div>
               <div className="flex items-center justify-between mb-2">

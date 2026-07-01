@@ -47,7 +47,8 @@
     "recentSms": "Recent SMS",
     "messages": "messages",
     "noSms": "No SMS records yet",
-    "viewModemDetail": "View Modem Detail"
+    "viewModemDetail": "View Modem Detail",
+    "rechargeInstruction": "To recharge, send Mobilis Flexy directly to this number."
   },
   "modems": {
     "title": "Active Modems",
@@ -95,6 +96,56 @@
       "firstSeen": "First Seen",
       "lastSeen": "Last Seen"
     }
+  },
+  "modemDetail": {
+    "loading": "Loading modem details...",
+    "loadError": "Failed to load modem details.",
+    "backToModems": "Back to Modems",
+    "unassignConfirm": "Are you sure you want to unassign this modem?",
+    "unassignFailed": "Failed to unassign modem",
+    "unassignedSuccess": "Modem unassigned successfully!",
+    "somethingWrong": "Something went wrong",
+    "online": "Online",
+    "offline": "Offline",
+    "info": "Info",
+    "balanceHistory": "Balance History",
+    "sms": "SMS",
+    "modemInformation": "Modem Information",
+    "imei": "IMEI",
+    "comPort": "ComPort",
+    "brandModel": "Brand / Model",
+    "created": "Created",
+    "machineId": "Machine ID",
+    "simCard": "SIM Card",
+    "imsi": "IMSI",
+    "phone": "Phone",
+    "balance": "Balance",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "firstSeen": "First Seen",
+    "lastSeen": "Last Seen",
+    "assignedUser": "Assigned User",
+    "noUserAssigned": "No user assigned",
+    "noSimConnected": "No SIM card connected.",
+    "ussdCheck": "USSD Check",
+    "smsCredit": "SMS Credit",
+    "settlement": "Settlement",
+    "withdrawal": "Withdrawal",
+    "other": "Other",
+    "was": "was",
+    "noBalanceHistory": "No balance history records found.",
+    "smsMessages": "SMS Messages",
+    "total": "total",
+    "noSmsRecords": "No SMS records found.",
+    "showingOf": "Showing 20 of {count}",
+    "editUser": "Edit User",
+    "newPasswordOptional": "New Password (optional)",
+    "leaveBlank": "Leave blank to keep current password",
+    "saveChanges": "Save Changes",
+    "failedToUpdate": "Failed to update",
+    "userUpdated": "User updated successfully!",
+    "confirmArchive": "Are you sure you want to archive this user?"
   },
   "users": {
     "title": "Users",
@@ -149,11 +200,15 @@
       "selectAvailable": "Select Available Modem",
       "chooseModem": "-- Choose Modem --",
       "assignModem": "Assign Modem",
+      "selectModem": "Please select a modem",
+      "assignFailed": "Failed to assign modem",
+      "assignSuccess": "Modem assigned successfully!",
       "noModemsAssigned": "No modems assigned to this user.",
       "noWalletHistory": "No wallet history found",
       "noBalanceHistory": "No SIM balance history found",
       "noSmsRecords": "No SMS records found",
       "userDetails": "User Details",
+      "userDetailsSubtitle": "View user wallet, SIM history, and SMS records.",
       "viewUserWallet": "View user wallet, SIM history, and SMS records.",
       "simId": "SIM ID",
       "delta": "Amount Credited",
@@ -222,7 +277,9 @@
     "loading": "Loading withdrawals...",
     "failedToLoad": "Failed to load withdrawals",
     "noWithdrawals": "No withdrawals found",
-    "balance": "Balance: {{amount}} DA"
+    "balance": "Balance: {{amount}} DA",
+    "failedProcess": "Failed to process request",
+    "unknownError": "Unknown error occurred"
   },
   "warnings": {
     "title": "High Balance Alerts",
@@ -243,14 +300,15 @@
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "save": "Save Changes"
+    "save": "Save Changes",
+    "language": "Language"
   },
   "mySims": {
     "title": "My SIM Cards",
     "subtitle": "View the real-time status of your assigned phone numbers.",
     "noSims": "You don't have any assigned SIM cards yet."
   },
-  "history": {
+    "history": {
     "title": "Credit History",
     "subtitle": "Timeline of all funds credited to your account via your SIMs.",
     "noHistory": "No credit history events found",
@@ -261,7 +319,9 @@
     "loading": "Loading history...",
     "failedToLoad": "Failed to load history",
     "noHistoryEvents": "No credit history events found",
-    "noHistoryFound": "No history found"
+    "noHistoryFound": "No history found",
+    "credit": "Credit",
+    "debit": "Debit"
   },
   "withdraw": {
     "title": "Withdraw Funds",
@@ -315,7 +375,8 @@
     "da": "DA",
     "search": "Search...",
     "archived": "Archived",
-    "view": "View"
+    "view": "View",
+    "unknown": "Unknown"
   },
   "balanceSource": {
     "0": "USSD Check",

@@ -26,13 +26,46 @@ const LOCALES: { code: Locale; label: string; flag: string; short: string }[] = 
   { code: 'ar', label: 'العربية', flag: '🇩🇿', short: 'عر' },
 ]
 
+function SidebarSkeleton() {
+  return (
+    <div className="flex flex-col h-full animate-pulse">
+      <div className="px-5 py-5 border-b border-sidebar-border-color">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-white/10 rounded-lg" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-white/10 rounded w-20" />
+            <div className="h-2.5 bg-white/10 rounded w-16" />
+          </div>
+        </div>
+      </div>
+      <nav className="flex-1 px-3 py-4 space-y-2">
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className="h-10 bg-white/5 rounded-lg" />
+        ))}
+      </nav>
+      <div className="px-3 py-3 border-t border-sidebar-border-color">
+        <div className="h-2.5 bg-white/10 rounded w-14 mb-2" />
+        <div className="flex gap-1.5">
+          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
+          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
+          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
+        </div>
+      </div>
+      <div className="px-5 py-4 border-t border-sidebar-border-color">
+        <div className="h-8 bg-white/5 rounded-lg w-full" />
+      </div>
+    </div>
+  )
+}
+
 export function Sidebar() {
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
   const role = session?.user?.role
   const rtl = isRTL
+  const isLoading = status === 'loading'
 
   const adminLinks = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },
@@ -53,7 +86,7 @@ export function Sidebar() {
 
   const links = role === 'admin' ? adminLinks : userLinks
 
-  const sidebarContent = (
+  const sidebarContent = isLoading ? <SidebarSkeleton /> : (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-sidebar-border-color">
@@ -106,7 +139,7 @@ export function Sidebar() {
 
       {/* Language Switcher */}
       <div className="px-3 py-3 border-t border-sidebar-border-color">
-        <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 px-1">Language</p>
+        <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 px-1">{t('settings.language')}</p>
         <div className="flex gap-1.5">
           {LOCALES.map((l) => (
             <button

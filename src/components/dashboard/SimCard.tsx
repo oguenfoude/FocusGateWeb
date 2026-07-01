@@ -29,7 +29,7 @@ export function SimCardItem({ phoneNumber, isOnline, lastSeen, balance = 0 }: Si
           </h3>
           <div className="flex items-center gap-1.5 mt-2 bg-gray-50 border border-gray-100 rounded-lg p-2 text-xs text-gray-500">
             <Info className="h-3.5 w-3.5 text-brand-500 flex-shrink-0" />
-            <span>To recharge, send Mobilis Flexy directly to this number.</span>
+            <span>{t('dashboard.rechargeInstruction')}</span>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">

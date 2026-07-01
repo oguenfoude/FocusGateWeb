@@ -39,7 +39,7 @@ export function WarningsContent({ warnings }: { warnings: WarningItem[] }) {
               {warnings.length > 0 ? (
                 warnings.map((w) => (
                   <tr key={w._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3.5 font-semibold text-gray-900">{w.phoneNumber || 'Unknown'}</td>
+                    <td className="px-6 py-3.5 font-semibold text-gray-900">{w.phoneNumber || t('common.unknown')}</td>
                     <td className="px-6 py-3.5 font-bold text-amber-600">{w.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
                     <td className="px-6 py-3.5 text-right">
                       <Link href={`/admin/modems/${w.modemId}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -71,7 +71,7 @@ export function WarningsContent({ warnings }: { warnings: WarningItem[] }) {
             {warnings.map((w) => (
               <div key={w._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold text-sm text-gray-900">{w.phoneNumber || 'Unknown'}</span>
+                  <span className="font-bold text-sm text-gray-900">{w.phoneNumber || t('common.unknown')}</span>
                   <span className="font-bold text-sm text-amber-600">{w.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</span>
                 </div>
                 <Link href={`/admin/modems/${w.modemId}`} className="btn btn-outline btn-sm w-full justify-center h-[32px] mt-2">

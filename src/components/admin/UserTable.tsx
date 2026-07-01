@@ -116,10 +116,10 @@ export function UserTable() {
 
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error || 'Failed to update user')
+        throw new Error(err.error || t('users.failedToUpdate'))
       }
 
-      toast.success('User updated successfully')
+      toast.success(t('users.userUpdated'))
       setIsEditModalOpen(false)
       mutate(`/api/admin/users?showArchived=${showArchived}`)
     } catch (err: unknown) {
@@ -228,7 +228,7 @@ export function UserTable() {
                           <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm" title={t('users.viewDetails')}><Eye className="h-3.5 w-3.5" /></Link>
                           {!isArchived && session?.user?.id !== user._id && (
                             <>
-                              <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm" title="Edit User">
+                              <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm" title={t('users.editUser')}>
                                 <Edit2 className="h-3.5 w-3.5" />
                               </button>
                               <button
@@ -289,7 +289,7 @@ export function UserTable() {
                   </Link>
                   {!isArchived && session?.user?.id !== user._id && (
                     <>
-                      <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]" title="Edit User">
+                      <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]" title={t('users.editUser')}>
                         <Edit2 className="h-3.5 w-3.5" />
                       </button>
                       <button
@@ -349,7 +349,7 @@ export function UserTable() {
         <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl">
             <div className="card-header flex items-center justify-between border-b">
-              <h4 className="font-bold text-gray-900">Edit User</h4>
+              <h4 className="font-bold text-gray-900">{t('users.editUser')}</h4>
               <button onClick={() => setIsEditModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleEditUserSubmit}>
@@ -359,14 +359,14 @@ export function UserTable() {
                   <input type="text" value={editDisplayName} onChange={(e) => setEditDisplayName(e.target.value)} placeholder={t('users.enterDisplayName')} className="input" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">New Password (optional)</label>
-                  <input type="password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} placeholder="Leave blank to keep current" className="input" />
+                  <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{t('users.newPasswordOptional')}</label>
+                  <input type="password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} placeholder={t('users.leaveBlank')} className="input" />
                 </div>
               </div>
               <div className="card-header flex items-center justify-end gap-2 border-t bg-gray-50/50">
                 <button type="button" onClick={() => setIsEditModalOpen(false)} className="btn btn-outline btn-sm">{t('common.cancel')}</button>
                 <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-sm min-w-[100px] flex justify-center h-[32px]">
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Changes'}
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('users.saveChanges')}
                 </button>
               </div>
             </form>

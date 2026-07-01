@@ -6,6 +6,7 @@ import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, RadioTower, Info, History, MessageSquare, Clock, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { useLanguage } from '@/components/language-provider'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -54,6 +55,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
   const resolvedParams = use(params)
   const modemId = resolvedParams.id
   const router = useRouter()
+  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState<'info' | 'balance' | 'sms'>('info')
   const [isUnassigning, setIsUnassigning] = useState(false)
 
@@ -61,13 +63,13 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
     refreshInterval: 30000,
   })
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading modem details...</div>
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">{t('modemDetail.loading')}</div>
   if (error || (data && 'error' in data)) {
     return (
       <div className="p-8 text-center text-destructive">
-        <p>Failed to load modem details.</p>
+        <p>{t('modemDetail.loadError')}</p>
         <button onClick={() => router.push('/admin/modems')} className="btn btn-outline btn-sm mt-4">
-          Back to Modems
+          {t('modemDetail.backToModems')}
         </button>
       </div>
     )
@@ -77,7 +79,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
   const { modem, sim, assignedUser, balanceHistory, smsRecords, smsCount } = data
 
   const handleUnassign = async () => {
-    if (!confirm('Are you sure you want to unassign this modem?')) return
+    if (!confirm(t('modemDetail.unassignConfirm'))) return
 
     try {
       setIsUnassigning(true)
@@ -89,13 +91,13 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
 
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error || 'Failed to unassign modem')
+        throw new Error(err.error || t('modemDetail.unassignFailed'))
       }
 
-      toast.success('Modem unassigned successfully!')
+      toast.success(t('modemDetail.unassignedSuccess'))
       mutate(`/api/admin/modems/${modemId}`)
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
+      const message = err instanceof Error ? err.message : t('modemDetail.somethingWrong')
       toast.error(message)
     } finally {
       setIsUnassigning(false)
@@ -109,7 +111,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
         onClick={() => router.push('/admin/modems')}
         className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-brand-500 transition-colors"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Modems
+        <ArrowLeft className="h-3.5 w-3.5" /> {t('modemDetail.backToModems')}
       </button>
 
       {/* Header card */}
@@ -129,10 +131,10 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                 {modem.isOnline ? (
                   <span className="badge badge-success">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Online
+                    {t('modemDetail.online')}
                   </span>
                 ) : (
-                  <span className="badge badge-danger">Offline</span>
+                  <span className="badge badge-danger">{t('modemDetail.offline')}</span>
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">
@@ -160,7 +162,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
               activeTab === 'info' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-400 hover:text-gray-600'
             }`}
           >
-            <Info className="h-4 w-4" /> Info
+            <Info className="h-4 w-4" /> {t('modemDetail.info')}
           </button>
           <button
             onClick={() => setActiveTab('balance')}
@@ -168,7 +170,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
               activeTab === 'balance' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-400 hover:text-gray-600'
             }`}
           >
-            <History className="h-4 w-4" /> Balance History
+            <History className="h-4 w-4" /> {t('modemDetail.balanceHistory')}
           </button>
           <button
             onClick={() => setActiveTab('sms')}
@@ -176,7 +178,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
               activeTab === 'sms' ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-400 hover:text-gray-600'
             }`}
           >
-            <MessageSquare className="h-4 w-4" /> SMS
+            <MessageSquare className="h-4 w-4" /> {t('modemDetail.sms')}
             <span className="ml-1 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">
               {smsCount}
             </span>
@@ -189,30 +191,30 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
             {/* Modem Info */}
             <div className="card">
               <div className="card-header">
-                <h4 className="text-sm font-semibold text-gray-900">Modem Information</h4>
+                <h4 className="text-sm font-semibold text-gray-900">{t('modemDetail.modemInformation')}</h4>
               </div>
               <div className="card-body">
                 <dl className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">IMEI</dt>
+                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.imei')}</dt>
                     <dd className="font-mono text-sm font-medium mt-1">{modem.imei}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">ComPort</dt>
+                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.comPort')}</dt>
                     <dd className="text-sm font-medium mt-1">{modem.comPort || 'N/A'}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">Brand / Model</dt>
+                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.brandModel')}</dt>
                     <dd className="text-sm font-medium mt-1">{modem.brand} {modem.model}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">Created</dt>
+                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.created')}</dt>
                     <dd className="text-sm font-medium mt-1">
                       {modem.createdAt ? format(new Date(modem.createdAt), 'MMM dd, yyyy HH:mm') : '-'}
                     </dd>
                   </div>
                   <div className="col-span-2">
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">Machine ID</dt>
+                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.machineId')}</dt>
                     <dd className="font-mono text-xs mt-1 text-gray-500 truncate" title={modem.machineId}>
                       {modem.machineId}
                     </dd>
@@ -224,42 +226,42 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
             {/* SIM Card Info */}
             <div className="card">
               <div className="card-header">
-                <h4 className="text-sm font-semibold text-gray-900">SIM Card</h4>
+                <h4 className="text-sm font-semibold text-gray-900">{t('modemDetail.simCard')}</h4>
               </div>
               <div className="card-body">
                 {sim ? (
                   <div className="space-y-4">
                     <dl className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <dt className="text-gray-400 font-medium">IMSI</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.imsi')}</dt>
                         <dd className="font-mono font-semibold">{sim.imsi}</dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-gray-400 font-medium">Phone</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.phone')}</dt>
                         <dd className="font-semibold">{sim.phoneNumber}</dd>
                       </div>
                       <div className="flex justify-between items-center">
-                        <dt className="text-gray-400 font-medium">Balance</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.balance')}</dt>
                         <dd className="text-lg font-bold text-brand-600">
                           {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-gray-400 font-medium">Status</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.status')}</dt>
                         <dd>
                           <span className={`badge ${sim.isActive ? 'badge-success' : 'badge-gray'}`}>
-                            {sim.isActive ? 'Active' : 'Inactive'}
+                            {sim.isActive ? t('modemDetail.active') : t('modemDetail.inactive')}
                           </span>
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-gray-400 font-medium">First Seen</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.firstSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
                           {sim.firstSeen ? format(new Date(sim.firstSeen), 'MMM dd, yyyy') : '-'}
                         </dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-gray-400 font-medium">Last Seen</dt>
+                        <dt className="text-gray-400 font-medium">{t('modemDetail.lastSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
                           {sim.lastSeen ? format(new Date(sim.lastSeen), 'MMM dd, HH:mm') : '-'}
                         </dd>
@@ -268,7 +270,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
 
                     <div className="mt-4 pt-4 border-t border-gray-100">
                       <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold mb-2">
-                        Assigned User
+                        {t('modemDetail.assignedUser')}
                       </p>
                       {assignedUser ? (
                         <div className="flex items-center justify-between">
@@ -282,18 +284,18 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                             onClick={handleUnassign}
                             disabled={isUnassigning}
                             className="text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1"
-                            title="Unassign User"
+                            title={t('modemDetail.noUserAssigned')}
                           >
                             <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400">No user assigned</p>
+                        <p className="text-xs text-gray-400">{t('modemDetail.noUserAssigned')}</p>
                       )}
                     </div>
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-gray-400 text-sm">No SIM card connected.</div>
+                  <div className="py-8 text-center text-gray-400 text-sm">{t('modemDetail.noSimConnected')}</div>
                 )}
               </div>
             </div>
@@ -336,10 +338,10 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {b.source === 0 ? 'USSD Check' : b.source === 1 ? 'SMS Credit' : b.source === 2 ? 'Settlement' : b.source === 4 ? 'Withdrawal' : 'Other'}{' '}
+                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}{' '}
                           {b.previousBalance !== null && (
                             <span className="text-gray-300">
-                              &middot; was {b.previousBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                              &middot; {t('modemDetail.was')} {b.previousBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
                             </span>
                           )}
                         </p>
@@ -350,7 +352,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
               ) : (
                 <div className="py-12 text-center">
                   <History className="h-8 w-8 text-gray-200 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400 font-medium">No balance history records found.</p>
+                  <p className="text-sm text-gray-400 font-medium">{t('modemDetail.noBalanceHistory')}</p>
                 </div>
               )}
             </div>
@@ -361,8 +363,8 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
         {activeTab === 'sms' && (
           <div className="card animate-in fade-in duration-200">
             <div className="card-header flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-gray-900">SMS Messages</h4>
-              <span className="text-[11px] text-gray-400">{smsCount} total</span>
+              <h4 className="text-sm font-semibold text-gray-900">{t('modemDetail.smsMessages')}</h4>
+              <span className="text-[11px] text-gray-400">{smsCount} {t('modemDetail.total')}</span>
             </div>
             <div className="max-h-[500px] overflow-y-auto">
               {smsRecords.length > 0 ? (
@@ -393,13 +395,13 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
               ) : (
                 <div className="py-12 text-center">
                   <MessageSquare className="h-8 w-8 text-gray-200 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400 font-medium">No SMS records found.</p>
+                  <p className="text-sm text-gray-400 font-medium">{t('modemDetail.noSmsRecords')}</p>
                 </div>
               )}
             </div>
             {smsCount > 20 && (
               <div className="px-5 py-2.5 border-t border-gray-100 text-center">
-                <span className="text-[11px] text-gray-400">Showing 20 of {smsCount}</span>
+                <span className="text-[11px] text-gray-400">{t('modemDetail.showingOf', { count: smsCount })}</span>
               </div>
             )}
           </div>

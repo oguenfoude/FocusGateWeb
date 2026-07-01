@@ -47,7 +47,8 @@
     "recentSms": "الرسائل الأخيرة",
     "messages": "رسائل",
     "noSms": "لا توجد رسائل SMS بعد",
-    "viewModemDetail": "عرض تفاصيل المودم"
+    "viewModemDetail": "عرض تفاصيل المودم",
+    "rechargeInstruction": "ل إعادة الشحن، أرسل Mobilis Flexy مباشرة إلى هذا الرقم."
   },
   "modems": {
     "title": "المودم النشطة",
@@ -95,6 +96,80 @@
       "firstSeen": "أول ظهور",
       "lastSeen": "آخر ظهور"
     }
+  },
+  "modemDetail": {
+    "loading": "جاري تحميل تفاصيل المودم...",
+    "loadError": "فشل في تحميل تفاصيل المودم.",
+    "backToModems": "العودة إلى المودمات",
+    "unassignConfirm": "هل أنت متأكد أنك تريد إلغاء تعيين هذا المودم؟",
+    "unassignFailed": "فشل في إلغاء تعيين المودم",
+    "unassignedSuccess": "تم إلغاء تعيين المودم بنجاح!",
+    "somethingWrong": "حدث خطأ ما",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "info": "معلومات",
+    "balanceHistory": "سجل الرصيد",
+    "sms": "رسائل",
+    "modemInformation": "معلومات المودم",
+    "imei": "IMEI",
+    "comPort": "منفذ الاتصال",
+    "brandModel": "العلامة التجارية / الطراز",
+    "created": "أنشئ",
+    "machineId": "معرف الجهاز",
+    "simCard": "بطاقة SIM",
+    "imsi": "IMSI",
+    "phone": "الهاتف",
+    "balance": "الرصيد",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "firstSeen": "أول ظهور",
+    "lastSeen": "آخر ظهور",
+    "assignedUser": "المستخدم المعين",
+    "noUserAssigned": "لم يتم تعيين مستخدم",
+    "noSimConnected": "لا توجد بطاقة SIM متصلة.",
+    "ussdCheck": "فحص USSD",
+    "smsCredit": "رصيد الرسائل",
+    "settlement": "تسوية",
+    "withdrawal": "سحب",
+    "other": "أخرى",
+    "was": "كان",
+    "noBalanceHistory": "لم يتم العثور على سجلات تاريخ الرصيد.",
+    "smsMessages": "رسائل SMS",
+    "total": "إجمالي",
+    "noSmsRecords": "لم يتم العثور على سجلات رسائل.",
+    "showingOf": "عرض 20 من {count}",
+    "editUser": "تعديل المستخدم",
+    "newPasswordOptional": "كلمة المرور الجديدة (اختياري)",
+    "leaveBlank": "اتركه فارغاً للحفاظ على كلمة المرور الحالية",
+    "saveChanges": "حفظ التغييرات",
+    "failedToUpdate": "فشل في التحديث",
+    "userUpdated": "تم تحديث المستخدم بنجاح!",
+    "confirmArchive": "هل أنت متأكد أنك تريد أرشفة هذا المستخدم؟"
+  },
+  "modemDetail": {
+    "loading": "جارٍ تحميل تفاصيل المودم...",
+    "loadError": "فشل تحميل تفاصيل المودم.",
+    "backToModems": "العودة للمودم",
+    "selectModem": "يرجى اختيار مودم",
+    "assignFailed": "فشل في تعيين المودم",
+    "assignSuccess": "تم تعيين المودم بنجاح!",
+    "unassignConfirm": "هل أنت متأكد من إلغاء تعيين هذا المودم؟",
+    "unassignFailed": "فشل في إلغاء التعيين",
+    "unassignedSuccess": "تم إلغاء التعيين!",
+    "somethingWrong": "خطأ",
+    "ussdCheck": "فحص USSD",
+    "smsCredit": "رصيد SMS",
+    "settlement": "تسوية",
+    "withdrawal": "سحب",
+    "other": "أخرى",
+    "editUser": "تعديل",
+    "newPasswordOptional": "كلمة المرور الجديدة (اختياري)",
+    "leaveBlank": "اتركه فارغاً للاحتفاظ بالحالي",
+    "saveChanges": "حفظ",
+    "failedToUpdate": "فشل في التحديث",
+    "userUpdated": "تم تحديث المستخدم",
+    "confirmArchive": "هل أنت متأكد من أرشفة هذا المستخدم؟"
   },
   "users": {
     "title": "المستخدمون",
@@ -153,7 +228,8 @@
       "noWalletHistory": "لا يوجد سجل محفظة",
       "noBalanceHistory": "لا يوجد سجل أرصدة SIM",
       "noSmsRecords": "لا توجد سجلات SMS",
-      "userDetails": "تفاصيل المستخدم",
+      "userDetails": "التفاصيل",
+      "userDetailsSubtitle": "عرض المحفظة والسجلات.",
       "viewUserWallet": "عرض المحفظة وسجل SIM ورسائل SMS.",
       "simId": "معرف SIM",
       "delta": "الرصيد المضاف",
@@ -164,7 +240,13 @@
       "role": "الدور",
       "balance": "الرصيد",
       "status": "الحالة"
-    }
+    },
+    "editUser": "تعديل",
+    "newPasswordOptional": "كلمة المرور الجديدة (اختياري)",
+    "leaveBlank": "اتركه فارغاً للاحتفاظ بالحالي",
+    "saveChanges": "حفظ",
+    "failedToUpdate": "فشل في التحديث",
+    "userUpdated": "تم تحديث المستخدم"
   },
   "sms": {
     "title": "سجلات SMS العامة",
@@ -222,7 +304,9 @@
     "loading": "جارٍ تحميل السحوبات...",
     "failedToLoad": "فشل تحميل السحوبات",
     "noWithdrawals": "لم يتم العثور على سحوبات",
-    "balance": "الرصيد: {{amount}} DA"
+    "balance": "الرصيد: {{amount}} DA",
+    "failedProcess": "فشل في المعالجة",
+    "unknownError": "خطأ غير معروف"
   },
   "warnings": {
     "title": "تنبيهات الرصيد العالي",
@@ -243,7 +327,8 @@
     "currentPassword": "كلمة المرور الحالية",
     "newPassword": "كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور",
-    "save": "حفظ التغييرات"
+    "save": "حفظ التغييرات",
+    "language": "اللغة"
   },
   "mySims": {
     "title": "بطاقات SIM الخاصة بي",
@@ -261,7 +346,9 @@
     "loading": "جارٍ تحميل السجل...",
     "failedToLoad": "فشل تحميل السجل",
     "noHistoryEvents": "لم يتم العثور على أحداث ائتمان",
-    "noHistoryFound": "لم يتم العثور على سجل"
+    "noHistoryFound": "لم يتم العثور على سجل",
+    "credit": "دائن",
+    "debit": "مدين"
   },
   "withdraw": {
     "title": "سحب الأموال",
@@ -315,7 +402,8 @@
     "da": "DA",
     "search": "بحث...",
     "archived": "مؤرشف",
-    "view": "عرض"
+    "view": "عرض",
+    "unknown": "غير معروف"
   },
   "balanceSource": {
     "0": "فحص USSD",

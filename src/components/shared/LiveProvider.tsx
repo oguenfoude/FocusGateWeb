@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { smsTypeLabel } from '@/lib/sms-classifier'
 import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'
+import { t } from '@/lib/i18n'
 
 export function LiveProvider({ children }: { children: React.ReactNode }) {
   const esRef = useRef<EventSource | null>(null)
@@ -22,26 +23,26 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
 
         if (event === 'sms') {
           if (data.isOffer) {
-            toast.info(`🎁 Offer / Flixy received from ${data.sender}`, {
-              description: 'This is a promotional offer — not credited to your balance.',
+            toast.info(`${t('dashboard.recentSms')} — ${data.sender}`, {
+              description: t('dashboardSms.promoTooltip'),
               duration: 8000,
             })
           } else {
-            toast.success(`New SMS from ${data.sender}`, {
-              description: `Type: ${smsTypeLabel(data.type)}`,
+            toast.success(`${t('sms.sender')}: ${data.sender}`, {
+              description: `${t('sms.type')}: ${smsTypeLabel(data.type)}`,
             })
           }
         }
 
         if (event === 'balance') {
-          toast.success(`Balance updated: +${data.delta} DA`, {
-            description: `New balance: ${data.balance.toLocaleString()} DA`,
+          toast.success(`Balance: +${data.delta} DA`, {
+            description: `${t('users.detail.walletBalance')}: ${data.balance.toLocaleString()} DA`,
           })
         }
 
         if (event === 'balance_warning') {
-          toast.warning(`⚠️ SIM balance approaching limit`, {
-            description: `Current: ${data.balance.toLocaleString()} DA — limit is ${BALANCE_WARN_THRESHOLD.toLocaleString()} DA`,
+          toast.warning(`${t('warnings.title')}`, {
+            description: `${t('warnings.balance')}: ${data.balance.toLocaleString()} DA — ${BALANCE_WARN_THRESHOLD.toLocaleString()} DA`,
             duration: 10000,
           })
         }

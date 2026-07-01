@@ -50,7 +50,7 @@ export function HistoryList() {
                 return (
                   <tr key={h._id} className="table-row-hover">
                     <td className="px-5 py-3 text-gray-900 text-xs font-medium max-w-[250px] truncate">
-                      {h.note || (isCredit ? 'Credit' : 'Debit')}
+                      {h.note || (isCredit ? t('history.credit') : t('history.debit'))}
                     </td>
                     <td className="px-5 py-3">
                       <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs`}>
