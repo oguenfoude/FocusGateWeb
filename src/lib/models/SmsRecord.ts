@@ -7,7 +7,7 @@ const SmsRecordSchema = new Schema({
   content: { type: String, default: '' },
   receivedAt: { type: Date },
   processedAt: { type: Date },
-  machineId: { type: String, required: true },
+  machineId: { type: String, default: '' },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null }
 }, { collection: 'smsrecords', timestamps: false })

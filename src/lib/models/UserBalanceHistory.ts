@@ -11,7 +11,7 @@ const UserBalanceHistorySchema = new Schema({
   recordedAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null },
-  machineId: { type: String, required: true }
+  machineId: { type: String, default: '' }
 }, { collection: 'userbalancehistories', timestamps: false })
 
 UserBalanceHistorySchema.index({ userId: 1, archivedAt: 1, updatedAt: -1 })

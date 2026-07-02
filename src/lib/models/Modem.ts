@@ -8,7 +8,7 @@ const ModemSchema = new Schema({
   brand: { type: Number, required: true },
   manufacturer: { type: String },
   model: { type: String },
-  machineId: { type: String, required: true },
+  machineId: { type: String, default: '' },
   createdAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null }

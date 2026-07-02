@@ -6,7 +6,7 @@ const UserModemSchema = new Schema({
   modemId: { type: Number, required: true },
   assignedAt: { type: Date },
   removedAt: { type: Date },
-  machineId: { type: String, required: true },
+  machineId: { type: String, default: '' },
   createdAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null }

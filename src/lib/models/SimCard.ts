@@ -13,7 +13,7 @@ const SimCardSchema = new Schema({
   lastSeen: { type: Date },
   removedAt: { type: Date },
   replacedAt: { type: Date },
-  machineId: { type: String, required: true },
+  machineId: { type: String, default: '' },
   createdAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null }

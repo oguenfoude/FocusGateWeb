@@ -11,7 +11,7 @@ const BalanceHistorySchema = new Schema({
   recordedAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null },
-  machineId: { type: String, required: true }
+  machineId: { type: String, default: '' }
 }, { collection: 'balancehistories', timestamps: false })
 
 BalanceHistorySchema.index({ archivedAt: 1, simCardId: 1, recordedAt: -1 })

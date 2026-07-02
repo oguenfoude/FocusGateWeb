@@ -13,7 +13,7 @@ const WithdrawalRequestSchema = new Schema({
   createdAt: { type: Date },
   updatedAt: { type: Date },
   archivedAt: { type: Date, default: null },
-  machineId: { type: String, required: true }
+  machineId: { type: String, default: '' }
 }, { collection: 'withdrawalrequests', timestamps: false })
 
 WithdrawalRequestSchema.index({ status: 1, archivedAt: 1 })
