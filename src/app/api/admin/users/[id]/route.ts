@@ -181,6 +181,41 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return Response.json({ ok: true })
     }
 
+    if (action === 'credit') {
+      const { amount, note } = body
+      const creditAmount = Number(amount)
+      if (!creditAmount || creditAmount <= 0) {
+        return Response.json({ error: 'Amount must be a positive number' }, { status: 400 })
+      }
+
+      const userObj = await User.findById(userId)
+      if (!userObj || userObj.archivedAt) {
+        return Response.json({ error: 'User not found or archived' }, { status: 404 })
+      }
+
+      const newBalance = (Number(userObj.balance) || 0) + creditAmount
+      userObj.balance = newBalance
+      userObj.updatedAt = new Date()
+      await userObj.save()
+
+      const historyId = nextId()
+      await UserBalanceHistory.create({
+        _id: historyId,
+        userId,
+        amount: creditAmount,
+        balanceAfter: newBalance,
+        type: 0,
+        note: note || 'Admin credit',
+        simCardId: null,
+        recordedAt: new Date(),
+        updatedAt: new Date(),
+        machineId: '',
+        archivedAt: null,
+      })
+
+      return Response.json({ ok: true, balance: newBalance })
+    }
+
     return Response.json({ error: 'Invalid action' }, { status: 400 })
   } catch (err) {
     console.error(err)

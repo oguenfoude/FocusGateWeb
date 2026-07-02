@@ -28,8 +28,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return Response.json({ error: 'Modem not found' }, { status: 404 })
     }
 
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000)
-    const isOnline = modem.status === 4 && modem.updatedAt && new Date(modem.updatedAt) > fiveMinAgo
+    const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000)
+    const isOnline = modem.status === 4 && modem.updatedAt && new Date(modem.updatedAt) > twoMinAgo
 
     // Phase 1: sim + userModem (both need modem._id)
     const [sim, userModem] = await Promise.all([
