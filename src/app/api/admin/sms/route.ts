@@ -1,6 +1,4 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { SmsRecord } from '@/lib/models/SmsRecord'
 import { SimCard } from '@/lib/models/SimCard'
@@ -10,11 +8,6 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { searchParams } = new URL(req.url)
     const modemId = searchParams.get('modemId')
     const days = Math.min(Math.max(parseInt(searchParams.get('days') || '7', 10), 1), 365)

@@ -1,5 +1,3 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { UserModem } from '@/lib/models/UserModem'
@@ -12,11 +10,6 @@ export const dynamic = 'force-dynamic'
 
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     await connectDB()
 
     const existingUsers = await User.countDocuments({ role: 1, archivedAt: null })
@@ -54,7 +47,7 @@ export async function POST() {
         role: 1,
         isActive: true,
         balance: tu.balance,
-        machineId: '',
+        machineId: 'web',
         createdAt: now,
         updatedAt: now,
         archivedAt: null,
@@ -70,7 +63,7 @@ export async function POST() {
         note: 'Initial seed credit',
         recordedAt: now,
         updatedAt: now,
-        machineId: '',
+        machineId: 'web',
         archivedAt: null,
       })
 
@@ -81,7 +74,7 @@ export async function POST() {
           userId,
           modemId,
           assignedAt: now,
-          machineId: modem?.machineId || '',
+          machineId: 'web',
           createdAt: now,
           updatedAt: now,
           archivedAt: null,
@@ -103,7 +96,7 @@ export async function POST() {
           createdAt: now,
           updatedAt: now,
           archivedAt: null,
-          machineId: '',
+          machineId: 'web',
         })
         results.push(`Created withdrawal request for ${tu.username}: ${tu.withdrawAmount} DA`)
       }

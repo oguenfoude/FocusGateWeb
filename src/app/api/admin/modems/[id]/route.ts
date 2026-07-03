@@ -1,23 +1,12 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
-import { SimCard } from '@/lib/models/SimCard'
-import { UserModem } from '@/lib/models/UserModem'
-import { User } from '@/lib/models/User'
-import { BalanceHistory } from '@/lib/models/BalanceHistory'
-import { SmsRecord } from '@/lib/models/SmsRecord'
+import { Command } from '@/lib/models/Command'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     await connectDB()
 
     const resolvedParams = await params
@@ -28,16 +17,20 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return Response.json({ error: 'Modem not found' }, { status: 404 })
     }
 
-    const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000)
+    const twoMinAgo = new Date(Date.now() - 10 * 60 * 1000)
     const isOnline = modem.status === 4 && modem.updatedAt && new Date(modem.updatedAt) > twoMinAgo
 
-    // Phase 1: sim + userModem (both need modem._id)
+    const SimCard = (await import('@/lib/models/SimCard')).SimCard
+    const UserModem = (await import('@/lib/models/UserModem')).UserModem
+    const User = (await import('@/lib/models/User')).User
+    const BalanceHistory = (await import('@/lib/models/BalanceHistory')).BalanceHistory
+    const SmsRecord = (await import('@/lib/models/SmsRecord')).SmsRecord
+
     const [sim, userModem] = await Promise.all([
       SimCard.findOne({ modemId: modem._id, isActive: true, archivedAt: null }).lean(),
       UserModem.findOne({ modemId: modem._id, removedAt: null, archivedAt: null }).lean(),
     ])
 
-    // Phase 2: assigned user (needs userModem) + sim-dependent queries (need sim)
     const assignedUserPromise = userModem
       ? User.findOne({ _id: userModem.userId }).select('-password').lean()
       : Promise.resolve(null)
@@ -81,7 +74,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       })
     }
 
-    // No sim — still resolve assigned user if present
     const assignedUser = await assignedUserPromise
 
     return Response.json({
@@ -100,11 +92,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     await connectDB()
 
     const resolvedParams = await params
@@ -114,14 +101,22 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { action } = body
 
     if (action === 'unassign') {
+      const UserModem = (await import('@/lib/models/UserModem')).UserModem
       const userModem = await UserModem.findOne({ modemId: id, removedAt: null, archivedAt: null })
-      if (userModem) {
-        userModem.removedAt = new Date()
-        userModem.updatedAt = new Date()
-        await userModem.save()
-        return Response.json({ ok: true })
+      if (!userModem) {
+        return Response.json({ error: 'Assignment not found' }, { status: 404 })
       }
-      return Response.json({ error: 'Assignment not found' }, { status: 404 })
+
+      await Command.create({
+        machineId: '*',
+        type: 'unassign_modem',
+        payload: {
+          userId: userModem.userId,
+          modemId: id,
+        },
+      })
+
+      return Response.json({ ok: true })
     }
 
     return Response.json({ error: 'Invalid action' }, { status: 400 })

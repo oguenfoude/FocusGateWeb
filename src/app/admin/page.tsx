@@ -10,16 +10,16 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData() {
-  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
+  const twoMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
 
   const [modemsTotal, modemsOnline, simCount, simBalanceAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments(),
     Modem.countDocuments({ status: 4, updatedAt: { $gte: twoMinutesAgo } }),
-    SimCard.countDocuments({ isActive: true }),
-    SimCard.aggregate([{ $match: { isActive: true } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
+    SimCard.countDocuments({ isActive: true, archivedAt: null }),
+    SimCard.aggregate([{ $match: { isActive: true, archivedAt: null } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
     User.countDocuments({ role: { $ne: 0 }, archivedAt: null }),
     User.aggregate([{ $match: { role: { $ne: 0 }, archivedAt: null } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
-    WithdrawalRequest.countDocuments({ status: 0 }),
+    WithdrawalRequest.countDocuments({ status: 0, archivedAt: null }),
     SmsRecord.find({ archivedAt: null }).sort({ receivedAt: -1 }).limit(20).lean(),
   ])
 

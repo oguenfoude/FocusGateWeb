@@ -1,5 +1,3 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
@@ -10,13 +8,11 @@ import { SmsRecord } from '@/lib/models/SmsRecord'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 import { UserDashboardContent } from '@/components/dashboard/UserDashboardContent'
 
-import { redirect } from 'next/navigation'
-
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData(userId: string | number) {
-  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
 
   const assignments = await UserModem.find({
     userId,
@@ -29,7 +25,7 @@ async function getDashboardData(userId: string | number) {
   const onlineModems = await Modem.countDocuments({
     _id: { $in: modemIds },
     status: 4,
-    updatedAt: { $gte: twoMinutesAgo }
+    updatedAt: { $gte: tenMinutesAgo }
   })
 
   const user = await User.findOne({ _id: userId }).lean()
@@ -96,16 +92,29 @@ async function getDashboardData(userId: string | number) {
   }
 }
 
-export default async function UserDashboardPage() {
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    redirect('/login')
+export default async function UserDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const userId = params.userId ? (Array.isArray(params.userId) ? params.userId[0] : params.userId) : null
+
+  if (!userId) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center space-y-4">
+          <p className="text-gray-500 text-sm">No user ID provided.</p>
+          <p className="text-gray-400 text-xs">Append <code>?userId=1</code> to the URL.</p>
+        </div>
+      </div>
+    )
   }
 
   await connectDB()
 
-  const userId = Number(session.user.id) || session.user.id
-  const data = await getDashboardData(userId)
+  const numericUserId = Number(userId) || userId
+  const data = await getDashboardData(numericUserId)
 
   return <UserDashboardContent data={data} />
 }

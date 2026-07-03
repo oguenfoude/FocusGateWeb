@@ -1,20 +1,12 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
-import { UserModem } from '@/lib/models/UserModem'
 import { nextId } from '@/lib/id-generator'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     await connectDB()
 
     const { searchParams } = new URL(req.url)
@@ -23,6 +15,7 @@ export async function GET(req: NextRequest) {
 
     const users = await User.find(filter).select('-password').lean()
 
+    const UserModem = (await import('@/lib/models/UserModem')).UserModem
     const counts = await UserModem.aggregate([
       { $match: { removedAt: null, archivedAt: null } },
       { $group: { _id: '$userId', count: { $sum: 1 } } }
@@ -45,11 +38,6 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await req.json()
     const { username, password, displayName } = body
 
@@ -64,29 +52,24 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Username already exists' }, { status: 409 })
     }
 
-    const id = nextId()
+    const now = new Date()
+    const userId = nextId()
 
-    const newUser = await User.create({
-      _id: id,
+    await User.create({
+      _id: userId,
       username,
       password,
       displayName: displayName || username,
-      role: 1,
+      role: 0,
+      isActive: true,
       balance: 0,
-      machineId: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      machineId: 'web',
+      createdAt: now,
+      updatedAt: now,
       archivedAt: null,
     })
 
-    return Response.json({
-      ok: true,
-      user: {
-        _id: String(newUser._id),
-        username: newUser.username,
-        displayName: newUser.displayName,
-      }
-    })
+    return Response.json({ ok: true })
   } catch (err) {
     console.error(err)
     return Response.json({ error: 'Internal server error' }, { status: 500 })

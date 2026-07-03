@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
@@ -7,17 +6,18 @@ import { UserModem } from '@/lib/models/UserModem'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'user') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    const { searchParams } = new URL(req.url)
+    const userId = searchParams.get('userId')
+    if (!userId) {
+      return Response.json({ error: 'userId required' }, { status: 400 })
     }
 
     await connectDB()
 
     const assignments = await UserModem.find({
-      userId: session.user.id,
+      userId: Number(userId) || userId,
       removedAt: null,
       archivedAt: null,
     }).lean()
@@ -30,7 +30,7 @@ export async function GET() {
     ])
 
     const simMap = new Map(sims.map(s => [s.modemId, s]))
-    const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000)
+    const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000)
 
     const result = modems.map(m => {
       const sim = simMap.get(m._id) ?? null
@@ -39,7 +39,7 @@ export async function GET() {
         imei: m.imei,
         brand: m.brand,
         model: m.model,
-        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > twoMinAgo,
+        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > tenMinAgo,
         phoneNumber: sim?.phoneNumber ?? null,
         simStatus: sim?.status ?? null,
         lastSeen: sim?.lastSeen ?? null,

@@ -1,23 +1,13 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { SmsRecord } from '@/lib/models/SmsRecord'
 import { BalanceHistory } from '@/lib/models/BalanceHistory'
-import { UserModem } from '@/lib/models/UserModem'
-import { SimCard } from '@/lib/models/SimCard'
 import { classifySms } from '@/lib/sms-classifier'
 import { isNearLimit } from '@/lib/balance-alert'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return new Response('Unauthorized', { status: 401 })
-
-  const userId = session.user.id
-  const isAdmin = session.user.role === 'admin'
-
   const encoder = new TextEncoder()
   let since = new Date()
   let isClosed = false
@@ -56,25 +46,16 @@ export async function GET(req: NextRequest) {
         try {
           await connectDB()
 
-          let simIds: (string | number)[] = []
-          if (!isAdmin) {
-            const assignments = await UserModem.find({ userId, removedAt: null, archivedAt: null }).lean()
-            const modemIds = assignments.map(a => a.modemId)
-            if (modemIds.length > 0) {
-              const sims = await SimCard.find({ modemId: { $in: modemIds }, archivedAt: null, isActive: true }).lean()
-              simIds = sims.map(s => s._id)
-            }
+          const smsFilter: Record<string, unknown> = {
+            updatedAt: { $gt: since },
+            archivedAt: null,
           }
 
-          if (isClosed) return
-
-          const smsFilter: Record<string, unknown> = isAdmin
-            ? { updatedAt: { $gt: since }, archivedAt: null }
-            : { simCardId: { $in: simIds }, updatedAt: { $gt: since }, archivedAt: null }
-
-          const balFilter: Record<string, unknown> = isAdmin
-            ? { updatedAt: { $gt: since }, source: { $in: [1, 2] }, archivedAt: null }
-            : { userId, updatedAt: { $gt: since }, source: { $in: [1, 2] }, archivedAt: null }
+          const balFilter: Record<string, unknown> = {
+            updatedAt: { $gt: since },
+            source: { $in: [1, 2] },
+            archivedAt: null,
+          }
 
           const [newSms, newBal] = await Promise.all([
             SmsRecord.find(smsFilter).limit(100).lean(),

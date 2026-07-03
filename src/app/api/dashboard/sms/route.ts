@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { SmsRecord } from '@/lib/models/SmsRecord'
 import { SimCard } from '@/lib/models/SimCard'
@@ -8,24 +7,25 @@ import { classifySms, smsTypeLabel } from '@/lib/sms-classifier'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'user') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    const { searchParams } = new URL(req.url)
+    const userId = searchParams.get('userId')
+    if (!userId) {
+      return Response.json({ error: 'userId required' }, { status: 400 })
     }
 
     await connectDB()
 
     const assignments = await UserModem.find({
-      userId: session.user.id,
+      userId: Number(userId) || userId,
       removedAt: null,
       archivedAt: null,
     }).lean()
 
     const modemIds = assignments.map(a => a.modemId)
 
-    const sims = await SimCard.find({ modemId: { $in: modemIds }, archivedAt: null }).lean()
+    const sims = await SimCard.find({ modemId: { $in: modemIds }, isActive: true, archivedAt: null }).lean()
     const simIds = sims.map(s => s._id)
 
     const records = await SmsRecord.find({

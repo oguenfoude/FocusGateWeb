@@ -14,6 +14,7 @@ interface SimCardData {
   lastSeen: string | null
   model: string | null
   brand: number | null
+  balance: number
 }
 
 export default function DashboardSimsPage() {

@@ -1,6 +1,4 @@
 import { NextRequest } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
@@ -10,28 +8,30 @@ import { z } from 'zod'
 export const dynamic = 'force-dynamic'
 
 const schema = z.object({
+  userId: z.union([z.number(), z.string()]),
   amount: z.number().positive().max(1_000_000),
   note: z.string().max(500).optional(),
 })
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'user') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    const { searchParams } = new URL(req.url)
+    const userId = searchParams.get('userId')
+    if (!userId) {
+      return Response.json({ error: 'userId required' }, { status: 400 })
     }
 
     await connectDB()
 
-    const user = await User.findById(session.user.id).lean()
+    const user = await User.findById(Number(userId) || userId).lean()
     if (!user) {
       return Response.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const pending = await WithdrawalRequest.findOne({ 
-      userId: session.user.id, 
+    const pending = await WithdrawalRequest.findOne({
+      userId: Number(userId) || userId,
       status: 0,
-      archivedAt: null 
+      archivedAt: null
     }).lean()
 
     return Response.json({
@@ -47,52 +47,51 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'user') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await req.json()
     const parsed = schema.safeParse(body)
-    
+
     if (!parsed.success) {
       return Response.json({ error: 'Invalid input data' }, { status: 400 })
     }
 
-    const { amount, note } = parsed.data
+    const { userId, amount, note } = parsed.data
 
     await connectDB()
 
     const now = new Date()
 
-    const atomicCheck = await User.findOneAndUpdate(
-      { _id: session.user.id, balance: { $gte: amount }, archivedAt: null },
-      { $set: { updatedAt: now } },
-      { new: false }
+    const deductResult = await User.findOneAndUpdate(
+      { _id: Number(userId) || userId, balance: { $gte: amount }, archivedAt: null },
+      { $inc: { balance: -amount }, $set: { updatedAt: now } },
+      { new: true }
     ).lean()
 
-    if (!atomicCheck) {
+    if (!deductResult) {
       return Response.json({ error: 'Amount exceeds available balance' }, { status: 400 })
     }
 
-    const pending = await WithdrawalRequest.findOne({ 
-      userId: session.user.id, 
+    const pending = await WithdrawalRequest.findOne({
+      userId: Number(userId) || userId,
       status: 0,
       archivedAt: null
     }).lean()
-    
+
     if (pending) {
+      await User.findOneAndUpdate(
+        { _id: Number(userId) || userId },
+        { $inc: { balance: amount }, $set: { updatedAt: new Date() } }
+      )
       return Response.json({ error: 'You already have a pending withdrawal request.' }, { status: 409 })
     }
 
     await WithdrawalRequest.create({
       _id: nextId(),
-      userId: session.user.id,
+      userId: Number(userId) || userId,
       amount,
       note: note || null,
       status: 0,
       requestedAt: now,
-      machineId: atomicCheck.machineId || '',
+      machineId: 'web',
       createdAt: now,
       updatedAt: now,
     })

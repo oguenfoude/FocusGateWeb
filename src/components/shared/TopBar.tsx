@@ -1,6 +1,5 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useLanguage } from '@/components/language-provider'
@@ -23,7 +22,6 @@ const ROUTE_TITLES: Record<string, string> = {
 }
 
 export function TopBar() {
-  const { data: session, status } = useSession()
   const { t } = useLanguage()
   const pathname = usePathname()
   const { toggle } = useMobileMenu()
@@ -46,9 +44,6 @@ export function TopBar() {
   }
   const displayTitle = titleKey ? t(titleKey) : t('app.adminTitle')
 
-  const isLoading = status === 'loading'
-  const avatarLetter = !isLoading ? (session?.user?.name?.[0] || session?.user?.email?.[0] || 'U') : 'U'
-
   return (
     <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-20 shrink-0">
       <div className="flex items-center justify-between">
@@ -68,7 +63,7 @@ export function TopBar() {
             {time || '--:--'}
           </div>
           <div className="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-sm">
-            {avatarLetter}
+            A
           </div>
         </div>
       </div>

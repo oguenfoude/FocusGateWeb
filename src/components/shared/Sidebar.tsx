@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
 import { useLanguage } from '@/components/language-provider'
 import { useMobileMenu } from '@/components/shared/mobile-menu-provider'
 import { Locale } from '@/lib/i18n'
@@ -12,7 +11,6 @@ import {
   Users,
   MessageSquare,
   Banknote,
-  LogOut,
   Smartphone,
   History,
   AlertTriangle,
@@ -26,48 +24,13 @@ const LOCALES: { code: Locale; label: string; flag: string; short: string }[] = 
   { code: 'ar', label: 'العربية', flag: '🇩🇿', short: 'عر' },
 ]
 
-function SidebarSkeleton() {
-  return (
-    <div className="flex flex-col h-full animate-pulse">
-      <div className="px-5 py-5 border-b border-sidebar-border-color">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-white/10 rounded-lg" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 bg-white/10 rounded w-20" />
-            <div className="h-2.5 bg-white/10 rounded w-16" />
-          </div>
-        </div>
-      </div>
-      <nav className="flex-1 px-3 py-4 space-y-2">
-        {[1,2,3,4,5].map(i => (
-          <div key={i} className="h-10 bg-white/5 rounded-lg" />
-        ))}
-      </nav>
-      <div className="px-3 py-3 border-t border-sidebar-border-color">
-        <div className="h-2.5 bg-white/10 rounded w-14 mb-2" />
-        <div className="flex gap-1.5">
-          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
-          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
-          <div className="flex-1 h-8 bg-white/5 rounded-lg" />
-        </div>
-      </div>
-      <div className="px-5 py-4 border-t border-sidebar-border-color">
-        <div className="h-8 bg-white/5 rounded-lg w-full" />
-      </div>
-    </div>
-  )
-}
-
 export function Sidebar() {
   const pathname = usePathname()
-  const { data: session, status } = useSession()
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
-  const role = session?.user?.role
   const rtl = isRTL
-  const isLoading = status === 'loading'
 
-  const adminLinks = [
+  const links = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },
     { href: '/admin/modems', label: t('nav.modems'), icon: Router },
     { href: '/admin/users', label: t('nav.users'), icon: Users },
@@ -76,17 +39,7 @@ export function Sidebar() {
     { href: '/admin/warnings', label: t('nav.warnings'), icon: AlertTriangle },
   ]
 
-  const userLinks = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { href: '/dashboard/sims', label: t('nav.mySims'), icon: Smartphone },
-    { href: '/dashboard/sms', label: t('nav.mySms'), icon: MessageSquare },
-    { href: '/dashboard/history', label: t('nav.history'), icon: History },
-    { href: '/dashboard/withdraw', label: t('nav.withdraw'), icon: Banknote },
-  ]
-
-  const links = role === 'admin' ? adminLinks : userLinks
-
-  const sidebarContent = isLoading ? <SidebarSkeleton /> : (
+  const sidebarContent = (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-sidebar-border-color">
@@ -155,18 +108,6 @@ export function Sidebar() {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-5 py-4 border-t border-sidebar-border-color">
-        <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex w-full items-center gap-3 text-[13px] font-medium text-slate-300 hover:text-white transition-colors mb-3"
-        >
-          <LogOut className="h-4 w-4 text-brand-400" />
-          {t('auth.logout')}
-        </button>
-
       </div>
     </div>
   )

@@ -1,23 +1,21 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'user') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    const { searchParams } = new URL(req.url)
+    const userId = searchParams.get('userId')
+    if (!userId) {
+      return Response.json({ error: 'userId required' }, { status: 400 })
     }
 
     await connectDB()
 
-    const userId = Number(session.user.id) || session.user.id
-
     const histories = await UserBalanceHistory.find({
-      userId,
+      userId: Number(userId) || userId,
       archivedAt: null,
     }).sort({ updatedAt: -1 }).limit(100).lean()
 

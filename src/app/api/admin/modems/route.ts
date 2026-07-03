@@ -1,5 +1,3 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
@@ -10,11 +8,6 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     await connectDB()
 
     const [modems, sims, userModems, users] = await Promise.all([
@@ -24,7 +17,7 @@ export async function GET() {
       User.find({ archivedAt: null }).select('username').lean(),
     ])
 
-    const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000)
+    const twoMinAgo = new Date(Date.now() - 10 * 60 * 1000)
     const simMap = new Map(sims.map(s => [s.modemId, s]))
     const userMap = new Map(users.map(u => [u._id, u.username]))
     const assignMap = new Map(userModems.map(um => [um.modemId, userMap.get(um.userId) ?? null]))

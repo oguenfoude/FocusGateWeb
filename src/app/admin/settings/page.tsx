@@ -1,13 +1,13 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
 import { useLanguage } from '@/components/language-provider'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { KeyRound, User, Settings } from 'lucide-react'
 
+const ADMIN_USER_ID = '1'
+
 export default function SettingsPage() {
-  const { data: session } = useSession()
   const { t } = useLanguage()
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -26,10 +26,10 @@ export default function SettingsPage() {
     }
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/users/' + session?.user?.id, {
+      const res = await fetch('/api/admin/users/' + ADMIN_USER_ID, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'edit', password: newPassword }),
+        body: JSON.stringify({ action: 'edit', password: newPassword, currentPassword }),
       })
       const data = await res.json()
       if (data.ok) {
@@ -49,7 +49,6 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2 bg-emerald-50 rounded-lg">
           <Settings className="h-5 w-5 text-emerald-600" />
@@ -60,7 +59,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Account Info */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-4">
           <User className="h-5 w-5 text-brand-500" />
@@ -68,10 +66,10 @@ export default function SettingsPage() {
         </div>
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-lg font-bold">
-            {session?.user?.name?.[0] || 'A'}
+            A
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">{session?.user?.name || 'admin'}</p>
+            <p className="text-sm font-semibold text-gray-900">admin</p>
             <p className="text-xs text-gray-400">Administrator</p>
           </div>
           <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
@@ -80,7 +78,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Change Password */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-4">
           <KeyRound className="h-5 w-5 text-amber-500" />

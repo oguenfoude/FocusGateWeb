@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { smsTypeLabel } from '@/lib/sms-classifier'
 import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'
@@ -9,11 +8,8 @@ import { t } from '@/lib/i18n'
 
 export function LiveProvider({ children }: { children: React.ReactNode }) {
   const esRef = useRef<EventSource | null>(null)
-  const { status } = useSession()
 
   useEffect(() => {
-    if (status !== 'authenticated') return
-
     const es = new EventSource('/api/events')
     esRef.current = es
 
@@ -56,7 +52,7 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
     }
 
     return () => es.close()
-  }, [status])
+  }, [])
 
   return <>{children}</>
 }
