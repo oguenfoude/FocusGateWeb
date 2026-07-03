@@ -116,5 +116,5 @@ export default async function UserDashboardPage({
   const numericUserId = Number(userId) || userId
   const data = await getDashboardData(numericUserId)
 
-  return <UserDashboardContent data={data} />
+  return <UserDashboardContent data={data} userId={String(numericUserId)} />
 }

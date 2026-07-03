@@ -18,11 +18,13 @@ interface SmsItemType {
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
-export function SmsList() {
+export function SmsList({ userId }: { userId: string }) {
   const { t } = useLanguage()
-  const { data, error, isLoading } = useSWR('/api/dashboard/sms', fetcher, {
-    refreshInterval: 30000,
-  })
+  const { data, error, isLoading } = useSWR(
+    userId ? `/api/dashboard/sms?userId=${userId}` : null,
+    fetcher,
+    { refreshInterval: 30000 }
+  )
 
   return (
     <div className="space-y-4">

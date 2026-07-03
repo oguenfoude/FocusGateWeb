@@ -15,8 +15,10 @@ import {
   History,
   AlertTriangle,
   RadioTower,
+  Settings,
   X,
 } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 const LOCALES: { code: Locale; label: string; flag: string; short: string }[] = [
   { code: 'en', label: 'English', flag: '🇬🇧', short: 'EN' },
@@ -29,15 +31,44 @@ export function Sidebar() {
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
   const rtl = isRTL
+  const [isAdmin, setIsAdmin] = useState(false)
 
-  const links = [
+  useEffect(() => {
+    if (pathname.startsWith('/admin')) {
+      setIsAdmin(true)
+    } else {
+      try {
+        const userId = localStorage.getItem('userId')
+        if (!userId) {
+          setIsAdmin(true)
+        } else {
+          setIsAdmin(false)
+        }
+      } catch {
+        setIsAdmin(false)
+      }
+    }
+  }, [pathname])
+
+  const adminLinks = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },
     { href: '/admin/modems', label: t('nav.modems'), icon: Router },
     { href: '/admin/users', label: t('nav.users'), icon: Users },
     { href: '/admin/sms', label: t('nav.sms'), icon: MessageSquare },
     { href: '/admin/withdrawals', label: t('nav.withdrawals'), icon: Banknote },
     { href: '/admin/warnings', label: t('nav.warnings'), icon: AlertTriangle },
+    { href: '/admin/settings', label: t('nav.settings'), icon: Settings },
   ]
+
+  const dashboardLinks = [
+    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { href: '/dashboard/sims', label: t('nav.mySims'), icon: Smartphone },
+    { href: '/dashboard/sms', label: t('nav.mySms'), icon: MessageSquare },
+    { href: '/dashboard/history', label: t('nav.history'), icon: History },
+    { href: '/dashboard/withdraw', label: t('nav.withdraw'), icon: Banknote },
+  ]
+
+  const links = isAdmin ? adminLinks : dashboardLinks
 
   const sidebarContent = (
     <div className="flex flex-col h-full">

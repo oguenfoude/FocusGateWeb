@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
 import { RadioTower, Wallet, CalendarRange, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
@@ -26,8 +27,14 @@ interface DashboardData {
   recentSms: SmsWithRelations[]
 }
 
-export function UserDashboardContent({ data }: { data: DashboardData }) {
+export function UserDashboardContent({ data, userId }: { data: DashboardData; userId: string }) {
   const { t } = useLanguage()
+
+  useEffect(() => {
+    if (userId) {
+      try { localStorage.setItem('userId', userId) } catch {}
+    }
+  }, [userId])
 
   return (
     <div className="space-y-6 max-w-[1400px]">

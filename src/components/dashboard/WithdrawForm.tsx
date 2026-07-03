@@ -20,9 +20,12 @@ type FormData = z.infer<typeof schema>
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
-export function WithdrawForm() {
+export function WithdrawForm({ userId }: { userId: string }) {
   const { t } = useLanguage()
-  const { data, error, isLoading, mutate } = useSWR('/api/dashboard/withdraw', fetcher)
+  const { data, error, isLoading, mutate } = useSWR(
+    userId ? `/api/dashboard/withdraw?userId=${userId}` : null,
+    fetcher
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
@@ -40,7 +43,7 @@ export function WithdrawForm() {
       const res = await fetch('/api/dashboard/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, userId })
       })
       
       const json = await res.json()

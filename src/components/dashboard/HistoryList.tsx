@@ -17,11 +17,13 @@ interface HistoryItemType {
   updatedAt?: string
 }
 
-export function HistoryList() {
+export function HistoryList({ userId }: { userId: string }) {
   const { t } = useLanguage()
-  const { data, error, isLoading } = useSWR('/api/dashboard/history', fetcher, {
-    refreshInterval: 30000,
-  })
+  const { data, error, isLoading } = useSWR(
+    userId ? `/api/dashboard/history?userId=${userId}` : null,
+    fetcher,
+    { refreshInterval: 30000 }
+  )
 
   return (
     <div className="space-y-4">

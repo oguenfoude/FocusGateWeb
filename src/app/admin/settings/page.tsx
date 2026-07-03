@@ -1,18 +1,31 @@
 'use client'
 
 import { useLanguage } from '@/components/language-provider'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { KeyRound, User, Settings } from 'lucide-react'
 
-const ADMIN_USER_ID = '1'
-
 export default function SettingsPage() {
   const { t } = useLanguage()
-  const [currentPassword, setCurrentPassword] = useState('')
+  const [adminId, setAdminId] = useState<string | null>(null)
+  const [adminName, setAdminName] = useState('admin')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/users')
+      .then(r => r.json())
+      .then(data => {
+        const users = Array.isArray(data) ? data : data.users || []
+        const admin = users.find((u: { role?: string }) => u.role === 'admin')
+        if (admin) {
+          setAdminId(String(admin._id))
+          setAdminName(admin.displayName || admin.username || 'admin')
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,21 +33,24 @@ export default function SettingsPage() {
       toast.error(t('settings.confirmPassword') + ' mismatch')
       return
     }
-    if (!newPassword || !currentPassword) {
-      toast.error('All fields are required')
+    if (!newPassword) {
+      toast.error('New password is required')
+      return
+    }
+    if (!adminId) {
+      toast.error('Admin account not found')
       return
     }
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/users/' + ADMIN_USER_ID, {
+      const res = await fetch('/api/admin/users/' + adminId, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'edit', password: newPassword, currentPassword }),
+        body: JSON.stringify({ action: 'edit', password: newPassword }),
       })
       const data = await res.json()
       if (data.ok) {
         toast.success('Password updated successfully')
-        setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
       } else {
@@ -66,10 +82,10 @@ export default function SettingsPage() {
         </div>
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-lg font-bold">
-            A
+            {adminName.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">admin</p>
+            <p className="text-sm font-semibold text-gray-900">{adminName}</p>
             <p className="text-xs text-gray-400">Administrator</p>
           </div>
           <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
@@ -84,15 +100,6 @@ export default function SettingsPage() {
           <h3 className="text-sm font-semibold text-gray-900">{t('settings.changePassword')}</h3>
         </div>
         <form onSubmit={handleChangePassword} className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('settings.currentPassword')}</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-            />
-          </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">{t('settings.newPassword')}</label>
             <input

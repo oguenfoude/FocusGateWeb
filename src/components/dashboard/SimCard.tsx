@@ -1,3 +1,5 @@
+'use client'
+
 import { formatDistanceToNow } from 'date-fns'
 import { useLanguage } from '@/components/language-provider'
 import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'

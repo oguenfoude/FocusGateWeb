@@ -4,10 +4,11 @@ import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { smsTypeLabel } from '@/lib/sms-classifier'
 import { BALANCE_WARN_THRESHOLD } from '@/lib/balance-alert'
-import { t } from '@/lib/i18n'
+import { useLanguage } from '@/components/language-provider'
 
 export function LiveProvider({ children }: { children: React.ReactNode }) {
   const esRef = useRef<EventSource | null>(null)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const es = new EventSource('/api/events')
@@ -52,7 +53,7 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
     }
 
     return () => es.close()
-  }, [])
+  }, [t])
 
   return <>{children}</>
 }
