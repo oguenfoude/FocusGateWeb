@@ -313,12 +313,31 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account settings",
+    "adminAccount": "Admin Account",
+    "administrator": "Administrator",
+    "changeUsername": "Change Username",
+    "currentUsername": "Current Username",
+    "newUsername": "New Username",
+    "newUsernamePlaceholder": "Enter new username",
+    "updateUsername": "Update Username",
     "changePassword": "Change Password",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
     "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm new password",
+    "updatePassword": "Update Password",
     "save": "Save Changes",
-    "language": "Language"
+    "language": "Language",
+    "saving": "Saving...",
+    "adminNotFound": "Admin account not found",
+    "usernameRequired": "New username is required",
+    "usernameUpdated": "Username updated successfully",
+    "usernameFailed": "Failed to update username",
+    "passwordRequired": "New password is required",
+    "passwordMismatch": "Passwords do not match",
+    "passwordUpdated": "Password updated successfully",
+    "passwordFailed": "Failed to update password"
   },
   "mySims": {
     "title": "My SIM Cards",
@@ -395,7 +414,10 @@
     "view": "View",
     "unknown": "Unknown",
     "pleaseLogIn": "Please log in to continue.",
-    "failedToLoad": "Failed to load data."
+    "failedToLoad": "Failed to load data.",
+    "notFound": "Page Not Found",
+    "notFoundDesc": "The page you are looking for does not exist.",
+    "goHome": "Go Home"
   },
   "balanceSource": {
     "0": "USSD Check",

@@ -12,7 +12,8 @@ interface WarningItem {
 }
 
 export function WarningsContent({ warnings }: { warnings: WarningItem[] }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
 
   return (
     <>
@@ -40,7 +41,7 @@ export function WarningsContent({ warnings }: { warnings: WarningItem[] }) {
                 warnings.map((w) => (
                   <tr key={w._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-3.5 font-semibold text-gray-900">{w.phoneNumber || t('common.unknown')}</td>
-                    <td className="px-6 py-3.5 font-bold text-amber-600">{w.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
+                    <td className="px-6 py-3.5 font-bold text-amber-600">{w.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} DA</td>
                     <td className="px-6 py-3.5 text-end">
                       <Link href={`/admin/modems/${w.modemId}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <Eye className="h-3 w-3" /> {t('warnings.viewModem')}
@@ -72,7 +73,7 @@ export function WarningsContent({ warnings }: { warnings: WarningItem[] }) {
               <div key={w._id} className="card card-body p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold text-sm text-gray-900">{w.phoneNumber || t('common.unknown')}</span>
-                  <span className="font-bold text-sm text-amber-600">{w.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</span>
+                  <span className="font-bold text-sm text-amber-600">{w.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} DA</span>
                 </div>
                 <Link href={`/admin/modems/${w.modemId}`} className="btn btn-outline btn-sm w-full justify-center h-[32px] mt-2">
                   <Eye className="h-3 w-3" /> {t('warnings.viewModem')}

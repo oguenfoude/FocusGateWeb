@@ -29,6 +29,7 @@ type TabType = 'all' | 'online' | 'offline' | 'assigned' | 'free'
 export function ModemTable() {
   const router = useRouter()
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<TabType>('all')
 
@@ -147,7 +148,7 @@ export function ModemTable() {
                     <td className="px-6 py-4 font-bold text-sm">
                       {modem.balance != null ? (
                         <span className={modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}>
-                          {Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                          {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                           {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                         </span>
                       ) : '-'}
@@ -219,7 +220,7 @@ export function ModemTable() {
                 <p className={`font-bold text-sm ${modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}`}>
                   {modem.balance != null ? (
                     <>
-                      {Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                      {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                       {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                     </>
                   ) : '-'}

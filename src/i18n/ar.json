@@ -314,12 +314,31 @@
   "settings": {
     "title": "الإعدادات",
     "subtitle": "إدارة إعدادات حسابك",
+    "adminAccount": "حساب المسؤول",
+    "administrator": "مدير",
+    "changeUsername": "تغيير اسم المستخدم",
+    "currentUsername": "اسم المستخدم الحالي",
+    "newUsername": "اسم المستخدم الجديد",
+    "newUsernamePlaceholder": "أدخل اسم المستخدم الجديد",
+    "updateUsername": "تحديث اسم المستخدم",
     "changePassword": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "newPassword": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+    "updatePassword": "تحديث كلمة المرور",
     "save": "حفظ التغييرات",
-    "language": "اللغة"
+    "language": "اللغة",
+    "saving": "جارٍ الحفظ...",
+    "adminNotFound": "حساب المسؤول غير موجود",
+    "usernameRequired": "اسم المستخدم الجديد مطلوب",
+    "usernameUpdated": "تم تحديث اسم المستخدم بنجاح",
+    "usernameFailed": "فشل تحديث اسم المستخدم",
+    "passwordRequired": "كلمة المرور الجديدة مطلوبة",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح",
+    "passwordFailed": "فشل تحديث كلمة المرور"
   },
   "mySims": {
     "title": "بطاقات SIM الخاصة بي",
@@ -396,7 +415,10 @@
     "view": "عرض",
     "unknown": "غير معروف",
     "pleaseLogIn": "يرجى تسجيل الدخول للمتابعة.",
-    "failedToLoad": "فشل تحميل البيانات."
+    "failedToLoad": "فشل تحميل البيانات.",
+    "notFound": "الصفحة غير موجودة",
+    "notFoundDesc": "الصفحة التي تبحث عنها غير موجودة.",
+    "goHome": "الذهاب للرئيسية"
   },
   "balanceSource": {
     "0": "فحص USSD",

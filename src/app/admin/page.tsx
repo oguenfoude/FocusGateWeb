@@ -11,11 +11,17 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData() {
+  const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
+  const onlineIdSet = new Set(onlineModemIds.map(m => String(m._id)))
+
   const [modemsTotal, modemsOnline, simCount, simBalanceAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
     Modem.countDocuments({ status: 4, archivedAt: null }),
-    SimCard.countDocuments({ isActive: true, archivedAt: null }),
-    SimCard.aggregate([{ $match: { isActive: true, archivedAt: null } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
+    SimCard.countDocuments({ isActive: true, archivedAt: null, modemId: { $in: [...onlineIdSet] } }),
+    SimCard.aggregate([
+      { $match: { isActive: true, archivedAt: null, modemId: { $in: [...onlineIdSet] } } },
+      { $group: { _id: null, total: { $sum: '$balance' } } },
+    ]),
     User.countDocuments({ role: { $ne: 0 }, archivedAt: null }),
     User.aggregate([{ $match: { role: { $ne: 0 }, archivedAt: null } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
     WithdrawalRequest.countDocuments({ status: 0, archivedAt: null }),
