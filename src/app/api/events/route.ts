@@ -4,6 +4,7 @@ import { SmsRecord } from '@/lib/models/SmsRecord'
 import { BalanceHistory } from '@/lib/models/BalanceHistory'
 import { classifySms } from '@/lib/sms-classifier'
 import { isNearLimit } from '@/lib/balance-alert'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -88,14 +89,16 @@ export async function GET(req: NextRequest) {
 
           for (const b of newBal) {
             if (isClosed) break
-            const nearLimit = isNearLimit(b.balance ?? 0)
+            const balNum = toNum(b.balance)
+            const prevBalNum = toNum(b.previousBalance)
+            const nearLimit = isNearLimit(balNum)
             const payload = JSON.stringify({
               event: 'balance',
               data: {
                 id: String(b._id),
                 simCardId: b.simCardId,
-                balance: b.balance,
-                delta: (b.balance ?? 0) - (b.previousBalance ?? 0),
+                balance: balNum,
+                delta: balNum - prevBalNum,
                 nearLimit,
               },
             })
@@ -110,7 +113,7 @@ export async function GET(req: NextRequest) {
               if (isClosed) break
               const warn = JSON.stringify({
                 event: 'balance_warning',
-                data: { simCardId: b.simCardId, balance: b.balance },
+                data: { simCardId: b.simCardId, balance: balNum },
               })
               try {
                 controller.enqueue(encoder.encode(`data: ${warn}\n\n`))

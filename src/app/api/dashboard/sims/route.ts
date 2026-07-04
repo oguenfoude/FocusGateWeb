@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
 import { UserModem } from '@/lib/models/UserModem'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
         phoneNumber: sim?.phoneNumber ?? null,
         simStatus: sim?.status ?? null,
         lastSeen: sim?.lastSeen ?? null,
-        balance: sim?.balance ?? 0,
+        balance: toNum(sim?.balance),
       }
     })
 

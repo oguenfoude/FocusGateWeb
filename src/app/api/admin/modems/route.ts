@@ -3,6 +3,7 @@ import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
 import { UserModem } from '@/lib/models/UserModem'
 import { User } from '@/lib/models/User'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +30,7 @@ export async function GET() {
         _id: String(m._id),
         isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > twoMinAgo,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,
-        balance: rawBalance != null ? Number(rawBalance.toString()) : null,
+        balance: toNum(rawBalance),
         simLastSeen: simMap.get(m._id)?.lastSeen ?? null,
         assignedTo: assignMap.get(m._id) ?? null,
       }

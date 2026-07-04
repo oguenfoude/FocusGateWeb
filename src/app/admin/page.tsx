@@ -5,6 +5,7 @@ import { User } from '@/lib/models/User'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { SmsRecord } from '@/lib/models/SmsRecord'
 import { AdminDashboardContent } from '@/components/admin/AdminDashboardContent'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -23,8 +24,8 @@ async function getDashboardData() {
     SmsRecord.find({ archivedAt: null }).sort({ receivedAt: -1 }).limit(20).lean(),
   ])
 
-  const totalSimBalance = simBalanceAggr.length > 0 ? Number(simBalanceAggr[0].total) : 0
-  const totalUserBalance = userBalanceAggr.length > 0 ? Number(userBalanceAggr[0].total) : 0
+  const totalSimBalance = simBalanceAggr.length > 0 ? toNum(simBalanceAggr[0].total) : 0
+  const totalUserBalance = userBalanceAggr.length > 0 ? toNum(userBalanceAggr[0].total) : 0
 
   const simIds = [...new Set(recentSmsRaw.map(s => String(s.simCardId)))]
   const sims = simIds.length > 0 ? await SimCard.find({ _id: { $in: simIds } }).lean() : []

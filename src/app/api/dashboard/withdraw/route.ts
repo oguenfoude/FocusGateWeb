@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
+import { toNum } from '@/lib/number-utils'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
@@ -35,9 +36,9 @@ export async function GET(req: NextRequest) {
     }).lean()
 
     return Response.json({
-      balance: Number(user.balance) || 0,
+      balance: toNum(user.balance),
       hasPending: !!pending,
-      pendingAmount: Number(pending?.amount) || 0
+      pendingAmount: toNum(pending?.amount)
     })
   } catch (err) {
     console.error(err)

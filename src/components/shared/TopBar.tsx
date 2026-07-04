@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useLanguage } from '@/components/language-provider'
 import { useMobileMenu } from '@/components/shared/mobile-menu-provider'
+import { useUserId } from '@/components/user-id-provider'
 import { Menu } from 'lucide-react'
 
 const ROUTE_TITLES: Record<string, string> = {
@@ -25,6 +26,7 @@ export function TopBar() {
   const { t } = useLanguage()
   const pathname = usePathname()
   const { toggle } = useMobileMenu()
+  const userId = useUserId()
   const [time, setTime] = useState('')
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export function TopBar() {
             {time || '--:--'}
           </div>
           <div className="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-sm">
-            A
+            {userId ? userId.toString().slice(-1).toUpperCase() : 'A'}
           </div>
         </div>
       </div>

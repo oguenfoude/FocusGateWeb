@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, RadioTower, Info, History, MessageSquare, Clock, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
+import { getModemBrand } from '@/lib/modem-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -138,7 +139,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                {modem.brand} {modem.model} &middot; {modem.comPort || 'N/A'} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
+                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.comPort || 'N/A'} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
               </p>
             </div>
           </div>
@@ -338,7 +339,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}{' '}
+                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}{' '}
                           {b.previousBalance !== null && (
                             <span className="text-gray-300">
                               &middot; {t('modemDetail.was')} {b.previousBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA

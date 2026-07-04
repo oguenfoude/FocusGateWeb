@@ -390,7 +390,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   <tr key={sms._id} className="table-row-hover">
                     <td className="px-5 py-3 font-medium text-xs text-gray-900">{sms.sender}</td>
                     <td className="px-5 py-3 text-xs">
-                      {sms.isOffer ? <span className="badge badge-warning">{sms.typeLabel}</span> : sms.type === 'other' ? <span className="badge badge-gray">{sms.typeLabel}</span> : <span className="badge badge-info">{sms.typeLabel}</span>}
+                      {sms.isOffer ? <span className="badge badge-warning">{t(sms.typeLabel || 'sms.types.info')}</span> : sms.type === 'other' ? <span className="badge badge-gray">{t(sms.typeLabel || 'sms.types.info')}</span> : <span className="badge badge-info">{t(sms.typeLabel || 'sms.types.info')}</span>}
                     </td>
                     <td className="px-5 py-3 text-xs text-gray-500 max-w-[300px] truncate" title={sms.content}>{sms.content}</td>
                     <td className="px-5 py-3 text-right text-xs text-gray-400">
@@ -409,7 +409,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-xs text-gray-900">{sms.sender}</span>
-                      {sms.isOffer ? <span className="badge badge-warning">{sms.typeLabel}</span> : sms.type === 'other' ? <span className="badge badge-gray">{sms.typeLabel}</span> : <span className="badge badge-info">{sms.typeLabel}</span>}
+                      {sms.isOffer ? <span className="badge badge-warning">{t(sms.typeLabel || 'sms.types.info')}</span> : sms.type === 'other' ? <span className="badge badge-gray">{t(sms.typeLabel || 'sms.types.info')}</span> : <span className="badge badge-info">{t(sms.typeLabel || 'sms.types.info')}</span>}
                     </div>
                     <p className="text-xs text-gray-500 truncate mb-2" title={sms.content}>{sms.content}</p>
                     <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>

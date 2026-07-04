@@ -7,6 +7,7 @@ import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { SmsRecord } from '@/lib/models/SmsRecord'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 import { UserDashboardContent } from '@/components/dashboard/UserDashboardContent'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -29,20 +30,20 @@ async function getDashboardData(userId: string | number) {
   })
 
   const user = await User.findOne({ _id: userId }).lean()
-  const balance = user?.balance || 0
+  const balance = toNum(user?.balance)
 
   const creditAggr = await UserBalanceHistory.aggregate([
     { $match: { userId: userId, type: 0, archivedAt: null } },
     { $group: { _id: null, total: { $sum: '$amount' } } }
   ])
-  const totalCredits = creditAggr.length > 0 ? Number(creditAggr[0].total) : 0
+  const totalCredits = creditAggr.length > 0 ? toNum(creditAggr[0].total) : 0
 
   const pendingRequest = await WithdrawalRequest.findOne({
     userId,
     status: 0,
     archivedAt: null
   }).lean()
-  const pendingAmount = pendingRequest?.amount || 0
+  const pendingAmount = toNum(pendingRequest?.amount)
 
   const activeSims = await SimCard.find({
     modemId: { $in: modemIds },

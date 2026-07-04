@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
+import { toNum, toNumOrNull } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,6 +59,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return {
         ...sms,
         _id: String(sms._id),
+        sender: sms.senderNumber,
         type,
         typeLabel: smsTypeLabel(type),
         isOffer: type === 'offer'
@@ -65,18 +67,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     })
 
     return Response.json({
-      user: { ...user, _id: String(user._id), balance: Number(user.balance) || 0 },
+      user: { ...user, _id: String(user._id), balance: toNum(user.balance) },
       assignments: populatedAssignments,
-      balanceHistories: balanceHistories.map((b: { _id: { toString(): string }; balance?: number; previousBalance?: number }) => ({
-        ...b,
-        _id: String(b._id),
-        balance: Number(b.balance) || 0,
-        previousBalance: Number(b.previousBalance) || 0,
-        delta: (Number(b.balance) || 0) - (Number(b.previousBalance) || 0)
-      })),
-      userBalanceHistories: userBalanceHistories.map(u => ({ ...u, _id: String(u._id), balance: Number(u.balanceAfter) || 0, amount: Number(u.amount) || 0 })),
+      balanceHistories: balanceHistories.map((b: { _id: { toString(): string }; balance?: unknown; previousBalance?: unknown }) => {
+        const bal = toNum(b.balance)
+        const prevBal = toNumOrNull(b.previousBalance)
+        return {
+          ...b,
+          _id: String(b._id),
+          balance: bal,
+          previousBalance: prevBal,
+          delta: prevBal != null ? bal - prevBal : bal,
+        }
+      }),
+      userBalanceHistories: userBalanceHistories.map(u => ({ ...u, _id: String(u._id), balance: toNum(u.balanceAfter), amount: toNum(u.amount) })),
       smsRecords: smsWithTypes,
-      withdrawals: withdrawals.map(w => ({ ...w, _id: String(w._id), amount: Number(w.amount) || 0 }))
+      withdrawals: withdrawals.map(w => ({ ...w, _id: String(w._id), amount: toNum(w.amount) }))
     })
   } catch (err) {
     console.error(err)
@@ -187,7 +193,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         return Response.json({ error: 'User not found or archived' }, { status: 404 })
       }
 
-      const newBalance = (Number(userObj.balance) || 0) + creditAmount
+      const newBalance = toNum(userObj.balance) + creditAmount
       userObj.balance = newBalance
       userObj.updatedAt = new Date()
       await userObj.save()

@@ -96,11 +96,11 @@ export function SmsTable() {
                   <td className="px-6 py-3 font-medium text-xs text-gray-900">{sms.sender}</td>
                   <td className="px-6 py-3 text-xs">
                     {sms.isOffer ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{sms.typeLabel}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{t(sms.typeLabel || 'sms.types.info')}</span>
                     ) : sms.type === 'other' ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{sms.typeLabel}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{t(sms.typeLabel || 'sms.types.info')}</span>
                     ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{sms.typeLabel}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{t(sms.typeLabel || 'sms.types.info')}</span>
                     )}
                   </td>
                   <td className="px-6 py-3 text-xs text-gray-500 max-w-[400px] truncate" title={sms.content}>{sms.content}</td>
@@ -128,11 +128,11 @@ export function SmsTable() {
             </div>
             <div className="flex items-center gap-2 mb-2">
               {sms.isOffer ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{sms.typeLabel}</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{t(sms.typeLabel || 'sms.types.info')}</span>
               ) : sms.type === 'other' ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{sms.typeLabel}</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{t(sms.typeLabel || 'sms.types.info')}</span>
               ) : (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{sms.typeLabel}</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{t(sms.typeLabel || 'sms.types.info')}</span>
               )}
               <span className="text-[11px] text-gray-400">{modemMap.get(sms.modemId || '') || ''}</span>
             </div>

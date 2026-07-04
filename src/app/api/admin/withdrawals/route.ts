@@ -1,6 +1,7 @@
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import '@/lib/models/User' // required for populate
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,15 +15,15 @@ export async function GET() {
       .lean()
 
     const result = all.map(w => {
-      const populated = w.userId as unknown as { _id: { toString(): string }; username: string; balance: number } | null
+      const populated = w.userId as unknown as { _id: { toString(): string }; username: string; balance: unknown } | null
       return {
         ...w,
         _id: String(w._id),
-        amount: Number(w.amount) || 0,
+        amount: toNum(w.amount),
         userId: populated ? {
           ...populated,
           _id: String(populated._id),
-          balance: Number(populated.balance) || 0,
+          balance: toNum(populated.balance),
         } : w.userId,
       }
     })

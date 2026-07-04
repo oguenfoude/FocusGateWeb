@@ -9,12 +9,14 @@ export function classifySms(sender: string, content: string): SmsType {
   return 'info'
 }
 
+export const SMS_TYPE_KEYS: Record<SmsType, string> = {
+  otp: 'sms.types.otp',
+  offer: 'sms.types.offer',
+  recharge: 'sms.types.recharge',
+  transfer: 'sms.types.transfer',
+  info: 'sms.types.info',
+}
+
 export function smsTypeLabel(type: SmsType): string {
-  switch (type) {
-    case 'otp': return 'OTP / Code'
-    case 'offer': return 'Promo / Offer'
-    case 'recharge': return 'Recharge'
-    case 'transfer': return 'Transfer'
-    case 'info': return 'General Info'
-  }
+  return SMS_TYPE_KEYS[type] ?? 'sms.types.info'
 }

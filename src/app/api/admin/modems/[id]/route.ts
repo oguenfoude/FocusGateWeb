@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
-import { Command } from '@/lib/models/Command'
+import { toNum, toNumOrNull } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,14 +50,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       ])
 
       balanceHistory = bh.map((b: Record<string, unknown>) => {
-        const bal = b.balance != null ? Number(b.balance.toString()) : 0
-        const prevBal = b.previousBalance != null ? Number(b.previousBalance.toString()) : 0
+        const bal = toNum(b.balance)
+        const prevBal = toNumOrNull(b.previousBalance)
         return {
           ...b,
           _id: String(b._id),
           balance: bal,
           previousBalance: prevBal,
-          delta: bal - prevBal,
+          delta: prevBal != null ? bal - prevBal : bal,
         }
       })
 
@@ -66,8 +66,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
       return Response.json({
         modem: { ...modem, _id: String(modem._id), isOnline },
-        sim: { ...sim, _id: String(sim._id), balance: sim.balance != null ? Number(sim.balance.toString()) : 0 },
-        assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: Number(assignedUser.balance) || 0 } : null,
+        sim: { ...sim, _id: String(sim._id), balance: toNum(sim.balance) },
+        assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
         balanceHistory,
         smsRecords: smsRecords.map(s => ({ ...s, _id: String(s._id) })),
         smsCount,
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return Response.json({
       modem: { ...modem, _id: String(modem._id), isOnline },
       sim: null,
-      assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: Number(assignedUser.balance) || 0 } : null,
+      assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
       balanceHistory,
       smsRecords,
       smsCount,
@@ -107,14 +107,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         return Response.json({ error: 'Assignment not found' }, { status: 404 })
       }
 
-      await Command.create({
-        machineId: '*',
-        type: 'unassign_modem',
-        payload: {
-          userId: userModem.userId,
-          modemId: id,
-        },
-      })
+      await UserModem.updateOne(
+        { _id: userModem._id },
+        { $set: { removedAt: new Date(), updatedAt: new Date() } }
+      )
 
       return Response.json({ ok: true })
     }

@@ -1,12 +1,22 @@
 'use client'
 
 import useSWR from 'swr'
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 import { SimCardItem } from '@/components/dashboard/SimCard'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { useLanguage } from '@/components/language-provider'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
+
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback)
+  return () => window.removeEventListener('storage', callback)
+}
+
+function getLocalStorage(key: string): string | null {
+  if (typeof window === 'undefined') return null
+  try { return localStorage.getItem(key) } catch { return null }
+}
 
 interface SimCardData {
   modemId: string
@@ -20,13 +30,11 @@ interface SimCardData {
 
 export default function DashboardSimsPage() {
   const { t } = useLanguage()
-  const [userId, setUserId] = useState<string | null>(null)
-
-  useEffect(() => {
-    try {
-      setUserId(localStorage.getItem('userId'))
-    } catch {}
-  }, [])
+  const userId = useSyncExternalStore(
+    subscribe,
+    () => getLocalStorage('userId'),
+    () => null,
+  )
 
   const { data, error, isLoading } = useSWR(
     userId ? `/api/dashboard/sims?userId=${userId}` : null,

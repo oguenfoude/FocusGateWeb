@@ -54,17 +54,17 @@ export function SmsList({ userId }: { userId: string }) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <span className="cursor-help badge badge-warning">{sms.typeLabel}<Info className="h-3 w-3 ml-1" /></span>
+                            <span className="cursor-help badge badge-warning">{sms.typeLabel ? t(sms.typeLabel) : ''}<Info className="h-3 w-3 ml-1" /></span>
                           </TooltipTrigger>
                           <TooltipContent><p>{t('dashboardSms.promoTooltip')}</p></TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     ) : sms.type === 'recharge' ? (
-                      <span className="badge badge-info">{sms.typeLabel}</span>
+                      <span className="badge badge-info">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     ) : sms.type === 'transfer' ? (
-                      <span className="badge badge-success">{sms.typeLabel}</span>
+                      <span className="badge badge-success">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     ) : (
-                      <span className="badge badge-gray">{sms.typeLabel}</span>
+                      <span className="badge badge-gray">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     )}
                   </td>
                   <td className="px-5 py-3 text-xs text-gray-900 max-w-xl whitespace-pre-wrap">{sms.content}</td>
@@ -91,13 +91,13 @@ export function SmsList({ userId }: { userId: string }) {
             </div>
             <div className="mb-2">
               {sms.isOffer ? (
-                <span className="badge badge-warning">{sms.typeLabel}</span>
+                <span className="badge badge-warning">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               ) : sms.type === 'recharge' ? (
-                <span className="badge badge-info">{sms.typeLabel}</span>
+                <span className="badge badge-info">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               ) : sms.type === 'transfer' ? (
-                <span className="badge badge-success">{sms.typeLabel}</span>
+                <span className="badge badge-success">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               ) : (
-                <span className="badge badge-gray">{sms.typeLabel}</span>
+                <span className="badge badge-gray">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               )}
             </div>
             {sms.content && <p className="text-xs text-gray-600 line-clamp-3 whitespace-pre-wrap">{sms.content}</p>}

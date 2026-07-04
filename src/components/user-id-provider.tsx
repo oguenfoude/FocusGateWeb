@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
 interface UserIdContextValue {
   userId: string | null
@@ -10,15 +10,13 @@ interface UserIdContextValue {
 
 const UserIdContext = createContext<UserIdContextValue | null>(null)
 
-export function UserIdProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserIdState] = useState<string | null>(null)
+function getInitialUserId(): string | null {
+  if (typeof window === 'undefined') return null
+  try { return localStorage.getItem('userId') } catch { return null }
+}
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('userId')
-      if (stored) setUserIdState(stored)
-    } catch {}
-  }, [])
+export function UserIdProvider({ children }: { children: ReactNode }) {
+  const [userId, setUserIdState] = useState<string | null>(getInitialUserId)
 
   const setUserId = useCallback((id: string) => {
     setUserIdState(id)

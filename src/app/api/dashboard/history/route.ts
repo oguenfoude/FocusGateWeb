@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,9 +18,14 @@ export async function GET(req: NextRequest) {
     const histories = await UserBalanceHistory.find({
       userId: Number(userId) || userId,
       archivedAt: null,
-    }).sort({ updatedAt: -1 }).limit(100).lean()
+    }).sort({ recordedAt: -1 }).limit(100).lean()
 
-    return Response.json(histories)
+    return Response.json(histories.map(h => ({
+      ...h,
+      _id: String(h._id),
+      amount: toNum(h.amount),
+      balanceAfter: toNum(h.balanceAfter),
+    })))
   } catch (err) {
     console.error(err)
     return Response.json({ error: 'Internal server error' }, { status: 500 })

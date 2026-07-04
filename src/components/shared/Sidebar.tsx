@@ -18,7 +18,7 @@ import {
   Settings,
   X,
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 
 const LOCALES: { code: Locale; label: string; flag: string; short: string }[] = [
   { code: 'en', label: 'English', flag: '🇬🇧', short: 'EN' },
@@ -26,29 +26,29 @@ const LOCALES: { code: Locale; label: string; flag: string; short: string }[] = 
   { code: 'ar', label: 'العربية', flag: '🇩🇿', short: 'عر' },
 ]
 
+function getLocalStorage(key: string): string | null {
+  if (typeof window === 'undefined') return null
+  try { return localStorage.getItem(key) } catch { return null }
+}
+
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback)
+  return () => window.removeEventListener('storage', callback)
+}
+
 export function Sidebar() {
   const pathname = usePathname()
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
   const rtl = isRTL
-  const [isAdmin, setIsAdmin] = useState(false)
+  const localStorageUserId = useSyncExternalStore(
+    subscribe,
+    () => getLocalStorage('userId'),
+    () => null,
+  )
 
-  useEffect(() => {
-    if (pathname.startsWith('/admin')) {
-      setIsAdmin(true)
-    } else {
-      try {
-        const userId = localStorage.getItem('userId')
-        if (!userId) {
-          setIsAdmin(true)
-        } else {
-          setIsAdmin(false)
-        }
-      } catch {
-        setIsAdmin(false)
-      }
-    }
-  }, [pathname])
+  const isAdmin = pathname.startsWith('/admin') ||
+    (!pathname.startsWith('/dashboard') && !localStorageUserId)
 
   const adminLinks = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },

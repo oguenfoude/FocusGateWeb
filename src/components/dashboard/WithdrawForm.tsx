@@ -24,7 +24,8 @@ export function WithdrawForm({ userId }: { userId: string }) {
   const { t } = useLanguage()
   const { data, error, isLoading, mutate } = useSWR(
     userId ? `/api/dashboard/withdraw?userId=${userId}` : null,
-    fetcher
+    fetcher,
+    { refreshInterval: 30000 }
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
 

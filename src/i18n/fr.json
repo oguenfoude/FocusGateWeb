@@ -145,7 +145,9 @@
     "saveChanges": "Enregistrer les modifications",
     "failedToUpdate": "Échec de la mise à jour",
     "userUpdated": "Utilisateur mis à jour avec succès!",
-    "confirmArchive": "Êtes-vous sûr de vouloir archiver cet utilisateur?"
+    "confirmArchive": "Êtes-vous sûr de vouloir archiver cet utilisateur?",
+    "balanceChanged": "Solde: +{{delta}} DA",
+    "balanceChangedDesc": "Nouveau solde: {{balance}} DA"
   },
 
   "users": {
@@ -175,6 +177,7 @@
     "archiveUser": "Archiver l'utilisateur",
     "noUsersFound": "Aucun utilisateur trouvé",
     "createUser": "Créer un Utilisateur",
+    "editUser": "Modifier l'utilisateur",
     "enterUsername": "Entrer le nom d'utilisateur",
     "enterDisplayName": "Entrer le nom d'affichage",
     "enterPassword": "Entrer le mot de passe",
@@ -248,7 +251,14 @@
     "recentSms": "SMS Récents",
     "lastSmsDescription": "Les 50 derniers SMS reçus par vos modems assignés.",
     "noSmsFound": "Aucun SMS trouvé",
-    "noMessages": "Aucun SMS"
+    "noMessages": "Aucun SMS",
+    "types": {
+      "otp": "OTP / Code",
+      "offer": "Promo / Offre",
+      "recharge": "Recharge",
+      "transfer": "Transfert",
+      "info": "Info Générale"
+    }
   },
   "withdrawals": {
     "title": "Demandes de Retrait",

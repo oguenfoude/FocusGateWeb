@@ -1,15 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { HistoryList } from '@/components/dashboard/HistoryList'
 import { PageHeader } from '@/components/shared/PageHeader'
 
-export default function DashboardHistoryPage() {
-  const [userId, setUserId] = useState<string | null>(null)
+function DashboardHistoryContent() {
+  const searchParams = useSearchParams()
+  const urlUserId = searchParams.get('userId')
 
-  useEffect(() => {
-    try { setUserId(localStorage.getItem('userId')) } catch {}
-  }, [])
+  let userId = urlUserId
+  if (!userId && typeof window !== 'undefined') {
+    try { userId = localStorage.getItem('userId') } catch {}
+  }
 
   if (!userId) {
     return (
@@ -32,5 +35,13 @@ export default function DashboardHistoryPage() {
       />
       <HistoryList userId={userId} />
     </div>
+  )
+}
+
+export default function DashboardHistoryPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><p className="text-gray-400 text-sm">Loading...</p></div>}>
+      <DashboardHistoryContent />
+    </Suspense>
   )
 }

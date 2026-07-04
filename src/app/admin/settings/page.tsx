@@ -18,7 +18,7 @@ export default function SettingsPage() {
       .then(r => r.json())
       .then(data => {
         const users = Array.isArray(data) ? data : data.users || []
-        const admin = users.find((u: { role?: string }) => u.role === 'admin')
+        const admin = users.find((u: { role?: number }) => u.role === 0)
         if (admin) {
           setAdminId(String(admin._id))
           setAdminName(admin.displayName || admin.username || 'admin')

@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
+import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,8 +36,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         return Response.json({ error: 'User not found' }, { status: 404 })
       }
 
-      const oldBalance = Number(user.balance) || 0
-      const withdrawalAmount = Number(request.amount) || 0
+      const oldBalance = toNum(user.balance)
+      const withdrawalAmount = toNum(request.amount)
       const newBalance = Math.max(0, oldBalance - withdrawalAmount)
 
       await WithdrawalRequest.updateOne(

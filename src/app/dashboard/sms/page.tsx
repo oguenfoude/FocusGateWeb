@@ -1,17 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { SmsList } from '@/components/dashboard/SmsList'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { useLanguage } from '@/components/language-provider'
 
-export default function DashboardSmsPage() {
-  const { t } = useLanguage()
-  const [userId, setUserId] = useState<string | null>(null)
+function DashboardSmsContent() {
+  const searchParams = useSearchParams()
+  const urlUserId = searchParams.get('userId')
 
-  useEffect(() => {
-    try { setUserId(localStorage.getItem('userId')) } catch {}
-  }, [])
+  let userId = urlUserId
+  if (!userId && typeof window !== 'undefined') {
+    try { userId = localStorage.getItem('userId') } catch {}
+  }
 
   if (!userId) {
     return (
@@ -34,5 +35,13 @@ export default function DashboardSmsPage() {
       />
       <SmsList userId={userId} />
     </div>
+  )
+}
+
+export default function DashboardSmsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><p className="text-gray-400 text-sm">Loading...</p></div>}>
+      <DashboardSmsContent />
+    </Suspense>
   )
 }
