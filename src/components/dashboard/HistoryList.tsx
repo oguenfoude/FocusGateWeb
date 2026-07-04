@@ -1,9 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import { formatDistanceToNow, format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { useLanguage } from '@/components/language-provider'
 import { getUserBalanceTypeLabel } from '@/lib/balance-utils'
+import { formatShortDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -18,7 +19,7 @@ interface HistoryItemType {
 }
 
 export function HistoryList({ userId }: { userId: string }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const { data, error, isLoading } = useSWR(
     userId ? `/api/dashboard/history?userId=${userId}` : null,
     fetcher,
@@ -67,7 +68,7 @@ export function HistoryList({ userId }: { userId: string }) {
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="text-gray-500 font-medium text-xs">{displayDate ? formatDistanceToNow(displayDate, { addSuffix: true }) : '-'}</div>
-                      <div className="text-[10px] text-gray-400 mt-1">{displayDate ? format(displayDate, 'dd MMM yyyy HH:mm') : ''}</div>
+                      <div className="text-[10px] text-gray-400 mt-1">{displayDate ? formatShortDate(displayDate, locale) : ''}</div>
                     </td>
                   </tr>
                 )

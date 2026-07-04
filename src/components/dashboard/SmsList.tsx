@@ -1,10 +1,11 @@
 'use client'
 
 import useSWR from 'swr'
-import { formatDistanceToNow, format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Info } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
+import { formatShortDate } from '@/lib/date-utils'
 
 interface SmsItemType {
   id: string
@@ -19,7 +20,7 @@ interface SmsItemType {
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function SmsList({ userId }: { userId: string }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const { data, error, isLoading } = useSWR(
     userId ? `/api/dashboard/sms?userId=${userId}` : null,
     fetcher,
@@ -70,7 +71,7 @@ export function SmsList({ userId }: { userId: string }) {
                   <td className="px-5 py-3 text-xs text-gray-900 max-w-xl whitespace-pre-wrap">{sms.content}</td>
                   <td className="px-5 py-3 text-right">
                     <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</div>
-                    <div className="text-[10px] text-gray-400 mt-1">{sms.receivedAt ? format(new Date(sms.receivedAt), 'dd MMM yyyy HH:mm') : ''}</div>
+                    <div className="text-[10px] text-gray-400 mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
                   </td>
                 </tr>
               ))}

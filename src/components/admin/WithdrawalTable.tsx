@@ -2,10 +2,10 @@
 
 import useSWR from 'swr'
 import { useState } from 'react'
-import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { Search, Info } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
+import { formatShortDate } from '@/lib/date-utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +34,7 @@ type TabType = 'all' | 'pending' | 'approved' | 'rejected'
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawalTable() {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<TabType>('all')
 
@@ -165,7 +165,7 @@ export function WithdrawalTable() {
                     <td className="px-5 py-3.5 text-xs">
                       {req.status === 0 ? <span className="badge badge-warning">{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
                     </td>
-                    <td className="px-5 py-3.5 text-xs text-gray-500">{req.updatedAt ? format(new Date(req.updatedAt), 'dd MMM yyyy, HH:mm') : '-'}</td>
+                    <td className="px-5 py-3.5 text-xs text-gray-500">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</td>
                     <td className="px-5 py-3.5 text-xs text-gray-500 max-w-[200px] truncate" title={req.note}>{req.note || '-'}</td>
                     <td className="px-5 py-3.5 text-right">
                       {req.status === 0 && (
@@ -196,7 +196,7 @@ export function WithdrawalTable() {
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-brand-600">{req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</span>
-                <span className="text-[11px] text-gray-400">{req.updatedAt ? format(new Date(req.updatedAt), 'dd MMM, HH:mm') : '-'}</span>
+                <span className="text-[11px] text-gray-400">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</span>
               </div>
               {req.note && <p className="text-xs text-gray-500 mb-2">{req.note}</p>}
               {req.status === 0 && (

@@ -17,8 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return Response.json({ error: 'Modem not found' }, { status: 404 })
     }
 
-    const twoMinAgo = new Date(Date.now() - 10 * 60 * 1000)
-    const isOnline = modem.status === 4 && modem.updatedAt && new Date(modem.updatedAt) > twoMinAgo
+    const isOnline = modem.status === 4
 
     const SimCard = (await import('@/lib/models/SimCard')).SimCard
     const UserModem = (await import('@/lib/models/UserModem')).UserModem

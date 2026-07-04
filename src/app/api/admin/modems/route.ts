@@ -18,7 +18,6 @@ export async function GET() {
       User.find({ archivedAt: null }).select('username').lean(),
     ])
 
-    const twoMinAgo = new Date(Date.now() - 10 * 60 * 1000)
     const simMap = new Map(sims.map(s => [s.modemId, s]))
     const userMap = new Map(users.map(u => [u._id, u.username]))
     const assignMap = new Map(userModems.map(um => [um.modemId, userMap.get(um.userId) ?? null]))
@@ -28,7 +27,7 @@ export async function GET() {
       return {
         ...m,
         _id: String(m._id),
-        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > twoMinAgo,
+        isOnline: m.status === 4,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,
         balance: toNum(rawBalance),
         simLastSeen: simMap.get(m._id)?.lastSeen ?? null,

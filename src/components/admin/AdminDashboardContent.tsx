@@ -4,6 +4,7 @@ import { useLanguage } from '@/components/language-provider'
 import { StatCards } from '@/components/admin/StatCards'
 import { QuickActions } from '@/components/admin/QuickActions'
 import { Inbox } from 'lucide-react'
+import { formatShortDate } from '@/lib/date-utils'
 
 interface SmsItem {
   _id: string
@@ -25,7 +26,7 @@ interface DashboardData {
 }
 
 export function AdminDashboardContent({ data }: { data: DashboardData }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
 
   return (
     <div className="space-y-6 max-w-[1400px]">
@@ -64,15 +65,13 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
             <tbody className="divide-y divide-gray-50">
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
-                  const date = new Date(sms.receivedAt || '')
                   const senderStr = sms.senderNumber || t('common.unknown')
                   const initials = senderStr.length >= 2 ? senderStr.slice(-2) : senderStr
 
                   return (
                     <tr key={sms._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-3 text-gray-400 text-xs whitespace-nowrap">
-                        {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
                       </td>
                       <td className="px-6 py-3">
                         <div className="flex items-center gap-2.5">
@@ -104,16 +103,14 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
           <div className="lg:hidden space-y-3 p-4">
             {data.recentSms.length > 0 ? (
               data.recentSms.map((sms) => {
-                const date = new Date(sms.receivedAt || '')
                 const senderStr = sms.senderNumber || t('common.unknown')
 
                 return (
-                  <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                    <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-xs text-gray-900">{senderStr}</span>
                       <span className="text-[11px] text-gray-400">
-                        {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 truncate mb-1">{sms.content}</p>

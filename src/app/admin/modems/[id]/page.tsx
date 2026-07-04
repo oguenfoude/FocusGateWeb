@@ -1,13 +1,13 @@
 'use client'
 
 import useSWR, { mutate } from 'swr'
-import { format } from 'date-fns'
 import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, RadioTower, Info, History, MessageSquare, Clock, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { getModemBrand } from '@/lib/modem-utils'
+import { formatDate, formatShortDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -56,7 +56,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
   const resolvedParams = use(params)
   const modemId = resolvedParams.id
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [activeTab, setActiveTab] = useState<'info' | 'balance' | 'sms'>('info')
   const [isUnassigning, setIsUnassigning] = useState(false)
 
@@ -211,7 +211,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                   <div>
                     <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.created')}</dt>
                     <dd className="text-sm font-medium mt-1">
-                      {modem.createdAt ? format(new Date(modem.createdAt), 'MMM dd, yyyy HH:mm') : '-'}
+                      {modem.createdAt ? formatDate(modem.createdAt, locale) : '-'}
                     </dd>
                   </div>
                   <div className="col-span-2">
@@ -258,13 +258,13 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex justify-between">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.firstSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
-                          {sim.firstSeen ? format(new Date(sim.firstSeen), 'MMM dd, yyyy') : '-'}
+                          {sim.firstSeen ? formatDate(sim.firstSeen, locale) : '-'}
                         </dd>
                       </div>
                       <div className="flex justify-between">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.lastSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
-                          {sim.lastSeen ? format(new Date(sim.lastSeen), 'MMM dd, HH:mm') : '-'}
+                          {sim.lastSeen ? formatShortDate(sim.lastSeen, locale) : '-'}
                         </dd>
                       </div>
                     </dl>
@@ -335,7 +335,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                             {b.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
                           </span>
                           <span className="text-gray-400 text-[11px]">
-                            {b.recordedAt ? format(new Date(b.recordedAt), 'MMM dd, HH:mm') : '-'}
+                            {b.recordedAt ? formatShortDate(b.recordedAt, locale) : '-'}
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
@@ -383,7 +383,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                               <span className="text-sm font-semibold text-gray-900">{sms.senderNumber}</span>
                               <span className="text-[10px] text-gray-300">&middot;</span>
                               <span className="text-[11px] text-gray-400">
-                                {sms.receivedAt ? format(new Date(sms.receivedAt), 'MMM dd, HH:mm') : '-'}
+                                {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed">{sms.content}</p>

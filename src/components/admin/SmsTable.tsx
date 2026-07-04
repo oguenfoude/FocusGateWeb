@@ -16,9 +16,6 @@ interface SmsRowType {
   _id: string
   modemId?: string
   sender: string
-  isOffer?: boolean
-  type?: string
-  typeLabel?: string
   content?: string
   receivedAt?: string
 }
@@ -68,42 +65,32 @@ export function SmsTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="border-b border-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sim')}</th>
                 <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sender')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.type')}</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sim')}</th>
                 <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.content')}</th>
                 <th className="px-6 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {isLoading && (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-400 animate-pulse text-xs">{t('sms.loading')}</td></tr>
+                <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 animate-pulse text-xs">{t('sms.loading')}</td></tr>
               )}
               {error && (
-                <tr><td colSpan={5} className="px-6 py-8 text-center text-red-500 text-xs">{t('sms.failed')}</td></tr>
+                <tr><td colSpan={4} className="px-6 py-8 text-center text-red-500 text-xs">{t('sms.failed')}</td></tr>
               )}
               {!isLoading && !error && (!data || !Array.isArray(data) || data.length === 0) && (
-                <tr><td colSpan={5} className="px-6 py-12 text-center"><Inbox className="h-8 w-8 text-gray-300 mx-auto mb-3" /><p className="text-sm text-gray-500">{t('sms.noRecords')}</p></td></tr>
+                <tr><td colSpan={4} className="px-6 py-12 text-center"><Inbox className="h-8 w-8 text-gray-300 mx-auto mb-3" /><p className="text-sm text-gray-500">{t('sms.noRecords')}</p></td></tr>
               )}
               {!isLoading && !error && Array.isArray(data) && data.map((sms) => (
                 <tr key={sms._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-3 text-xs text-gray-700 font-medium">{modemMap.get(sms.modemId || '') || sms.modemId || '-'}</td>
                   <td className="px-6 py-3 font-medium text-xs text-gray-900">{sms.sender}</td>
-                  <td className="px-6 py-3 text-xs">
-                    {sms.isOffer ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{t(sms.typeLabel || 'sms.types.info')}</span>
-                    ) : sms.type === 'other' ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{t(sms.typeLabel || 'sms.types.info')}</span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{t(sms.typeLabel || 'sms.types.info')}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-xs text-gray-500 max-w-[400px] truncate" title={sms.content}>{sms.content}</td>
+                  <td className="px-6 py-3 text-xs text-gray-500">{modemMap.get(sms.modemId || '') || sms.modemId || '-'}</td>
+                  <td className="px-6 py-3 text-xs text-gray-500 max-w-[500px] truncate" title={sms.content}>{sms.content}</td>
                   <td className="px-6 py-3 text-right text-xs text-gray-400 whitespace-nowrap">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</td>
                 </tr>
               ))}
@@ -126,16 +113,7 @@ export function SmsTable() {
               <span className="font-bold text-xs text-gray-900">{sms.sender}</span>
               <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              {sms.isOffer ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700">{t(sms.typeLabel || 'sms.types.info')}</span>
-              ) : sms.type === 'other' ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-50 text-gray-600">{t(sms.typeLabel || 'sms.types.info')}</span>
-              ) : (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">{t(sms.typeLabel || 'sms.types.info')}</span>
-              )}
-              <span className="text-[11px] text-gray-400">{modemMap.get(sms.modemId || '') || ''}</span>
-            </div>
+            <div className="text-[11px] text-gray-400 mb-2">{modemMap.get(sms.modemId || '') || ''}</div>
             {sms.content && (
               <p className="text-xs text-gray-500 line-clamp-2">{sms.content}</p>
             )}

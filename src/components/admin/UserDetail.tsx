@@ -1,12 +1,13 @@
 'use client'
 
 import useSWR, { mutate } from 'swr'
-import { formatDistanceToNow, format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { useState } from 'react'
 import { ArrowUpRight, ArrowDownRight, Smartphone, X, Plus, Loader2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
+import { formatDate, formatShortDate } from '@/lib/date-utils'
 
 interface UserBalanceHistoryItem {
   _id: string
@@ -71,7 +72,7 @@ function sourceLabel(source: number, t: (key: string) => string): string {
 }
 
 export function UserDetail({ userId }: { userId: string }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [selectedModemId, setSelectedModemId] = useState('')
   const [isAssigning, setIsAssigning] = useState(false)
   const [unassigningId, setUnassigningId] = useState<string | null>(null)
@@ -154,7 +155,7 @@ export function UserDetail({ userId }: { userId: string }) {
                 <h3 className="text-xl font-bold text-gray-900">{user.displayName || user.username}</h3>
                 {user.role === 0 ? <span className="badge badge-purple">{t('users.detail.admin')}</span> : <span className="badge badge-gray">{t('users.detail.user')}</span>}
               </div>
-              <p className="text-xs text-gray-400 mt-1">@{user.username} &middot; Created {user.createdAt ? format(new Date(user.createdAt), 'MMM dd, yyyy') : '-'}</p>
+              <p className="text-xs text-gray-400 mt-1">@{user.username} &middot; Created {user.createdAt ? formatDate(user.createdAt, locale) : '-'}</p>
             </div>
           </div>
           <div className="sm:text-right">
@@ -286,7 +287,7 @@ export function UserDetail({ userId }: { userId: string }) {
                     </td>
                     <td className="px-5 py-3 text-xs text-gray-500">{h.note || '-'}</td>
                     <td className="px-5 py-3 text-xs text-right text-gray-400">
-                      {h.updatedAt ? format(new Date(h.updatedAt), 'dd MMM yyyy, HH:mm') : '-'}
+                      {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
                     </td>
                   </tr>
                 ))}
@@ -306,7 +307,7 @@ export function UserDetail({ userId }: { userId: string }) {
                           {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString()} DA
                         </span>
                       </div>
-                      <span className="text-[11px] text-gray-400">{h.updatedAt ? format(new Date(h.updatedAt), 'dd MMM yyyy, HH:mm') : '-'}</span>
+                      <span className="text-[11px] text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
                     </div>
                     <p className="text-xs text-gray-500">{h.note || '-'}</p>
                   </div>
