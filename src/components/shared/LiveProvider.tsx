@@ -32,8 +32,8 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (event === 'balance') {
-          toast.success(t('usersDetail.balanceChanged', { delta: data.delta.toLocaleString() }), {
-            description: t('usersDetail.balanceChangedDesc', { balance: data.balance.toLocaleString() }),
+          toast.success(t('modemDetail.balanceChanged', { delta: data.delta.toLocaleString() }), {
+            description: t('modemDetail.balanceChangedDesc', { balance: data.balance.toLocaleString() }),
           })
         }
 

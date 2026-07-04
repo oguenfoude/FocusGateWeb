@@ -20,6 +20,7 @@ interface HistoryItemType {
 
 export function HistoryList({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const { data, error, isLoading } = useSWR(
     userId ? `/api/dashboard/history?userId=${userId}` : null,
     fetcher,
@@ -89,11 +90,11 @@ export function HistoryList({ userId }: { userId: string }) {
                     </td>
                     <td className="px-5 py-4">
                       <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs shadow-sm`}>
-                        {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} {t('common.da')}
+                        {isCredit ? '+' : '-'}{displayAmount.toLocaleString(loc)} {t('common.da')}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-gray-600 text-xs font-bold">
-                      {h.balanceAfter?.toLocaleString()} {t('common.da')}
+                      {h.balanceAfter?.toLocaleString(loc)} {t('common.da')}
                     </td>
                     <td className="px-5 py-4 text-end">
                       <div className="text-gray-500 font-medium text-xs">{displayDate ? formatTimeAgo(displayDate, locale) : '-'}</div>
@@ -134,13 +135,13 @@ export function HistoryList({ userId }: { userId: string }) {
             <div key={h._id} className="card card-body p-4 page-enter delay-100">
               <div className="flex items-center justify-between mb-2">
                 <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs`}>
-                  {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} {t('common.da')}
+                  {isCredit ? '+' : '-'}{displayAmount.toLocaleString(loc)} {t('common.da')}
                 </span>
                 <span className="text-[11px] text-gray-400 font-medium">{displayDate ? formatTimeAgo(displayDate, locale) : '-'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-900 font-semibold">{h.note || t(typeLabelKey)}</span>
-                <span className="text-[10px] text-gray-500 font-bold">{t('users.detail.walletBalance')}: {h.balanceAfter?.toLocaleString()} {t('common.da')}</span>
+                <span className="text-[10px] text-gray-500 font-bold">{t('users.detail.walletBalance')}: {h.balanceAfter?.toLocaleString(loc)} {t('common.da')}</span>
               </div>
             </div>
           )

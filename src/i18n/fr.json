@@ -314,12 +314,31 @@
   "settings": {
     "title": "Paramètres",
     "subtitle": "Gérer les paramètres de votre compte",
+    "adminAccount": "Compte administrateur",
+    "administrator": "Administrateur",
+    "changeUsername": "Changer le Nom d'Utilisateur",
+    "currentUsername": "Nom d'utilisateur actuel",
+    "newUsername": "Nouveau nom d'utilisateur",
+    "newUsernamePlaceholder": "Entrez le nouveau nom d'utilisateur",
+    "updateUsername": "Mettre à jour le nom d'utilisateur",
     "changePassword": "Changer le Mot de Passe",
     "currentPassword": "Mot de Passe Actuel",
     "newPassword": "Nouveau Mot de Passe",
+    "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
     "confirmPassword": "Confirmer le Mot de Passe",
+    "confirmPasswordPlaceholder": "Ressaisissez le nouveau mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
     "save": "Enregistrer",
-    "language": "Langue"
+    "language": "Langue",
+    "saving": "Enregistrement...",
+    "adminNotFound": "Compte administrateur introuvable",
+    "usernameRequired": "Le nouveau nom d'utilisateur est requis",
+    "usernameUpdated": "Nom d'utilisateur mis à jour avec succès",
+    "usernameFailed": "Échec de la mise à jour du nom d'utilisateur",
+    "passwordRequired": "Le nouveau mot de passe est requis",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordUpdated": "Mot de passe mis à jour avec succès",
+    "passwordFailed": "Échec de la mise à jour du mot de passe"
   },
   "mySims": {
     "title": "Mes Cartes SIM",
@@ -396,7 +415,10 @@
     "view": "Voir",
     "unknown": "Inconnu",
     "pleaseLogIn": "Veuillez vous connecter pour continuer.",
-    "failedToLoad": "Échec du chargement des données."
+    "failedToLoad": "Échec du chargement des données.",
+    "notFound": "Page Non Trouvée",
+    "notFoundDesc": "La page que vous recherchez n'existe pas.",
+    "goHome": "Retour à l'accueil"
   },
   "balanceSource": {
     "0": "Vérification USSD",

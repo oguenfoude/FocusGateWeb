@@ -28,6 +28,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawalTable() {
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<TabType>('all')
 
@@ -154,10 +155,10 @@ export function WithdrawalTable() {
                     <td className="px-5 py-4">
                       <div className="font-bold text-sm text-gray-900 tracking-tight">{req.userId?.username || t('common.unknown')}</div>
                       {req.userId?.balance !== undefined && (
-                        <div className="text-[10px] text-gray-400 font-medium mt-0.5">{t('withdrawals.balance', { amount: req.userId.balance.toLocaleString() })}</div>
+                        <div className="text-[10px] text-gray-400 font-medium mt-0.5">{t('withdrawals.balance', { amount: req.userId.balance.toLocaleString(loc) })}</div>
                       )}
                     </td>
-                    <td className="px-5 py-4 font-bold text-sm text-brand-600">{req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
+                    <td className="px-5 py-4 font-bold text-sm text-brand-600">{req.amount.toLocaleString(loc, { minimumFractionDigits: 2 })} DA</td>
                     <td className="px-5 py-4 text-xs">
                       {req.status === 0 ? <span className="badge badge-warning"><span className="pulse-dot" />{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
                     </td>
@@ -192,7 +193,7 @@ export function WithdrawalTable() {
                 {req.status === 0 ? <span className="badge badge-warning">{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
               </div>
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-brand-600">{req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</span>
+                <span className="font-bold text-brand-600">{req.amount.toLocaleString(loc, { minimumFractionDigits: 2 })} DA</span>
                 <span className="text-[11px] text-gray-400">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</span>
               </div>
               {req.note && <p className="text-xs text-gray-500 mb-2">{req.note}</p>}
@@ -221,7 +222,7 @@ export function WithdrawalTable() {
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleAction(); }} className="p-6 space-y-5">
               <div className="text-sm text-gray-600">
-                {confirmDialog.action === 'approve' ? t('withdrawals.confirmApproveBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' }) : t('withdrawals.confirmRejectBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' })}
+                {confirmDialog.action === 'approve' ? t('withdrawals.confirmApproveBody', { amount: confirmDialog.request?.amount.toLocaleString(loc) || '0', username: confirmDialog.request?.userId?.username || 'Unknown' }) : t('withdrawals.confirmRejectBody', { amount: confirmDialog.request?.amount.toLocaleString(loc) || '0', username: confirmDialog.request?.userId?.username || 'Unknown' })}
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t('withdrawals.noteLabel')}</label>

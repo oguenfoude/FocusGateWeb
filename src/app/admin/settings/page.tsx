@@ -33,11 +33,11 @@ export default function SettingsPage() {
   const handleChangeUsername = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!adminId) {
-      toast.error('Admin account not found')
+      toast.error(t('settings.adminNotFound'))
       return
     }
     if (!newUsername.trim()) {
-      toast.error('New username is required')
+      toast.error(t('settings.usernameRequired'))
       return
     }
     setLoadingUsername(true)
@@ -51,14 +51,14 @@ export default function SettingsPage() {
       })
       const data = await res.json()
       if (data.ok) {
-        toast.success('Username updated successfully')
+        toast.success(t('settings.usernameUpdated'))
         setAdminName(newUsername.trim())
         setNewUsername('')
       } else {
-        toast.error(data.error || 'Failed to update username')
+        toast.error(data.error || t('settings.usernameFailed'))
       }
     } catch {
-      toast.error('Failed to update username')
+      toast.error(t('settings.usernameFailed'))
     } finally {
       setLoadingUsername(false)
     }
@@ -67,15 +67,15 @@ export default function SettingsPage() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
-      toast.error(t('settings.confirmPassword') + ' mismatch')
+      toast.error(t('settings.passwordMismatch'))
       return
     }
     if (!newPassword) {
-      toast.error('New password is required')
+      toast.error(t('settings.passwordRequired'))
       return
     }
     if (!adminId) {
-      toast.error('Admin account not found')
+      toast.error(t('settings.adminNotFound'))
       return
     }
     setLoadingPassword(true)
@@ -89,14 +89,14 @@ export default function SettingsPage() {
       })
       const data = await res.json()
       if (data.ok) {
-        toast.success('Password updated successfully')
+        toast.success(t('settings.passwordUpdated'))
         setNewPassword('')
         setConfirmPassword('')
       } else {
-        toast.error(data.error || 'Failed to update password')
+        toast.error(data.error || t('settings.passwordFailed'))
       }
     } catch {
-      toast.error('Failed to update password')
+      toast.error(t('settings.passwordFailed'))
     } finally {
       setLoadingPassword(false)
     }
@@ -119,7 +119,7 @@ export default function SettingsPage() {
           <div className="p-2 bg-brand-50 rounded-lg">
             <User className="h-5 w-5 text-brand-500" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 tracking-tight">Admin Account</h3>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{t('settings.adminAccount')}</h3>
         </div>
         <div className="flex items-center gap-4 bg-gray-50/50 rounded-xl p-4 border border-gray-100">
           <div className="w-14 h-14 bg-gradient-to-br from-brand-100 to-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-sm border border-brand-100/50">
@@ -127,7 +127,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <p className="text-base font-bold text-gray-900 tracking-tight">{adminName}</p>
-            <p className="text-sm text-gray-500 font-medium">Administrator</p>
+            <p className="text-sm text-gray-500 font-medium">{t('settings.administrator')}</p>
           </div>
           <span className="badge badge-purple ml-auto shadow-sm">
             Admin
@@ -140,11 +140,11 @@ export default function SettingsPage() {
           <div className="p-2 bg-blue-50 rounded-lg">
             <Pencil className="h-5 w-5 text-blue-500" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900 tracking-tight">Change Username</h3>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{t('settings.changeUsername')}</h3>
         </div>
         <form onSubmit={handleChangeUsername} className="space-y-5">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Current Username</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('settings.currentUsername')}</label>
             <input
               type="text"
               value={adminName}
@@ -153,13 +153,13 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">New Username</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('settings.newUsername')}</label>
             <input
               type="text"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
               className="input w-full"
-              placeholder="Enter new username"
+              placeholder={t('settings.newUsernamePlaceholder')}
               required
             />
           </div>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
               disabled={loadingUsername}
               className="btn btn-primary min-w-[120px] justify-center bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"
             >
-              {loadingUsername ? 'Saving...' : 'Update Username'}
+              {loadingUsername ? t('settings.saving') : t('settings.updateUsername')}
             </button>
           </div>
         </form>
@@ -190,7 +190,7 @@ export default function SettingsPage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="input w-full"
-              placeholder="Enter new password"
+              placeholder={t('settings.newPasswordPlaceholder')}
               required
             />
           </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="input w-full"
-              placeholder="Confirm new password"
+              placeholder={t('settings.confirmPasswordPlaceholder')}
               required
             />
           </div>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
               disabled={loadingPassword}
               className="btn btn-primary min-w-[120px] justify-center"
             >
-              {loadingPassword ? 'Saving...' : 'Update Password'}
+              {loadingPassword ? t('settings.saving') : t('settings.updatePassword')}
             </button>
           </div>
         </form>
@@ -219,4 +219,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

@@ -14,7 +14,8 @@ interface StatCardsProps {
 }
 
 export function StatCards({ modemsTotal, modemsOnline, totalSimBalance, simCount, totalUserBalance, userCount, pendingWithdrawals }: StatCardsProps) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -48,7 +49,7 @@ export function StatCards({ modemsTotal, modemsOnline, totalSimBalance, simCount
           <div>
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{t('dashboard.simBalance')}</p>
             <p className="text-3xl font-bold text-gray-900 mt-2">
-              {totalSimBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              {totalSimBalance.toLocaleString(loc, { maximumFractionDigits: 0 })}
             </p>
             <p className="text-xs text-gray-400 mt-2">{simCount} {t('dashboard.sims')} &middot; DA</p>
           </div>
@@ -65,7 +66,7 @@ export function StatCards({ modemsTotal, modemsOnline, totalSimBalance, simCount
           <div>
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{t('dashboard.userWallets')}</p>
             <p className="text-3xl font-bold text-gray-900 mt-2">
-              {totalUserBalance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              {totalUserBalance.toLocaleString(loc, { maximumFractionDigits: 0 })}
             </p>
             <p className="text-xs text-gray-400 mt-2">{userCount} {t('dashboard.users')} &middot; DA</p>
           </div>

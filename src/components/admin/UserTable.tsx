@@ -21,7 +21,8 @@ interface UserRowType {
 }
 
 export function UserTable() {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [searchTerm, setSearchTerm] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -242,7 +243,7 @@ export function UserTable() {
                       <td className="px-5 py-4 text-xs">
                         {user.role === 0 ? <span className="badge badge-purple">{t('users.detail.admin')}</span> : <span className="badge badge-gray">{t('users.detail.user')}</span>}
                       </td>
-                      <td className="px-5 py-4 text-gray-600 font-bold text-sm">{user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
+                      <td className="px-5 py-4 text-gray-600 font-bold text-sm">{user.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} DA</td>
                       <td className="px-5 py-4 text-gray-500 font-medium text-xs">
                         <span className="badge badge-info">{user.assignedModemsCount} {t('users.assigned')}</span>
                       </td>
@@ -316,7 +317,7 @@ export function UserTable() {
                     <span className="text-gray-400">{user.role === 0 ? t('users.detail.admin') : t('users.detail.user')}</span>
                     <span className="font-medium text-gray-700">{user.assignedModemsCount} {t('users.modems')}</span>
                   </div>
-                  <span className="font-bold text-gray-900">{user.balance.toLocaleString()} DA</span>
+                  <span className="font-bold text-gray-900">{user.balance.toLocaleString(loc)} DA</span>
                 </div>
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
                   <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]">
