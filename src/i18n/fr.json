@@ -71,6 +71,7 @@
     "view": "Voir",
     "noModems": "Aucun modem trouvé correspondant à vos critères",
     "noModemsFound": "Aucun modem trouvé",
+    "lastKnown": "dernière connue",
     "detail": {
       "back": "Retour aux Modems",
       "simInfo": "Informations SIM",

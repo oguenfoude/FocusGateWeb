@@ -144,8 +144,13 @@ export function ModemTable() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-sm text-emerald-600">
-                      {modem.balance != null ? `${Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA` : '-'}
+                    <td className="px-6 py-4 font-bold text-sm">
+                      {modem.balance != null ? (
+                        <span className={modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}>
+                          {Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                          {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
+                        </span>
+                      ) : '-'}
                     </td>
                     <td className="px-6 py-4 text-gray-700 text-xs">
                       <span className="font-semibold text-gray-900">{getModemBrand(modem.brand)}</span>{' '}
@@ -211,8 +216,13 @@ export function ModemTable() {
                   <p className="font-bold text-sm text-gray-900">{modem.phoneNumber || t('modems.noSim')}</p>
                   <p className="text-[11px] text-gray-400 mt-0.5">{getModemBrand(modem.brand)} {modem.model || t('modems.unknown')}</p>
                 </div>
-                <p className="font-bold text-sm text-emerald-600">
-                  {modem.balance != null ? `${Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA` : '-'}
+                <p className={`font-bold text-sm ${modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}`}>
+                  {modem.balance != null ? (
+                    <>
+                      {Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                      {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
+                    </>
+                  ) : '-'}
                 </p>
               </div>
               {modem.assignedTo && (

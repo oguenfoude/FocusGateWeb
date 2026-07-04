@@ -71,6 +71,7 @@
     "view": "View",
     "noModems": "No modems found matching your criteria",
     "noModemsFound": "No modems found",
+    "lastKnown": "last known",
     "detail": {
       "back": "Back to Modems",
       "simInfo": "SIM Information",
