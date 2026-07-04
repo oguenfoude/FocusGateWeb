@@ -17,6 +17,7 @@ import {
   RadioTower,
   Settings,
   X,
+  LogOut,
 } from 'lucide-react'
 import { useSyncExternalStore } from 'react'
 
@@ -69,6 +70,14 @@ export function Sidebar() {
   ]
 
   const links = isAdmin ? adminLinks : dashboardLinks
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('userId')
+      localStorage.removeItem('role')
+    } catch {}
+    window.location.href = '/login'
+  }
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -133,12 +142,23 @@ export function Sidebar() {
                 locale === l.code
                   ? 'bg-brand-500 text-white'
                   : 'text-slate-400 hover:bg-white/5'
-              }`}
-            >
-              {l.short}
-            </button>
-          ))}
-        </div>
+               }`}
+             >
+               {l.short}
+             </button>
+           ))}
+         </div>
+       </div>
+
+      {/* Sign Out Button */}
+      <div className="px-3 py-3 border-t border-sidebar-border-color">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors cursor-pointer"
+        >
+          <LogOut className="h-5 w-5" strokeWidth={2.5} />
+          {t('auth.logout')}
+        </button>
       </div>
     </div>
   )

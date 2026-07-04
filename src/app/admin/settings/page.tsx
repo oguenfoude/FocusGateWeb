@@ -3,15 +3,17 @@
 import { useLanguage } from '@/components/language-provider'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { KeyRound, User, Settings } from 'lucide-react'
+import { KeyRound, User, Settings, Pencil } from 'lucide-react'
 
 export default function SettingsPage() {
   const { t } = useLanguage()
   const [adminId, setAdminId] = useState<string | null>(null)
   const [adminName, setAdminName] = useState('admin')
+  const [newUsername, setNewUsername] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loadingUsername, setLoadingUsername] = useState(false)
+  const [loadingPassword, setLoadingPassword] = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/users?includeAdmin=true')
@@ -21,11 +23,46 @@ export default function SettingsPage() {
         const admin = users.find((u: { role?: number }) => u.role === 0)
         if (admin) {
           setAdminId(String(admin._id))
-          setAdminName(admin.displayName || admin.username || 'admin')
+          const name = admin.displayName || admin.username || 'admin'
+          setAdminName(name)
         }
       })
       .catch(() => {})
   }, [])
+
+  const handleChangeUsername = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!adminId) {
+      toast.error('Admin account not found')
+      return
+    }
+    if (!newUsername.trim()) {
+      toast.error('New username is required')
+      return
+    }
+    setLoadingUsername(true)
+    try {
+      const payload = { action: 'edit', username: newUsername.trim() }
+
+      const res = await fetch('/api/admin/users/' + adminId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        toast.success('Username updated successfully')
+        setAdminName(newUsername.trim())
+        setNewUsername('')
+      } else {
+        toast.error(data.error || 'Failed to update username')
+      }
+    } catch {
+      toast.error('Failed to update username')
+    } finally {
+      setLoadingUsername(false)
+    }
+  }
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,12 +78,14 @@ export default function SettingsPage() {
       toast.error('Admin account not found')
       return
     }
-    setLoading(true)
+    setLoadingPassword(true)
     try {
+      const payload = { action: 'edit', password: newPassword }
+
       const res = await fetch('/api/admin/users/' + adminId, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'edit', password: newPassword }),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (data.ok) {
@@ -59,7 +98,7 @@ export default function SettingsPage() {
     } catch {
       toast.error('Failed to update password')
     } finally {
-      setLoading(false)
+      setLoadingPassword(false)
     }
   }
 
@@ -98,6 +137,46 @@ export default function SettingsPage() {
 
       <div className="card card-body p-6 delay-200">
         <div className="flex items-center gap-3 mb-5">
+          <div className="p-2 bg-blue-50 rounded-lg">
+            <Pencil className="h-5 w-5 text-blue-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">Change Username</h3>
+        </div>
+        <form onSubmit={handleChangeUsername} className="space-y-5">
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Current Username</label>
+            <input
+              type="text"
+              value={adminName}
+              disabled
+              className="input w-full bg-gray-50 text-gray-400 cursor-not-allowed"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">New Username</label>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              className="input w-full"
+              placeholder="Enter new username"
+              required
+            />
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              disabled={loadingUsername}
+              className="btn btn-primary min-w-[120px] justify-center bg-blue-600 hover:bg-blue-700 shadow-blue-600/20"
+            >
+              {loadingUsername ? 'Saving...' : 'Update Username'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div className="card card-body p-6 delay-300">
+        <div className="flex items-center gap-3 mb-5">
           <div className="p-2 bg-amber-50 rounded-lg">
             <KeyRound className="h-5 w-5 text-amber-500" />
           </div>
@@ -111,6 +190,8 @@ export default function SettingsPage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="input w-full"
+              placeholder="Enter new password"
+              required
             />
           </div>
           <div>
@@ -120,15 +201,17 @@ export default function SettingsPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="input w-full"
+              placeholder="Confirm new password"
+              required
             />
           </div>
           <div className="flex justify-end pt-2">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loadingPassword}
               className="btn btn-primary min-w-[120px] justify-center"
             >
-              {loading ? 'Saving...' : t('settings.save')}
+              {loadingPassword ? 'Saving...' : 'Update Password'}
             </button>
           </div>
         </form>
@@ -136,3 +219,4 @@ export default function SettingsPage() {
     </div>
   )
 }
+

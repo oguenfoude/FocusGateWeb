@@ -162,12 +162,24 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     if (action === 'edit') {
-      const { displayName, password, currentPassword } = body
+      const { displayName, password, currentPassword, username } = body
       const userObj = await User.findById(userId)
       if (!userObj || userObj.archivedAt) {
         return Response.json({ error: 'User not found or archived' }, { status: 404 })
       }
       
+      if (username !== undefined) {
+        const trimmed = String(username).trim()
+        if (!trimmed) {
+          return Response.json({ error: 'Username cannot be empty' }, { status: 400 })
+        }
+        const existing = await User.findOne({ username: trimmed, _id: { $ne: userId } }).lean()
+        if (existing) {
+          return Response.json({ error: 'Username already exists' }, { status: 409 })
+        }
+        userObj.username = trimmed
+      }
+
       if (displayName !== undefined) userObj.displayName = displayName
       if (password) {
         if (currentPassword && userObj.password !== currentPassword) {
