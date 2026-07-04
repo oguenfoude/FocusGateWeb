@@ -17,38 +17,39 @@ export function SimCardItem({ phoneNumber, isOnline, lastSeen, balance = 0 }: Si
   const isNearWarnLimit = balance >= BALANCE_WARN_THRESHOLD
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col justify-between h-full relative overflow-hidden">
+    <div className="card card-body flex flex-col justify-between h-full relative overflow-hidden group page-enter">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
       {isNearWarnLimit && (
-        <div className="absolute top-0 left-0 right-0 bg-amber-500 text-white text-[11px] font-bold py-1 px-3 flex items-center gap-1.5 justify-center">
-          <AlertTriangle className="h-3 w-3" />
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-bold py-1 px-3 flex items-center gap-1.5 justify-center shadow-sm">
+          <AlertTriangle className="h-3.5 w-3.5" />
           {t('warnings.title')}: {balance.toLocaleString()} / {BALANCE_WARN_THRESHOLD.toLocaleString()} DA
         </div>
       )}
-      <div className={`flex justify-between items-start mb-4 ${isNearWarnLimit ? 'mt-5' : ''}`}>
+      <div className={`flex justify-between items-start mb-4 relative z-10 ${isNearWarnLimit ? 'mt-5' : ''}`}>
         <div className="space-y-1">
-          <h3 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h3 className="text-2xl font-bold tracking-tight text-gray-900 drop-shadow-sm">
             {phoneNumber || t('simCard.noSim')}
           </h3>
-          <div className="flex items-center gap-1.5 mt-2 bg-gray-50 border border-gray-100 rounded-lg p-2 text-xs text-gray-500">
-            <Info className="h-3.5 w-3.5 text-brand-500 flex-shrink-0" />
-            <span>{t('dashboard.rechargeInstruction')}</span>
+          <div className="flex items-center gap-1.5 mt-2 bg-gradient-to-r from-brand-50 to-transparent border-l-2 border-brand-500 rounded-r-lg p-2 text-xs text-gray-600 shadow-sm">
+            <Info className="h-4 w-4 text-brand-600 flex-shrink-0" />
+            <span className="font-medium">{t('dashboard.rechargeInstruction')}</span>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end gap-2 relative z-10">
           {isOnline ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="badge badge-success shadow-sm">
+              <span className="pulse-dot" />
               {t('simCard.online')}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+            <span className="badge badge-danger shadow-sm">
+              <span className="pulse-dot offline" />
               {t('simCard.offline')}
             </span>
           )}
         </div>
       </div>
-      <div className="pt-4 border-t border-gray-100 text-xs text-gray-400 flex justify-between uppercase tracking-wider font-semibold mt-auto">
+      <div className="pt-4 border-t border-gray-200/50 text-xs text-gray-400 flex justify-between uppercase tracking-widest font-bold mt-auto relative z-10">
         <span>{t('simCard.lastSeen')}</span>
         <span>{lastSeen ? formatDistanceToNow(new Date(lastSeen), { addSuffix: true }) : t('simCard.never')}</span>
       </div>

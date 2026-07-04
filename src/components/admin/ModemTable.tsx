@@ -83,7 +83,7 @@ export function ModemTable() {
           placeholder={t('modems.search')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full h-10 pl-10 pr-4 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+          className="input pl-10"
         />
       </div>
 
@@ -93,11 +93,7 @@ export function ModemTable() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              activeTab === tab
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-            }`}
+            className={`filter-pill ${activeTab === tab ? 'active' : ''}`}
           >
             {tab === 'assigned' || tab === 'free' ? <User className="h-3 w-3" /> : null}
             {t(`modems.${tab}`)} ({counts[tab]})
@@ -106,64 +102,64 @@ export function ModemTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="hidden lg:block card overflow-hidden page-enter delay-100">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="border-b border-gray-100">
+          <table className="w-full text-sm text-start border-collapse">
+            <thead className="border-b border-gray-200/50">
               <tr>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.status')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.phoneNumber')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.balance')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.device')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.assignedTo')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('modems.lastSeen')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.status')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.phoneNumber')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.balance')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.device')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.assignedTo')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('modems.lastSeen')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {filtered.length > 0 ? (
                 filtered.map((modem) => (
                   <tr
                     key={modem._id}
                     onClick={() => router.push(`/admin/modems/${modem._id}`)}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="table-row-hover cursor-pointer"
                   >
-                    <td className="px-6 py-3.5">
+                    <td className="px-6 py-4">
                       {modem.isOnline ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="badge badge-success">
+                          <span className="pulse-dot" />
                           {t('modems.online')}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500">
-                          <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                        <span className="badge badge-gray">
+                          <span className="pulse-dot offline" />
                           {t('modems.offline')}
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-3.5">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Copy className="h-3.5 w-3.5 text-gray-300 flex-shrink-0" />
+                        <Copy className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
                         <div>
-                          <span className="font-bold text-sm text-gray-900">{modem.phoneNumber || t('modems.noSim')}</span>
-                          <div className="text-[10px] text-gray-400 mt-0.5">{(modem.imei || '').slice(-8)}</div>
+                          <span className="font-bold text-sm text-gray-900 tracking-tight">{modem.phoneNumber || t('modems.noSim')}</span>
+                          <div className="font-mono text-[10px] text-gray-400 mt-0.5">{(modem.imei || '').slice(-8)}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-3.5 font-bold text-sm text-emerald-600">
+                    <td className="px-6 py-4 font-bold text-sm text-emerald-600">
                       {modem.balance != null ? `${Number(modem.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })} DA` : '-'}
                     </td>
-                    <td className="px-6 py-3.5 text-gray-700 text-xs">
-                      <span className="font-medium">{getModemBrand(modem.brand)}</span>{' '}
-                      <span className="text-gray-400">{modem.model || t('modems.unknown')}</span>
+                    <td className="px-6 py-4 text-gray-700 text-xs">
+                      <span className="font-semibold text-gray-900">{getModemBrand(modem.brand)}</span>{' '}
+                      <span className="text-gray-500">{modem.model || t('modems.unknown')}</span>
                     </td>
-                    <td className="px-6 py-3.5 text-xs">
+                    <td className="px-6 py-4 text-xs">
                       {modem.assignedTo ? (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-[11px] font-medium">
+                        <span className="badge badge-purple">
                           <User className="h-3 w-3" />
                           {modem.assignedTo}
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-[11px]">{t('modems.free')}</span>
+                        <span className="badge badge-gray">{t('modems.free')}</span>
                       )}
                     </td>
                     <td className="px-6 py-3.5 text-xs text-gray-400">
@@ -191,18 +187,18 @@ export function ModemTable() {
             <div
               key={modem._id}
               onClick={() => router.push(`/admin/modems/${modem._id}`)}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 active:bg-gray-50 transition-colors cursor-pointer"
+              className="card card-body table-row-hover cursor-pointer page-enter delay-200"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {modem.isOnline ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="badge badge-success">
+                      <span className="pulse-dot" />
                       {t('modems.online')}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-500">
-                      <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                    <span className="badge badge-gray">
+                      <span className="pulse-dot offline" />
                       {t('modems.offline')}
                     </span>
                   )}
@@ -222,7 +218,7 @@ export function ModemTable() {
               </div>
               {modem.assignedTo && (
                 <div className="mt-2 pt-2 border-t border-gray-100">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-[11px] font-medium">
+                  <span className="badge badge-purple">
                     <User className="h-3 w-3" />
                     {modem.assignedTo}
                   </span>
@@ -231,9 +227,9 @@ export function ModemTable() {
             </div>
           ))
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
+          <div className="card card-body text-center">
             <Inbox className="h-8 w-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">{t('modems.noModemsFound')}</p>
+            <p className="text-sm text-gray-500 font-medium">{t('modems.noModemsFound')}</p>
           </div>
         )}
       </div>

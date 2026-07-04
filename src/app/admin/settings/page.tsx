@@ -14,7 +14,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/users')
+    fetch('/api/admin/users?includeAdmin=true')
       .then(r => r.json())
       .then(data => {
         const users = Array.isArray(data) ? data : data.users || []
@@ -64,65 +64,69 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6 page-enter">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-emerald-50 rounded-lg">
-          <Settings className="h-5 w-5 text-emerald-600" />
+        <div className="p-3 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl shadow-inner border border-emerald-100/50">
+          <Settings className="h-6 w-6 text-emerald-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">{t('settings.title')}</h1>
-          <p className="text-sm text-gray-500">{t('settings.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('settings.title')}</h1>
+          <p className="text-sm text-gray-500 font-medium">{t('settings.subtitle')}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <User className="h-5 w-5 text-brand-500" />
-          <h3 className="text-sm font-semibold text-gray-900">Admin Account</h3>
+      <div className="card card-body p-6 delay-100">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-2 bg-brand-50 rounded-lg">
+            <User className="h-5 w-5 text-brand-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">Admin Account</h3>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center text-lg font-bold">
+        <div className="flex items-center gap-4 bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+          <div className="w-14 h-14 bg-gradient-to-br from-brand-100 to-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-sm border border-brand-100/50">
             {adminName.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-900">{adminName}</p>
-            <p className="text-xs text-gray-400">Administrator</p>
+            <p className="text-base font-bold text-gray-900 tracking-tight">{adminName}</p>
+            <p className="text-sm text-gray-500 font-medium">Administrator</p>
           </div>
-          <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+          <span className="badge badge-purple ml-auto shadow-sm">
             Admin
           </span>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <KeyRound className="h-5 w-5 text-amber-500" />
-          <h3 className="text-sm font-semibold text-gray-900">{t('settings.changePassword')}</h3>
+      <div className="card card-body p-6 delay-200">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-2 bg-amber-50 rounded-lg">
+            <KeyRound className="h-5 w-5 text-amber-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{t('settings.changePassword')}</h3>
         </div>
-        <form onSubmit={handleChangePassword} className="space-y-4">
+        <form onSubmit={handleChangePassword} className="space-y-5">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('settings.newPassword')}</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('settings.newPassword')}</label>
             <input
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+              className="input w-full"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('settings.confirmPassword')}</label>
+            <label className="block text-sm font-bold text-gray-700 mb-2">{t('settings.confirmPassword')}</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+              className="input w-full"
             />
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-brand-500 text-white text-sm font-medium rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50"
+              className="btn btn-primary min-w-[120px] justify-center"
             >
               {loading ? 'Saving...' : t('settings.save')}
             </button>

@@ -183,20 +183,20 @@ export function UserTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden lg:block card">
+      <div className="hidden lg:block card page-enter delay-100">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="border-b border-gray-100">
+          <table className="w-full text-sm text-start border-collapse">
+            <thead className="border-b border-gray-200/50">
               <tr>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.user')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.role')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.balance')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.modems')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.status')}</th>
-                <th className="px-5 py-3.5 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.actions')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.user')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.role')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.balance')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.modems')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.status')}</th>
+                <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.actions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {filtered.length > 0 ? (
                 filtered.map((user: UserRowType) => {
                   const nameStr = user.displayName || user.username
@@ -205,24 +205,26 @@ export function UserTable() {
 
                   return (
                     <tr key={user._id} className={`table-row-hover ${isArchived ? 'opacity-50' : ''}`}>
-                      <td className="px-5 py-3.5">
+                      <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-100 to-brand-50 text-brand-600 flex items-center justify-center font-bold text-xs shadow-inner border border-brand-100/50">{initials}</div>
                           <div>
-                            <div className="font-bold text-xs text-gray-900">{nameStr}</div>
-                            <div className="text-[10px] text-gray-400">{user.username}</div>
+                            <div className="font-bold text-sm text-gray-900 tracking-tight">{nameStr}</div>
+                            <div className="font-mono text-[10px] text-gray-400 mt-0.5">{user.username}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 text-xs">
-                        {user.role === 0 ? <span className="badge badge-gray">{t('users.detail.admin')}</span> : <span className="badge badge-gray">{t('users.detail.user')}</span>}
+                      <td className="px-5 py-4 text-xs">
+                        {user.role === 0 ? <span className="badge badge-purple">{t('users.detail.admin')}</span> : <span className="badge badge-gray">{t('users.detail.user')}</span>}
                       </td>
-                      <td className="px-5 py-3.5 text-gray-400 font-medium text-xs">{user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
-                      <td className="px-5 py-3.5 text-gray-500 font-medium text-xs">{user.assignedModemsCount} {t('users.assigned')}</td>
-                      <td className="px-5 py-3.5 text-xs">
-                        {isArchived ? <span className="badge badge-gray">{t('users.archived')}</span> : <span className="badge badge-success">{t('users.active')}</span>}
+                      <td className="px-5 py-4 text-gray-600 font-bold text-sm">{user.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
+                      <td className="px-5 py-4 text-gray-500 font-medium text-xs">
+                        <span className="badge badge-info">{user.assignedModemsCount} {t('users.assigned')}</span>
                       </td>
-                      <td className="px-5 py-3.5 text-right">
+                      <td className="px-5 py-4 text-xs">
+                        {isArchived ? <span className="badge badge-gray">{t('users.archived')}</span> : <span className="badge badge-success"><span className="pulse-dot" />{t('users.active')}</span>}
+                      </td>
+                      <td className="px-5 py-4 text-end">
                         <div className="flex justify-end gap-1.5">
                           <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm" title={t('users.viewDetails')}><Eye className="h-3.5 w-3.5" /></Link>
                           {!isArchived && (
@@ -262,7 +264,7 @@ export function UserTable() {
             const isArchived = !!user.archivedAt
 
             return (
-              <div key={user._id} className={`bg-white rounded-xl border border-gray-200 shadow-sm p-4 ${isArchived ? 'opacity-50' : ''}`}>
+              <div key={user._id} className={`card card-body p-4 page-enter delay-200 ${isArchived ? 'opacity-50' : ''}`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">{initials}</div>
@@ -272,7 +274,7 @@ export function UserTable() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {isArchived ? <span className="badge badge-gray">{t('users.archived')}</span> : <span className="badge badge-success">{t('users.active')}</span>}
+                    {isArchived ? <span className="badge badge-gray">{t('users.archived')}</span> : <span className="badge badge-success"><span className="pulse-dot" />{t('users.active')}</span>}
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs">
@@ -305,7 +307,7 @@ export function UserTable() {
             )
           })
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-gray-400 text-xs">{t('users.noUsersFound')}</div>
+          <div className="card card-body text-center text-gray-400 text-xs py-10">{t('users.noUsersFound')}</div>
         )}
       </div>
 

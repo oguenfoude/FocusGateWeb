@@ -69,27 +69,28 @@ export function WithdrawForm({ userId }: { userId: string }) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 max-w-4xl">
-      <div className="card border-emerald-500/20 bg-emerald-50/50">
-        <div className="card-header pb-4">
-          <h3 className="text-lg font-bold text-gray-900">{t('withdraw.availableBalance')}</h3>
+      <div className="card border-emerald-500/20 bg-emerald-50/50 page-enter relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
+        <div className="card-header pb-4 relative z-10">
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{t('withdraw.availableBalance')}</h3>
           <p className="text-sm text-gray-500">{t('withdraw.yourFunds')}</p>
         </div>
-        <div className="card-body">
-          <div className="text-4xl font-bold text-emerald-600">
+        <div className="card-body relative z-10">
+          <div className="text-4xl font-bold text-emerald-600 drop-shadow-sm">
             {data.balance.toLocaleString()} DA
           </div>
         </div>
       </div>
 
-      <div className="card">
+      <div className="card page-enter delay-100">
         <div className="card-header pb-4">
-          <h3 className="text-lg font-bold text-gray-900">{t('withdraw.requestWithdrawal')}</h3>
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">{t('withdraw.requestWithdrawal')}</h3>
           <p className="text-sm text-gray-500">{t('withdraw.submitDescription')}</p>
         </div>
         <div className="card-body">
           {data.hasPending ? (
-              <div className="p-4 rounded-md bg-amber-500/10 text-amber-600 border border-amber-500/20 text-sm font-medium">
-                {t('withdraw.pendingWarning1')} {data.pendingAmount.toLocaleString()} DA. 
+              <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-700 border border-amber-500/20 text-sm font-medium shadow-sm">
+                {t('withdraw.pendingWarning1')} <span className="font-bold">{data.pendingAmount.toLocaleString()} DA</span>. 
                 {t('withdraw.pendingWarning2')}
             </div>
           ) : (

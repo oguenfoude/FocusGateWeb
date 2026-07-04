@@ -57,8 +57,8 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                   <span className="text-xs text-brand-600 font-medium">{data.onlineModems} {t('dashboard.online')}</span>
                 </div>
               </div>
-              <div className="w-11 h-11 bg-brand-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <RadioTower className="h-5 w-5 text-brand-500" />
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-100 to-brand-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-brand-100/50">
+                <RadioTower className="h-6 w-6 text-brand-600" />
               </div>
             </div>
           </div>
@@ -75,8 +75,8 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                 </p>
                 <p className="text-xs text-gray-400 mt-2">DA</p>
               </div>
-              <div className="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Wallet className="h-5 w-5 text-blue-500" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-blue-100/50">
+                <Wallet className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </div>
@@ -93,8 +93,8 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                 </p>
                 <p className="text-xs text-gray-400 mt-2">DA</p>
               </div>
-              <div className="w-11 h-11 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <CalendarRange className="h-5 w-5 text-purple-500" />
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-purple-100/50">
+                <CalendarRange className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -111,8 +111,8 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                 </p>
                 <p className="text-xs text-gray-400 mt-2">DA</p>
               </div>
-              <div className="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Clock className="h-5 w-5 text-amber-500" />
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-amber-100/50">
+                <Clock className="h-6 w-6 text-amber-600" />
               </div>
             </div>
           </div>
@@ -121,73 +121,73 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Link href="/dashboard/sims" className="card group cursor-pointer hover:border-brand-300 transition-colors">
+        <Link href="/dashboard/sims" className="card group cursor-pointer hover:border-brand-300 page-enter delay-100">
           <div className="card-body flex items-center gap-3 py-4">
-            <div className="w-10 h-10 bg-brand-50 rounded-lg flex items-center justify-center group-hover:bg-brand-100 transition-colors">
-              <Smartphone className="h-4 w-4 text-brand-500" />
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-100 to-brand-50 rounded-xl flex items-center justify-center group-hover:from-brand-200 group-hover:to-brand-100 transition-colors shadow-inner border border-brand-100/50">
+              <Smartphone className="h-5 w-5 text-brand-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{t('nav.mySims')}</p>
-              <p className="text-xs text-gray-400">{data.totalModems} SIM</p>
+              <p className="text-sm font-bold text-gray-900 truncate tracking-tight">{t('nav.mySims')}</p>
+              <p className="text-xs text-gray-400 font-medium">{data.totalModems} SIM</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-brand-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-brand-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
           </div>
         </Link>
-        <Link href="/dashboard/sms" className="card group cursor-pointer hover:border-purple-300 transition-colors">
+        <Link href="/dashboard/sms" className="card group cursor-pointer hover:border-purple-300 page-enter delay-200">
           <div className="card-body flex items-center gap-3 py-4">
-            <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors">
-              <MessageSquare className="h-4 w-4 text-purple-500" />
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl flex items-center justify-center group-hover:from-purple-200 group-hover:to-purple-100 transition-colors shadow-inner border border-purple-100/50">
+              <MessageSquare className="h-5 w-5 text-purple-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{t('nav.mySms')}</p>
-              <p className="text-xs text-gray-400">{t('sms.recentSms')}</p>
+              <p className="text-sm font-bold text-gray-900 truncate tracking-tight">{t('nav.mySms')}</p>
+              <p className="text-xs text-gray-400 font-medium">{t('sms.recentSms')}</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-purple-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-purple-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
           </div>
         </Link>
-        <Link href="/dashboard/history" className="card group cursor-pointer hover:border-blue-300 transition-colors">
+        <Link href="/dashboard/history" className="card group cursor-pointer hover:border-blue-300 page-enter delay-300">
           <div className="card-body flex items-center gap-3 py-4">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-              <History className="h-4 w-4 text-blue-500" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-100 transition-colors shadow-inner border border-blue-100/50">
+              <History className="h-5 w-5 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{t('nav.history')}</p>
-              <p className="text-xs text-gray-400">{t('history.title')}</p>
+              <p className="text-sm font-bold text-gray-900 truncate tracking-tight">{t('nav.history')}</p>
+              <p className="text-xs text-gray-400 font-medium">{t('history.title')}</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-blue-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-blue-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
           </div>
         </Link>
-        <Link href="/dashboard/withdraw" className="card group cursor-pointer hover:border-amber-300 transition-colors">
+        <Link href="/dashboard/withdraw" className="card group cursor-pointer hover:border-amber-300 page-enter delay-300">
           <div className="card-body flex items-center gap-3 py-4">
-            <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center group-hover:bg-amber-100 transition-colors">
-              <Banknote className="h-4 w-4 text-amber-500" />
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center group-hover:from-amber-200 group-hover:to-amber-100 transition-colors shadow-inner border border-amber-100/50">
+              <Banknote className="h-5 w-5 text-amber-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">{t('nav.withdraw')}</p>
-              <p className="text-xs text-gray-400">{t('withdraw.subtitle')}</p>
+              <p className="text-sm font-bold text-gray-900 truncate tracking-tight">{t('nav.withdraw')}</p>
+              <p className="text-xs text-gray-400 font-medium">{t('withdraw.subtitle')}</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-amber-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-amber-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
           </div>
         </Link>
       </div>
 
       {/* Recent SMS */}
-      <div className="card">
+      <div className="card page-enter delay-300">
         <div className="card-header flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-900">{t('dashboard.recentSms')}</h3>
-          <span className="text-xs text-gray-400">{data.recentSms.length} {t('dashboard.messages')}</span>
+          <h3 className="text-sm font-bold text-gray-900 tracking-tight">{t('dashboard.recentSms')}</h3>
+          <span className="badge badge-gray">{data.recentSms.length} {t('dashboard.messages')}</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm hidden lg:table">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sender')}</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.content')}</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sim')}</th>
+          <table className="w-full text-sm hidden lg:table border-collapse text-start">
+            <thead className="border-b border-gray-200/50">
+              <tr>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
                   const date = new Date(sms.receivedAt)
@@ -197,23 +197,23 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
 
                   return (
                     <tr key={sms._id.toString()} className="table-row-hover">
-                      <td className="px-5 py-3 text-gray-400 text-xs whitespace-nowrap">
+                      <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap font-medium">
                         {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
                         {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </td>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-500 flex-shrink-0 uppercase">
+                          <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center text-[10px] font-bold text-brand-600 flex-shrink-0 uppercase shadow-sm border border-brand-100">
                             {initials}
                           </div>
-                          <span className="font-medium text-xs">{senderStr}</span>
+                          <span className="font-semibold text-xs text-gray-900 tracking-tight">{senderStr}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-gray-500 max-w-xs truncate text-xs">
+                      <td className="px-5 py-4 text-gray-600 max-w-xs truncate text-xs">
                         {sms.content}
                       </td>
-                      <td className="px-5 py-3 text-gray-400 text-[11px]">
-                        {simCard?.phoneNumber || 'N/A'}
+                      <td className="px-5 py-4">
+                        <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || 'N/A'}</span>
                       </td>
                     </tr>
                   )
@@ -236,16 +236,16 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                 const simCard = sms.simCardId
 
                 return (
-                  <div key={sms._id.toString()} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                  <div key={sms._id.toString()} className="card card-body p-4 table-row-hover">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-xs text-gray-900">{senderStr}</span>
-                      <span className="text-[11px] text-gray-400">
+                      <span className="font-bold text-xs text-gray-900">{senderStr}</span>
+                      <span className="text-[11px] text-gray-400 font-medium">
                         {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
                         {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate mb-1">{sms.content}</p>
-                    <span className="text-[10px] text-gray-400">{simCard?.phoneNumber || 'N/A'}</span>
+                    <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>
+                    <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || 'N/A'}</span>
                   </div>
                 )
               })

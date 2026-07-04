@@ -31,7 +31,6 @@ export async function GET(req: NextRequest) {
     ])
 
     const simMap = new Map(sims.map(s => [s.modemId, s]))
-    const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000)
 
     const result = modems.map(m => {
       const sim = simMap.get(m._id) ?? null
@@ -40,7 +39,7 @@ export async function GET(req: NextRequest) {
         imei: m.imei,
         brand: m.brand,
         model: m.model,
-        isOnline: m.status === 4 && m.updatedAt && new Date(m.updatedAt) > tenMinAgo,
+        isOnline: m.status === 4,
         phoneNumber: sim?.phoneNumber ?? null,
         simStatus: sim?.status ?? null,
         lastSeen: sim?.lastSeen ?? null,

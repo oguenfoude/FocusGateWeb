@@ -12,7 +12,12 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url)
     const showArchived = searchParams.get('showArchived') === 'true'
-    const filter = showArchived ? {} : { archivedAt: null }
+    const includeAdmin = searchParams.get('includeAdmin') === 'true'
+    
+    const filter: Record<string, unknown> = showArchived ? {} : { archivedAt: null }
+    if (!includeAdmin) {
+      filter.role = { $ne: 0 } // Exclude Admin (Role = 0)
+    }
 
     const users = await User.find(filter).select('-password').lean()
 

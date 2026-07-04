@@ -13,8 +13,6 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData(userId: string | number) {
-  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
-
   const assignments = await UserModem.find({
     userId,
     removedAt: null,
@@ -23,11 +21,9 @@ async function getDashboardData(userId: string | number) {
   const modemIds = assignments.map(a => a.modemId)
 
   const totalModems = modemIds.length
-  const onlineModems = await Modem.countDocuments({
-    _id: { $in: modemIds },
-    status: 4,
-    updatedAt: { $gte: tenMinutesAgo }
-  })
+  const onlineModems = modemIds.length > 0
+    ? await Modem.countDocuments({ _id: { $in: modemIds }, status: 4 })
+    : 0
 
   const user = await User.findOne({ _id: userId }).lean()
   const balance = toNum(user?.balance)

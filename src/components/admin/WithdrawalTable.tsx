@@ -138,36 +138,36 @@ export function WithdrawalTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden lg:block card">
+      <div className="hidden lg:block card page-enter delay-100">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="border-b border-gray-100">
+          <table className="w-full text-sm text-start border-collapse">
+            <thead className="border-b border-gray-200/50">
               <tr>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.user')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.amount')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.status')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.requestedAt')}</th>
-                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.note')}</th>
-                <th className="px-5 py-3.5 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('withdrawals.actions')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.user')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.amount')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.status')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.requestedAt')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.note')}</th>
+                <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.actions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {filtered.length > 0 ? (
                 filtered.map((req: WithdrawalRequestType) => (
                   <tr key={req._id} className="table-row-hover">
-                    <td className="px-5 py-3.5">
-                      <div className="font-bold text-xs text-gray-900">{req.userId?.username || t('common.unknown')}</div>
+                    <td className="px-5 py-4">
+                      <div className="font-bold text-sm text-gray-900 tracking-tight">{req.userId?.username || t('common.unknown')}</div>
                       {req.userId?.balance !== undefined && (
-                        <div className="text-[10px] text-gray-400 mt-0.5">{t('withdrawals.balance', { amount: req.userId.balance.toLocaleString() })}</div>
+                        <div className="text-[10px] text-gray-400 font-medium mt-0.5">{t('withdrawals.balance', { amount: req.userId.balance.toLocaleString() })}</div>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 font-bold text-xs text-brand-600">{req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
-                    <td className="px-5 py-3.5 text-xs">
-                      {req.status === 0 ? <span className="badge badge-warning">{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
+                    <td className="px-5 py-4 font-bold text-sm text-brand-600">{req.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA</td>
+                    <td className="px-5 py-4 text-xs">
+                      {req.status === 0 ? <span className="badge badge-warning"><span className="pulse-dot" />{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
                     </td>
-                    <td className="px-5 py-3.5 text-xs text-gray-500">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</td>
-                    <td className="px-5 py-3.5 text-xs text-gray-500 max-w-[200px] truncate" title={req.note}>{req.note || '-'}</td>
-                    <td className="px-5 py-3.5 text-right">
+                    <td className="px-5 py-4 text-xs text-gray-500 font-medium">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</td>
+                    <td className="px-5 py-4 text-xs text-gray-600 max-w-[200px] truncate" title={req.note}>{req.note || '-'}</td>
+                    <td className="px-5 py-4 text-end">
                       {req.status === 0 && (
                         <div className="flex justify-end gap-1.5">
                           <button onClick={() => setConfirmDialog({ isOpen: true, action: 'approve', request: req })} className="btn btn-outline btn-sm text-emerald-600 hover:text-white hover:bg-emerald-500 hover:border-emerald-500">{t('withdrawals.approve')}</button>
@@ -189,7 +189,7 @@ export function WithdrawalTable() {
       <div className="lg:hidden space-y-3">
         {filtered.length > 0 ? (
           filtered.map((req: WithdrawalRequestType) => (
-            <div key={req._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <div key={req._id} className="card card-body p-4 page-enter delay-200">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-sm text-gray-900">{req.userId?.username || t('common.unknown')}</span>
                 {req.status === 0 ? <span className="badge badge-warning">{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
@@ -208,7 +208,7 @@ export function WithdrawalTable() {
             </div>
           ))
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-gray-400 text-xs"><Info className="h-6 w-6 mx-auto mb-2 text-gray-300" />{t('withdrawals.noRequestsFound')}</div>
+          <div className="card card-body text-center text-gray-400 text-xs py-10"><Info className="h-6 w-6 mx-auto mb-2 text-gray-300" />{t('withdrawals.noRequestsFound')}</div>
         )}
       </div>
 

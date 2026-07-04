@@ -105,14 +105,14 @@ export function Sidebar() {
               key={link.href}
               href={link.href}
               onClick={close}
-              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
                 isActive
-                  ? 'bg-brand-500/15 text-brand-400'
-                  : 'text-slate-300 hover:bg-white/10'
+                  ? 'bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
               }`}
             >
               {isActive && (
-                <div className={`absolute top-1.5 bottom-1.5 w-[3px] rounded-sm bg-brand-500 ${rtl ? 'right-0 rounded-l-sm' : 'left-0 rounded-r-sm'}`} />
+                <div className={`absolute top-0 bottom-0 w-[3px] bg-brand-500 shadow-[0_0_10px_rgba(20,184,166,0.5)] ${rtl ? 'right-0' : 'left-0'}`} />
               )}
               <Icon className="h-5 w-5" strokeWidth={2.5} />
               {link.label}

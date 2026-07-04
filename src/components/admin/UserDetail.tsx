@@ -178,8 +178,8 @@ export function UserDetail({ userId }: { userId: string }) {
             <div className="card lg:col-span-2">
               <div className="card-header"><h4 className="text-sm font-semibold text-gray-900">{t('users.detail.assignedModems')}</h4></div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left hidden lg:table">
-                  <tbody className="divide-y divide-gray-50">
+                <table className="w-full text-sm text-start hidden lg:table border-collapse">
+                  <tbody className="divide-y divide-gray-100">
                     {assignments.length > 0 ? (
                       assignments.map((item: AssignmentItem) => {
                         const phoneStr = item.sim?.phoneNumber || t('common.unknown')
@@ -196,8 +196,8 @@ export function UserDetail({ userId }: { userId: string }) {
                                 </div>
                               </div>
                             </td>
-                            <td className="px-5 py-3 text-right">{item.sim?.balance !== undefined ? <span className="font-semibold text-xs text-gray-900">{item.sim.balance.toLocaleString()} DA</span> : '-'}</td>
-                            <td className="px-5 py-3 text-right">
+                            <td className="px-5 py-3 text-end">{item.sim?.balance !== undefined ? <span className="font-semibold text-xs text-gray-900">{item.sim.balance.toLocaleString()} DA</span> : '-'}</td>
+                            <td className="px-5 py-3 text-end">
                             <button onClick={() => handleUnassign(item.modem._id)} disabled={unassigningId === item.modem._id} className="text-red-400 hover:text-red-600 transition-colors">
                                 {unassigningId === item.modem._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                               </button>
@@ -215,7 +215,7 @@ export function UserDetail({ userId }: { userId: string }) {
                     assignments.map((item: AssignmentItem) => {
                       const phoneStr = item.sim?.phoneNumber || t('common.unknown')
                       return (
-                        <div key={item.modem._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <div key={item.modem._id} className="card card-body p-4 table-row-hover">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-500">
@@ -265,16 +265,16 @@ export function UserDetail({ userId }: { userId: string }) {
 
         <TabsContent value="wallet" className="space-y-4">
           <div className="card">
-            <table className="w-full text-sm text-left hidden lg:table">
-              <thead className="border-b border-gray-100">
+            <table className="w-full text-sm text-start border-collapse hidden lg:table">
+              <thead className="border-b border-gray-200/50">
                 <tr>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider w-10"></th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.amount')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.note')}</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.date')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest w-10"></th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.amount')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.note')}</th>
+                  <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.date')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-100">
                 {userBalanceHistories.map((h: UserBalanceHistoryItem) => (
                   <tr key={h._id} className="table-row-hover">
                     <td className="px-5 py-3">
@@ -286,7 +286,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </span>
                     </td>
                     <td className="px-5 py-3 text-xs text-gray-500">{h.note || '-'}</td>
-                    <td className="px-5 py-3 text-xs text-right text-gray-400">
+                    <td className="px-5 py-3 text-xs text-end text-gray-400">
                       {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
                     </td>
                   </tr>
@@ -299,8 +299,8 @@ export function UserDetail({ userId }: { userId: string }) {
             <div className="lg:hidden space-y-3 p-4">
               {userBalanceHistories.length > 0 ? (
                 userBalanceHistories.map((h: UserBalanceHistoryItem) => (
-                  <div key={h._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                    <div className="flex items-center justify-between mb-2">
+                        <div key={h._id} className="card card-body p-4 table-row-hover">
+                          <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {h.type === 0 ? <ArrowDownRight className="h-4 w-4 text-emerald-500" /> : <ArrowUpRight className="h-4 w-4 text-red-500" />}
                         <span className={`text-xs font-medium ${h.type === 0 ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -313,7 +313,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   </div>
                 ))
               ) : (
-                <div className="text-center text-gray-400 text-xs py-8">{t('users.detail.noWalletHistory')}</div>
+                <div className="card card-body text-center text-gray-400 text-xs py-8">{t('users.detail.noWalletHistory')}</div>
               )}
             </div>
           </div>
@@ -321,17 +321,17 @@ export function UserDetail({ userId }: { userId: string }) {
 
         <TabsContent value="history" className="space-y-4">
           <div className="card">
-            <table className="w-full text-sm text-left hidden lg:table">
-              <thead className="border-b border-gray-100">
+            <table className="w-full text-sm text-start border-collapse hidden lg:table">
+              <thead className="border-b border-gray-200/50">
                 <tr>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.simId')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.delta')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.source')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.balance')}</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('users.detail.date')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.simId')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.delta')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.source')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.balance')}</th>
+                  <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('users.detail.date')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-100">
                 {balanceHistories.map((h: BalanceHistoryItem) => (
                   <tr key={h._id} className="table-row-hover">
                     <td className="px-5 py-3 font-mono text-xs text-gray-500">{h.simCardId || '-'}</td>
@@ -342,7 +342,7 @@ export function UserDetail({ userId }: { userId: string }) {
                     </td>
                     <td className="px-5 py-3 text-xs text-gray-700">{sourceLabel(h.source, t)}</td>
                     <td className="px-5 py-3 font-medium text-xs text-gray-900">{h.balance?.toLocaleString()} DA</td>
-                    <td className="px-5 py-3 text-right text-xs text-gray-400">
+                    <td className="px-5 py-3 text-end text-xs text-gray-400">
                       {h.updatedAt ? formatDistanceToNow(new Date(h.updatedAt), { addSuffix: true }) : '-'}
                     </td>
                   </tr>
@@ -355,8 +355,8 @@ export function UserDetail({ userId }: { userId: string }) {
             <div className="lg:hidden space-y-3 p-4">
               {balanceHistories.length > 0 ? (
                 balanceHistories.map((h: BalanceHistoryItem) => (
-                  <div key={h._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                    <div className="flex items-center justify-between mb-2">
+                        <div key={h._id} className="card card-body p-4 table-row-hover">
+                          <div className="flex items-center justify-between mb-2">
                       <span className={`text-xs font-medium ${(h.delta ?? 0) >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                         {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString()} DA
                       </span>
@@ -369,7 +369,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   </div>
                 ))
               ) : (
-                <div className="text-center text-gray-400 text-xs py-8">{t('users.detail.noBalanceHistory')}</div>
+                <div className="card card-body text-center text-gray-400 text-xs py-8">{t('users.detail.noBalanceHistory')}</div>
               )}
             </div>
           </div>
@@ -377,16 +377,16 @@ export function UserDetail({ userId }: { userId: string }) {
 
         <TabsContent value="sms" className="space-y-4">
           <div className="card">
-            <table className="w-full text-sm text-left hidden lg:table">
-              <thead className="border-b border-gray-100">
+            <table className="w-full text-sm text-start border-collapse hidden lg:table">
+              <thead className="border-b border-gray-200/50">
                 <tr>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sender')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.type')}</th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.content')}</th>
-                  <th className="px-5 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.type')}</th>
+                  <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
+                  <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-100">
                 {smsRecords.map((sms: SmsRecordItem) => (
                   <tr key={sms._id} className="table-row-hover">
                     <td className="px-5 py-3 font-medium text-xs text-gray-900">{sms.sender}</td>
@@ -394,7 +394,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       {sms.isOffer ? <span className="badge badge-warning">{t(sms.typeLabel || 'sms.types.info')}</span> : sms.type === 'other' ? <span className="badge badge-gray">{t(sms.typeLabel || 'sms.types.info')}</span> : <span className="badge badge-info">{t(sms.typeLabel || 'sms.types.info')}</span>}
                     </td>
                     <td className="px-5 py-3 text-xs text-gray-500 max-w-[300px] truncate" title={sms.content}>{sms.content}</td>
-                    <td className="px-5 py-3 text-right text-xs text-gray-400">
+                    <td className="px-5 py-3 text-end text-xs text-gray-400">
                       {sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}
                     </td>
                   </tr>
@@ -407,8 +407,8 @@ export function UserDetail({ userId }: { userId: string }) {
             <div className="lg:hidden space-y-3 p-4">
               {smsRecords.length > 0 ? (
                 smsRecords.map((sms: SmsRecordItem) => (
-                  <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                    <div className="flex items-center justify-between mb-2">
+                        <div key={sms._id} className="card card-body p-4 table-row-hover">
+                          <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-xs text-gray-900">{sms.sender}</span>
                       {sms.isOffer ? <span className="badge badge-warning">{t(sms.typeLabel || 'sms.types.info')}</span> : sms.type === 'other' ? <span className="badge badge-gray">{t(sms.typeLabel || 'sms.types.info')}</span> : <span className="badge badge-info">{t(sms.typeLabel || 'sms.types.info')}</span>}
                     </div>
@@ -417,7 +417,7 @@ export function UserDetail({ userId }: { userId: string }) {
                   </div>
                 ))
               ) : (
-                <div className="text-center text-gray-400 text-xs py-8">{t('users.detail.noSmsRecords')}</div>
+                <div className="card card-body text-center text-gray-400 text-xs py-8">{t('users.detail.noSmsRecords')}</div>
               )}
             </div>
           </div>

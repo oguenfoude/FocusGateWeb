@@ -30,18 +30,18 @@ export function SmsList({ userId }: { userId: string }) {
   return (
     <div className="space-y-4">
       {/* Desktop Table */}
-      <div className="hidden lg:block card">
+      <div className="hidden lg:block card page-enter delay-100">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="border-b border-gray-100">
+          <table className="w-full text-sm text-start border-collapse">
+            <thead className="border-b border-gray-200/50">
               <tr>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('dashboardSms.sender')}</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('dashboardSms.type')}</th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('dashboardSms.content')}</th>
-                <th className="px-5 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('dashboardSms.date')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.sender')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.type')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.content')}</th>
+                <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.date')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {isLoading && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-gray-400 animate-pulse">{t('dashboardSms.loading')}</td></tr>}
               {error && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-red-500">{t('dashboardSms.failedToLoad')}</td></tr>}
               {!isLoading && !error && (!data || !Array.isArray(data) || data.length === 0) && (
@@ -49,8 +49,8 @@ export function SmsList({ userId }: { userId: string }) {
               )}
               {!isLoading && !error && Array.isArray(data) && data.map((sms: SmsItemType) => (
                 <tr key={sms.id} className="table-row-hover">
-                  <td className="px-5 py-3 font-bold text-xs text-gray-900">{sms.sender}</td>
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-4 font-bold text-sm text-gray-900 tracking-tight">{sms.sender}</td>
+                  <td className="px-5 py-4">
                     {sms.isOffer ? (
                       <TooltipProvider>
                         <Tooltip>
@@ -68,10 +68,10 @@ export function SmsList({ userId }: { userId: string }) {
                       <span className="badge badge-gray">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-xs text-gray-900 max-w-xl whitespace-pre-wrap">{sms.content}</td>
-                  <td className="px-5 py-3 text-right">
+                  <td className="px-5 py-4 text-xs text-gray-600 max-w-xl whitespace-pre-wrap">{sms.content}</td>
+                  <td className="px-5 py-4 text-end">
                     <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</div>
-                    <div className="text-[10px] text-gray-400 mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
+                    <div className="text-[10px] text-gray-400 font-medium mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
                   </td>
                 </tr>
               ))}
@@ -82,13 +82,13 @@ export function SmsList({ userId }: { userId: string }) {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-3">
-        {isLoading && <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center text-gray-400 animate-pulse text-xs">{t('common.loading')}</div>}
-        {error && <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center text-red-500 text-xs">{t('common.error')}</div>}
+        {isLoading && <div className="card card-body p-6 text-center text-gray-400 animate-pulse text-xs">{t('common.loading')}</div>}
+        {error && <div className="card card-body p-6 text-center text-red-500 text-xs">{t('common.error')}</div>}
         {!isLoading && !error && Array.isArray(data) && data.length > 0 && data.map((sms: SmsItemType) => (
-          <div key={sms.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+          <div key={sms.id} className="card card-body p-4 page-enter delay-100">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-gray-900">{sms.sender}</span>
-              <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
             </div>
             <div className="mb-2">
               {sms.isOffer ? (
@@ -105,7 +105,7 @@ export function SmsList({ userId }: { userId: string }) {
           </div>
         ))}
         {!isLoading && !error && (!data || data.length === 0) && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-gray-400 text-xs">{t('dashboardSms.noRecords')}</div>
+          <div className="card card-body p-8 text-center text-gray-400 text-xs">{t('dashboardSms.noRecords')}</div>
         )}
       </div>
     </div>

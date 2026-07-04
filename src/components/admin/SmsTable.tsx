@@ -36,11 +36,11 @@ export function SmsTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-4 card card-body">
         <div className="flex-1 w-full flex items-center gap-2">
-          <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('sms.modem')}</label>
+          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{t('sms.modem')}</label>
           <select
-            className="flex-1 h-9 px-3 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+            className="input flex-1"
             value={modemId}
             onChange={(e) => setModemId(e.target.value)}
           >
@@ -51,9 +51,9 @@ export function SmsTable() {
           </select>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">{t('sms.timeframe')}</label>
+          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{t('sms.timeframe')}</label>
           <select
-            className="flex-1 sm:w-[150px] h-9 px-3 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+            className="input flex-1 sm:w-[150px]"
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
           >
@@ -65,18 +65,18 @@ export function SmsTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden lg:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="hidden lg:block card page-enter delay-100">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="border-b border-gray-100">
+          <table className="w-full text-sm text-start border-collapse">
+            <thead className="border-b border-gray-200/50">
               <tr>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sender')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sim')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.content')}</th>
-                <th className="px-6 py-3 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
+                <th className="px-6 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {isLoading && (
                 <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 animate-pulse text-xs">{t('sms.loading')}</td></tr>
               )}
@@ -87,11 +87,13 @@ export function SmsTable() {
                 <tr><td colSpan={4} className="px-6 py-12 text-center"><Inbox className="h-8 w-8 text-gray-300 mx-auto mb-3" /><p className="text-sm text-gray-500">{t('sms.noRecords')}</p></td></tr>
               )}
               {!isLoading && !error && Array.isArray(data) && data.map((sms) => (
-                <tr key={sms._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-3 font-medium text-xs text-gray-900">{sms.sender}</td>
-                  <td className="px-6 py-3 text-xs text-gray-500">{modemMap.get(sms.modemId || '') || sms.modemId || '-'}</td>
-                  <td className="px-6 py-3 text-xs text-gray-500 max-w-[500px] truncate" title={sms.content}>{sms.content}</td>
-                  <td className="px-6 py-3 text-right text-xs text-gray-400 whitespace-nowrap">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</td>
+                <tr key={sms._id} className="table-row-hover">
+                  <td className="px-6 py-4 font-bold text-sm text-gray-900 tracking-tight">{sms.sender}</td>
+                  <td className="px-6 py-4">
+                    <span className="badge badge-gray font-mono text-[10px]">{modemMap.get(sms.modemId || '') || sms.modemId || '-'}</span>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-600 max-w-[500px] truncate" title={sms.content}>{sms.content}</td>
+                  <td className="px-6 py-4 text-end text-xs text-gray-400 whitespace-nowrap font-medium">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -102,13 +104,13 @@ export function SmsTable() {
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-3">
         {isLoading && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center text-gray-400 animate-pulse text-xs">{t('common.loading')}</div>
+          <div className="card card-body text-center text-gray-400 animate-pulse text-xs py-10">{t('common.loading')}</div>
         )}
         {error && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center text-red-500 text-xs">{t('common.error')}</div>
+          <div className="card card-body text-center text-red-500 text-xs py-10">{t('common.error')}</div>
         )}
         {!isLoading && !error && Array.isArray(data) && data.length > 0 && data.map((sms) => (
-          <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+          <div key={sms._id} className="card card-body p-4 page-enter delay-200">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-xs text-gray-900">{sms.sender}</span>
               <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
@@ -120,9 +122,9 @@ export function SmsTable() {
           </div>
         ))}
         {!isLoading && !error && (!data || data.length === 0) && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center">
+          <div className="card card-body text-center py-10">
             <Inbox className="h-8 w-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">{t('sms.noMessages')}</p>
+            <p className="text-sm text-gray-500 font-medium">{t('sms.noMessages')}</p>
           </div>
         )}
       </div>

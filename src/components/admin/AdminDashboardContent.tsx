@@ -47,45 +47,45 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
       />
 
       {/* Recent SMS */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-900">{t('dashboard.recentSms')}</h3>
-          <span className="text-xs text-gray-400">{data.recentSms.length} {t('dashboard.messages')}</span>
+      <div className="card page-enter delay-300">
+        <div className="card-header flex items-center justify-between">
+          <h3 className="text-sm font-bold text-gray-900 tracking-tight">{t('dashboard.recentSms')}</h3>
+          <span className="badge badge-gray">{data.recentSms.length} {t('dashboard.messages')}</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm hidden lg:table">
+          <table className="w-full text-sm hidden lg:table border-collapse">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.date')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sender')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.content')}</th>
-                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('sms.sim')}</th>
+              <tr className="border-b border-gray-200/50">
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
                   const senderStr = sms.senderNumber || t('common.unknown')
                   const initials = senderStr.length >= 2 ? senderStr.slice(-2) : senderStr
 
                   return (
-                    <tr key={sms._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3 text-gray-400 text-xs whitespace-nowrap">
+                    <tr key={sms._id} className="table-row-hover">
+                      <td className="px-6 py-4 text-gray-400 text-xs whitespace-nowrap font-medium">
                         {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
                       </td>
-                      <td className="px-6 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-500 flex-shrink-0 uppercase">
+                          <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center text-[10px] font-bold text-brand-600 flex-shrink-0 uppercase shadow-sm border border-brand-100">
                             {initials}
                           </div>
-                          <span className="font-medium text-xs text-gray-900">{senderStr}</span>
+                          <span className="font-semibold text-xs text-gray-900 tracking-tight">{senderStr}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-3 text-gray-500 max-w-xs truncate text-xs">
+                      <td className="px-6 py-4 text-gray-600 max-w-xs truncate text-xs">
                         {sms.content}
                       </td>
-                      <td className="px-6 py-3 text-gray-400 text-xs">
-                        {sms.simPhoneNumber || 'N/A'}
+                      <td className="px-6 py-4">
+                        <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || 'N/A'}</span>
                       </td>
                     </tr>
                   )
@@ -106,15 +106,15 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
                 const senderStr = sms.senderNumber || t('common.unknown')
 
                 return (
-                    <div key={sms._id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                    <div key={sms._id} className="card card-body p-4 table-row-hover">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-xs text-gray-900">{senderStr}</span>
-                      <span className="text-[11px] text-gray-400">
+                      <span className="font-bold text-xs text-gray-900">{senderStr}</span>
+                      <span className="text-[11px] text-gray-400 font-medium">
                         {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate mb-1">{sms.content}</p>
-                    <span className="text-[10px] text-gray-400">{sms.simPhoneNumber || 'N/A'}</span>
+                    <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>
+                    <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || 'N/A'}</span>
                   </div>
                 )
               })

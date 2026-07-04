@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
-import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
 import { toNum } from '@/lib/number-utils'
+import mongoose from 'mongoose'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,8 +19,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await connectDB()
 
-    const request = await WithdrawalRequest.findById(id)
-    if (!request || request.archivedAt !== null) {
+    // Use raw MongoDB collection to avoid Mongoose Number cast precision loss on large IDs
+    const db = mongoose.connection.db!
+    const col = db.collection('withdrawalrequests')
+
+    // Try Number first (handles most IDs), then fall back to string match for oversized IDs
+    const numId = Number(id)
+    let request = await col.findOne({ _id: numId } as Record<string, unknown>)
+    if (!request && id !== String(numId)) {
+      // Oversized ID: precision was lost in Number conversion — try string-based matching
+      request = await col.findOne({ _id: id } as Record<string, unknown>)
+    }
+    if (!request) {
+      return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
+    }
+
+    if (request.archivedAt !== null && request.archivedAt !== undefined) {
       return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
     }
 
@@ -29,6 +43,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const now = new Date()
+    const requestObjectId = request._id
 
     if (action === 'approve') {
       const user = await User.findById(request.userId)
@@ -40,8 +55,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       const withdrawalAmount = toNum(request.amount)
       const newBalance = Math.max(0, oldBalance - withdrawalAmount)
 
-      await WithdrawalRequest.updateOne(
-        { _id: request._id },
+      await col.updateOne(
+        { _id: requestObjectId },
         { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now } }
       )
 
@@ -84,8 +99,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     if (action === 'reject') {
-      await WithdrawalRequest.updateOne(
-        { _id: request._id },
+      await col.updateOne(
+        { _id: requestObjectId },
         { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now } }
       )
 
@@ -94,7 +109,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return Response.json({ error: 'Invalid action' }, { status: 400 })
   } catch (err) {
-    console.error(err)
+    console.error('Withdrawal PATCH error:', err)
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

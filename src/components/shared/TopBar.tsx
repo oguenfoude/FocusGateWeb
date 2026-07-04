@@ -47,7 +47,7 @@ export function TopBar() {
   const displayTitle = titleKey ? t(titleKey) : t('app.adminTitle')
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-20 shrink-0">
+    <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-6 py-3 sticky top-0 z-20 shrink-0 transition-all duration-300">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
@@ -64,7 +64,7 @@ export function TopBar() {
           <div className="text-xs text-gray-400 font-medium tracking-wide hidden sm:block">
             {time || '--:--'}
           </div>
-          <div className="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-sm">
+          <div className="w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-[0_2px_8px_rgba(20,184,166,0.3)] ring-2 ring-white">
             {userId ? userId.toString().slice(-1).toUpperCase() : 'A'}
           </div>
         </div>
