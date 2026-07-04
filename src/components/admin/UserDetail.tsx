@@ -70,6 +70,7 @@ function sourceLabel(source: number, t: (key: string) => string): string {
 
 export function UserDetail({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [selectedModemId, setSelectedModemId] = useState('')
   const [isAssigning, setIsAssigning] = useState(false)
   const [unassigningId, setUnassigningId] = useState<string | null>(null)
@@ -163,7 +164,7 @@ export function UserDetail({ userId }: { userId: string }) {
         const err = await res.json()
         throw new Error(err.error || t('users.detail.creditFailed'))
       }
-      toast.success(t('users.detail.creditSuccess', { amount: amt.toLocaleString() }))
+      toast.success(t('users.detail.creditSuccess', { amount: amt.toLocaleString(loc) }))
       setIsCreditModalOpen(false)
       setCreditAmount('')
       setCreditNote('')
@@ -237,7 +238,7 @@ export function UserDetail({ userId }: { userId: string }) {
           <div className="sm:text-end flex flex-col sm:items-end gap-3">
             <div>
               <p className="text-xs text-gray-400 uppercase tracking-wider font-bold">{t('users.detail.walletBalance')}</p>
-              <p className="text-3xl font-extrabold text-brand-600 mt-1 tracking-tight">{(user.balance || 0).toLocaleString()} DA</p>
+              <p className="text-3xl font-extrabold text-brand-600 mt-1 tracking-tight">{(user.balance || 0).toLocaleString(loc)} DA</p>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <button onClick={() => setIsWithdrawModalOpen(true)} className="btn btn-outline btn-sm">
@@ -324,7 +325,7 @@ export function UserDetail({ userId }: { userId: string }) {
                           </div>
                           <div className="flex justify-end mt-3 pt-3 border-t border-gray-100">
                             <button onClick={() => handleUnassign(item.modem._id)} disabled={unassigningId === item.modem._id} className="btn btn-outline text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 text-xs py-1.5 h-auto">
-                              {unassigningId === item.modem._id ? <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> : <X className="h-3 w-3 mr-1.5" />} Unassign
+                              {unassigningId === item.modem._id ? <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> : <X className="h-3 w-3 mr-1.5" />} {t('modems.detail.unassign')}
                             </button>
                           </div>
                         </div>
@@ -387,7 +388,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </td>
                       <td className="px-5 py-3 text-sm font-bold">
                         <span className={h.type === 0 ? 'text-emerald-600' : 'text-red-600'}>
-                          {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString()} DA
+                          {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                         </span>
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium">{h.note || '-'}</td>
@@ -420,7 +421,7 @@ export function UserDetail({ userId }: { userId: string }) {
                             {h.type === 0 ? <ArrowDownRight className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                           </div>
                           <span className={`text-sm font-bold ${h.type === 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                            {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString()} DA
+                            {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                           </span>
                         </div>
                         <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
@@ -460,11 +461,11 @@ export function UserDetail({ userId }: { userId: string }) {
                       <td className="px-5 py-3 font-mono text-xs text-gray-500 bg-gray-50/50">{h.simCardId || '-'}</td>
                       <td className="px-5 py-3 font-bold text-sm">
                         <span className={(h.delta ?? 0) >= 0 ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md' : 'text-red-600 bg-red-50 px-2 py-0.5 rounded-md'}>
-                          {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString()} DA
+                          {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString(loc)} DA
                         </span>
                       </td>
                       <td className="px-5 py-3 text-sm font-medium text-gray-700">{sourceLabel(h.source, t)}</td>
-                      <td className="px-5 py-3 font-bold text-sm text-gray-900">{h.balance?.toLocaleString()} DA</td>
+                      <td className="px-5 py-3 font-bold text-sm text-gray-900">{h.balance?.toLocaleString(loc)} DA</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400">
                         {h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}
                       </td>
@@ -490,18 +491,18 @@ export function UserDetail({ userId }: { userId: string }) {
                     <div key={h._id} className="card card-body p-4 table-row-hover shadow-sm border border-gray-100">
                       <div className="flex items-center justify-between mb-3">
                         <span className={`text-sm font-bold px-2 py-1 rounded-md ${(h.delta ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
-                          {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString()} DA
+                          {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString(loc)} DA
                         </span>
                         <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}</span>
                       </div>
                       <div className="flex flex-col gap-1 mt-2 p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500 font-medium">Source</span>
+                          <span className="text-gray-500 font-medium">{t('users.detail.source')}</span>
                           <span className="text-gray-900 font-semibold">{sourceLabel(h.source, t)}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500 font-medium">Balance</span>
-                          <span className="text-brand-600 font-bold">{h.balance?.toLocaleString()} DA</span>
+                          <span className="text-gray-500 font-medium">{t('common.balance')}</span>
+                          <span className="text-brand-600 font-bold">{h.balance?.toLocaleString(loc)} DA</span>
                         </div>
                       </div>
                     </div>
@@ -641,7 +642,7 @@ export function UserDetail({ userId }: { userId: string }) {
               <div className="p-6 space-y-5">
                 <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 mb-6">
                   <p className="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">{t('withdraw.availableBalance')}</p>
-                  <p className="text-2xl font-extrabold text-amber-700">{(Number(user.balance) || 0).toLocaleString()} DA</p>
+                  <p className="text-2xl font-extrabold text-amber-700">{(Number(user.balance) || 0).toLocaleString(loc)} DA</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">{t('withdraw.amountLabel')}</label>

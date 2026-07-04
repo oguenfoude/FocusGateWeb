@@ -2,9 +2,11 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/components/language-provider'
 
 export default function Home() {
   const router = useRouter()
+  const { t } = useLanguage()
 
   useEffect(() => {
     const userId = localStorage.getItem('userId')
@@ -21,7 +23,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-pulse text-sm text-gray-400">Loading...</div>
+      <div className="animate-pulse text-sm text-gray-400">{t('common.loading')}</div>
     </div>
   )
 }

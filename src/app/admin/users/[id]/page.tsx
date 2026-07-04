@@ -1,9 +1,14 @@
+'use client'
+
+import React from 'react'
 import { UserDetail } from '@/components/admin/UserDetail'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useLanguage } from '@/components/language-provider'
 
-export default async function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params
+export default function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params)
+  const { t } = useLanguage()
   
   return (
     <div className="space-y-6">
@@ -15,8 +20,8 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">User Details</h1>
-          <p className="text-sm text-gray-500">View user wallet, SIM history, and SMS records.</p>
+          <h1 className="text-xl font-bold text-gray-900">{t('users.detail.userDetails')}</h1>
+          <p className="text-sm text-gray-500">{t('users.detail.viewUserWallet')}</p>
         </div>
       </div>
       

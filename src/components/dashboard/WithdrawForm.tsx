@@ -20,7 +20,8 @@ type FormData = z.infer<typeof schema>
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawForm({ userId }: { userId: string }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const { data, error, isLoading, mutate } = useSWR(
     userId ? `/api/dashboard/withdraw?userId=${userId}` : null,
     fetcher,
@@ -76,7 +77,7 @@ export function WithdrawForm({ userId }: { userId: string }) {
         </div>
         <div className="card-body relative z-10">
           <div className="text-4xl font-bold text-emerald-600 drop-shadow-sm">
-            {data.balance.toLocaleString()} {t('common.da')}
+            {data.balance.toLocaleString(loc)} {t('common.da')}
           </div>
         </div>
       </div>
