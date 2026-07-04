@@ -1,12 +1,12 @@
 'use client'
 
 import useSWR from 'swr'
-import { formatDistanceToNow } from 'date-fns'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, User, Copy, Inbox } from 'lucide-react'
 import { getModemBrand } from '@/lib/modem-utils'
 import { useLanguage } from '@/components/language-provider'
+import { formatTimeAgo } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -14,7 +14,6 @@ interface ModemData {
   _id: string
   imei: string
   model: string | null
-  comPort: string | null
   phoneNumber: number | null
   isOnline: boolean
   status: number
@@ -29,7 +28,7 @@ type TabType = 'all' | 'online' | 'offline' | 'assigned' | 'free'
 
 export function ModemTable() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<TabType>('all')
 
@@ -44,7 +43,7 @@ export function ModemTable() {
   const lastSeenOf = (modem: ModemData): string | null => modem.simLastSeen ?? modem.updatedAt
   const formatLastSeen = (modem: ModemData) => {
     const ts = lastSeenOf(modem);
-    return ts ? formatDistanceToNow(new Date(ts), { addSuffix: true }) : t('modems.never');
+    return ts ? formatTimeAgo(new Date(ts), locale) : t('modems.never');
   };
 
   const counts = {

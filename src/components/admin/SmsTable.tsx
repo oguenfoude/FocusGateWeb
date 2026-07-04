@@ -2,9 +2,9 @@
 
 import useSWR from 'swr'
 import { useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
 import { Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
+import { formatTimeAgo } from '@/lib/date-utils'
 
 interface ModemRowType {
   _id: string
@@ -23,7 +23,7 @@ interface SmsRowType {
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function SmsTable() {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [days, setDays] = useState(7)
   const [modemId, setModemId] = useState('all')
 
@@ -93,7 +93,7 @@ export function SmsTable() {
                     <span className="badge badge-gray font-mono text-[10px]">{modemMap.get(sms.modemId || '') || sms.modemId || '-'}</span>
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600 max-w-[500px] truncate" title={sms.content}>{sms.content}</td>
-                  <td className="px-6 py-4 text-end text-xs text-gray-400 whitespace-nowrap font-medium">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</td>
+                  <td className="px-6 py-4 text-end text-xs text-gray-400 whitespace-nowrap font-medium">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -113,7 +113,7 @@ export function SmsTable() {
           <div key={sms._id} className="card card-body p-4 page-enter delay-200">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-xs text-gray-900">{sms.sender}</span>
-              <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
+              <span className="text-[11px] text-gray-400">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
             </div>
             <div className="text-[11px] text-gray-400 mb-2">{modemMap.get(sms.modemId || '') || ''}</div>
             {sms.content && (

@@ -7,6 +7,12 @@ import { toNum } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
+function stripComPort(obj: Record<string, unknown>): Record<string, unknown> {
+  const result = { ...obj }
+  delete result.comPort
+  return result
+}
+
 export async function GET() {
   try {
     await connectDB()
@@ -25,7 +31,7 @@ export async function GET() {
     const populated = modems.map(m => {
       const rawBalance = simMap.get(m._id)?.balance;
       return {
-        ...m,
+        ...stripComPort(m),
         _id: String(m._id),
         isOnline: m.status === 4,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,

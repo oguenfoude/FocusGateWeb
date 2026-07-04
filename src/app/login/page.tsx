@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/components/language-provider'
+import { useSetUserId } from '@/components/user-id-provider'
 import { toast } from 'sonner'
 import { Lock, User, RadioTower, Globe } from 'lucide-react'
 import { Locale } from '@/lib/i18n'
@@ -15,6 +16,7 @@ const LOCALES: { code: Locale; label: string; short: string }[] = [
 
 export default function LoginPage() {
   const { t, locale, setLocale, isRTL } = useLanguage()
+  const setUserId = useSetUserId()
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +43,7 @@ export default function LoginPage() {
       }
 
       toast.success('Signed in successfully!')
-      localStorage.setItem('userId', data.userId)
+      setUserId(data.userId)
       localStorage.setItem('role', String(data.role))
       
       // Force page-reload or routing depending on role

@@ -4,10 +4,9 @@ import useSWR from 'swr'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useLanguage } from '@/components/language-provider'
 
@@ -77,7 +76,7 @@ export function WithdrawForm({ userId }: { userId: string }) {
         </div>
         <div className="card-body relative z-10">
           <div className="text-4xl font-bold text-emerald-600 drop-shadow-sm">
-            {data.balance.toLocaleString()} DA
+            {data.balance.toLocaleString()} {t('common.da')}
           </div>
         </div>
       </div>
@@ -90,14 +89,14 @@ export function WithdrawForm({ userId }: { userId: string }) {
         <div className="card-body">
           {data.hasPending ? (
               <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-700 border border-amber-500/20 text-sm font-medium shadow-sm">
-                {t('withdraw.pendingWarning1')} <span className="font-bold">{data.pendingAmount.toLocaleString()} DA</span>. 
+                {t('withdraw.pendingWarning1')}
                 {t('withdraw.pendingWarning2')}
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-sm font-medium text-gray-700">{t('withdraw.amountLabel')}</Label>
-                <Input 
+                <input 
                   id="amount" 
                   type="number" 
                   placeholder={t('withdraw.amountPlaceholder')}
@@ -109,7 +108,7 @@ export function WithdrawForm({ userId }: { userId: string }) {
               
               <div className="space-y-2">
                 <Label htmlFor="note" className="text-sm font-medium text-gray-700">{t('withdraw.noteLabel')}</Label>
-                <Textarea 
+                <textarea 
                   id="note" 
                   placeholder={t('withdraw.notePlaceholder')}
                   className="input min-h-[100px]"
@@ -118,8 +117,8 @@ export function WithdrawForm({ userId }: { userId: string }) {
                 {errors.note && <p className="text-sm text-red-500">{errors.note.message}</p>}
               </div>
               
-              <button type="submit" className="btn btn-primary w-full justify-center" disabled={isSubmitting}>
-                {isSubmitting ? t('withdraw.submitting') : t('withdraw.submitRequest')}
+              <button type="submit" className="btn btn-primary w-full justify-center shadow-md" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('withdraw.submitRequest')}
               </button>
             </form>
           )}

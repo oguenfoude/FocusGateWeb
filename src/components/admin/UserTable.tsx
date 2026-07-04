@@ -3,7 +3,7 @@
 import useSWR, { mutate } from 'swr'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Search, Plus, Trash2, Eye, X, Loader2, Edit2 } from 'lucide-react'
+import { Search, Plus, Trash2, Eye, X, Loader2, Edit2, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 
@@ -30,6 +30,7 @@ export function UserTable() {
   const [displayName, setDisplayName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [archivingId, setArchivingId] = useState<string | null>(null)
+  const [restoringId, setRestoringId] = useState<string | null>(null)
   
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
@@ -98,6 +99,30 @@ export function UserTable() {
       toast.error(message)
     } finally {
       setArchivingId(null)
+    }
+  }
+
+  const handleRestoreUser = async (userId: string, uname: string) => {
+    try {
+      setRestoringId(userId)
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'restore' }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || t('users.restoreFailed'))
+      }
+
+      toast.success(t('users.userRestored', { name: uname }))
+      mutate(`/api/admin/users?showArchived=${showArchived}`)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('users.somethingWentWrong')
+      toast.error(message)
+    } finally {
+      setRestoringId(null)
     }
   }
 
@@ -227,7 +252,7 @@ export function UserTable() {
                       <td className="px-5 py-4 text-end">
                         <div className="flex justify-end gap-1.5">
                           <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm" title={t('users.viewDetails')}><Eye className="h-3.5 w-3.5" /></Link>
-                          {!isArchived && (
+                          {!isArchived ? (
                             <>
                               <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm" title={t('users.editUser')}>
                                 <Edit2 className="h-3.5 w-3.5" />
@@ -241,6 +266,15 @@ export function UserTable() {
                                 {archivingId === user._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                               </button>
                             </>
+                          ) : (
+                            <button
+                              onClick={() => handleRestoreUser(user._id, user.username)}
+                              disabled={restoringId === user._id}
+                              className="btn btn-outline btn-sm text-emerald-600 hover:text-white hover:bg-emerald-500 hover:border-emerald-500"
+                              title={t('users.restore')}
+                            >
+                              {restoringId === user._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+                            </button>
                           )}
                         </div>
                       </td>
@@ -288,7 +322,7 @@ export function UserTable() {
                   <Link href={`/admin/users/${user._id}`} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]">
                     <Eye className="h-3.5 w-3.5" /> {t('common.view')}
                   </Link>
-                  {!isArchived && (
+                  {!isArchived ? (
                     <>
                       <button onClick={() => openEditModal(user)} className="btn btn-outline btn-sm flex-1 justify-center h-[32px]" title={t('users.editUser')}>
                         <Edit2 className="h-3.5 w-3.5" />
@@ -301,6 +335,14 @@ export function UserTable() {
                         {archivingId === user._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                       </button>
                     </>
+                  ) : (
+                    <button
+                      onClick={() => handleRestoreUser(user._id, user.username)}
+                      disabled={restoringId === user._id}
+                      className="btn btn-outline btn-sm text-emerald-600 hover:text-white hover:bg-emerald-500 hover:border-emerald-500 h-[32px] flex-1 justify-center"
+                    >
+                      {restoringId === user._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+                    </button>
                   )}
                 </div>
               </div>
@@ -334,7 +376,7 @@ export function UserTable() {
                   <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('users.enterPassword')} className="input" />
                 </div>
               </div>
-              <div className="card-header flex items-center justify-end gap-2 border-t bg-gray-50/50">
+              <div className="flex items-center justify-end gap-2 p-4 border-t bg-gray-50/50">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-outline btn-sm">{t('common.cancel')}</button>
                 <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-sm min-w-[100px] flex justify-center h-[32px]">
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('users.createUser')}
@@ -364,7 +406,7 @@ export function UserTable() {
                   <input type="password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} placeholder={t('users.leaveBlank')} className="input" />
                 </div>
               </div>
-              <div className="card-header flex items-center justify-end gap-2 border-t bg-gray-50/50">
+              <div className="flex items-center justify-end gap-2 p-4 border-t bg-gray-50/50">
                 <button type="button" onClick={() => setIsEditModalOpen(false)} className="btn btn-outline btn-sm">{t('common.cancel')}</button>
                 <button type="submit" disabled={isSubmitting} className="btn btn-primary btn-sm min-w-[100px] flex justify-center h-[32px]">
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t('users.saveChanges')}

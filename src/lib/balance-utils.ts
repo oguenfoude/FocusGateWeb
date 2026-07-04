@@ -19,6 +19,10 @@ export function getUserBalanceTypeLabel(type: number): string {
   return USER_BALANCE_TYPE_LABELS[type] ?? 'Unknown'
 }
 
+export function getUserBalanceTypeLabelKey(type: number): string {
+  return type === 0 ? 'history.credit' : type === 1 ? 'history.debit' : 'common.unknown'
+}
+
 export function formatBalance(amount: number): string {
   return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }

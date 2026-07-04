@@ -56,10 +56,10 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
           <table className="w-full text-sm hidden lg:table border-collapse">
             <thead>
               <tr className="border-b border-gray-200/50">
-                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
-                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
-                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
-                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.date')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sender')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.content')}</th>
+                <th className="px-6 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

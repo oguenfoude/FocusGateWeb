@@ -1,9 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+import useSWR from 'swr'
 import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
-import { RadioTower, Wallet, CalendarRange, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
+import { RadioTower, Wallet, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 interface SmsWithRelations {
   _id: { toString(): string }
@@ -27,8 +30,14 @@ interface DashboardData {
   recentSms: SmsWithRelations[]
 }
 
-export function UserDashboardContent({ data, userId }: { data: DashboardData; userId: string }) {
-  const { t } = useLanguage()
+export function UserDashboardContent({ userId }: { userId: string }) {
+  const { t, locale } = useLanguage()
+
+  const { data, error, isLoading } = useSWR<DashboardData>(
+    userId ? `/api/dashboard/overview?userId=${userId}` : null,
+    fetcher,
+    { refreshInterval: 30000 }
+  )
 
   useEffect(() => {
     if (userId) {
@@ -36,10 +45,38 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
     }
   }, [userId])
 
+  const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }
+  const loc = localeMap[locale] || 'en-US'
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] page-enter delay-100">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="w-12 h-12 rounded-full border-4 border-brand-100 border-t-brand-600 animate-spin" />
+          <p className="text-gray-400 font-medium animate-pulse">{t('common.loading')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh] page-enter delay-100">
+        <div className="card p-8 text-center flex flex-col items-center max-w-sm w-full mx-4">
+          <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4">
+            <Inbox className="h-8 w-8" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900">{t('common.error')}</h3>
+          <p className="text-sm text-gray-500 mt-2">{t('common.failedToLoad')}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 max-w-[1400px]">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* My SIMs */}
         <div className="card stat-card">
           <div className="card-body">
@@ -71,30 +108,12 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{t('users.detail.walletBalance')}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
-                  {data.balance.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  {data.balance.toLocaleString(loc, { maximumFractionDigits: 0 })}
                 </p>
-                <p className="text-xs text-gray-400 mt-2">DA</p>
+                <p className="text-xs text-gray-400 mt-2">{t('common.da')}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-blue-100/50">
                 <Wallet className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Credits */}
-        <div className="card stat-card">
-          <div className="card-body">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{t('history.amountCredited')}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
-                  {data.totalCredits.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                </p>
-                <p className="text-xs text-gray-400 mt-2">DA</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-purple-100/50">
-                <CalendarRange className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -107,9 +126,9 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{t('dashboard.pendingRequests')}</p>
                 <p className={`text-3xl font-bold mt-2 ${data.pendingAmount > 0 ? 'text-amber-500' : 'text-gray-900'}`}>
-                  {data.pendingAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  {data.pendingAmount.toLocaleString(loc, { maximumFractionDigits: 0 })}
                 </p>
-                <p className="text-xs text-gray-400 mt-2">DA</p>
+                <p className="text-xs text-gray-400 mt-2">{t('common.da')}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner border border-amber-100/50">
                 <Clock className="h-6 w-6 text-amber-600" />
@@ -128,7 +147,7 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-gray-900 truncate tracking-tight">{t('nav.mySims')}</p>
-              <p className="text-xs text-gray-400 font-medium">{data.totalModems} SIM</p>
+              <p className="text-xs text-gray-400 font-medium">{data.totalModems} {t('dashboard.sims')}</p>
             </div>
             <ChevronRight className="h-4 w-4 text-gray-300 ml-auto group-hover:text-brand-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
           </div>
@@ -198,8 +217,8 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                   return (
                     <tr key={sms._id.toString()} className="table-row-hover">
                       <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap font-medium">
-                        {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
+                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
@@ -213,16 +232,20 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                         {sms.content}
                       </td>
                       <td className="px-5 py-4">
-                        <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || 'N/A'}</span>
+                        <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || t('common.unknown')}</span>
                       </td>
                     </tr>
                   )
                 })
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-5 py-12 text-center">
-                    <Inbox className="h-6 w-6 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-400">{t('dashboard.noSms')}</p>
+                  <td colSpan={4} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-400">
+                        <MessageSquare className="h-6 w-6" />
+                      </div>
+                      <p className="text-gray-500 text-sm font-medium">{t('dashboard.noSms')}</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -240,19 +263,21 @@ export function UserDashboardContent({ data, userId }: { data: DashboardData; us
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-xs text-gray-900">{senderStr}</span>
                       <span className="text-[11px] text-gray-400 font-medium">
-                        {date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
+                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>
-                    <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || 'N/A'}</span>
+                    <span className="badge badge-gray font-mono text-[10px]">{simCard?.phoneNumber || t('common.unknown')}</span>
                   </div>
                 )
               })
             ) : (
-              <div className="text-center py-8">
-                <Inbox className="h-6 w-6 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">{t('dashboard.noSms')}</p>
+              <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-400">
+                  <MessageSquare className="h-6 w-6" />
+                </div>
+                <p className="text-gray-500 text-sm font-medium">{t('dashboard.noSms')}</p>
               </div>
             )}
           </div>

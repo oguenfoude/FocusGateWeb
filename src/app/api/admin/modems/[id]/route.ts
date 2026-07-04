@@ -5,6 +5,12 @@ import { toNum, toNumOrNull } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
+function stripComPort(obj: Record<string, unknown>): Record<string, unknown> {
+  const result = { ...obj }
+  delete result.comPort
+  return result
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB()
@@ -64,7 +70,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       smsRecords = sms.map(s => ({ ...s, _id: String(s._id) }))
 
       return Response.json({
-        modem: { ...modem, _id: String(modem._id), isOnline },
+        modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
         sim: { ...sim, _id: String(sim._id), balance: toNum(sim.balance) },
         assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
         balanceHistory,
@@ -76,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const assignedUser = await assignedUserPromise
 
     return Response.json({
-      modem: { ...modem, _id: String(modem._id), isOnline },
+      modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
       sim: null,
       assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
       balanceHistory,

@@ -16,7 +16,6 @@ interface ModemDetailData {
     _id: string
     imei: string
     model: string | null
-    comPort: string | null
     brand: string | null
     machineId: string
     createdAt: string
@@ -139,12 +138,12 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.comPort || 'N/A'} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
+                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
               </p>
             </div>
           </div>
           {sim && (
-            <div className="md:text-right">
+            <div className="md:text-end">
               <p className="text-2xl font-bold text-brand-600">
                 {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
               </p>
@@ -200,11 +199,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                     <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.imei')}</dt>
                     <dd className="font-mono text-sm font-medium mt-1">{modem.imei}</dd>
                   </div>
-                  <div>
-                    <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.comPort')}</dt>
-                    <dd className="text-sm font-medium mt-1">{modem.comPort || 'N/A'}</dd>
-                  </div>
-                  <div>
+                   <div>
                     <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.brandModel')}</dt>
                     <dd className="text-sm font-medium mt-1">{modem.brand} {modem.model}</dd>
                   </div>

@@ -6,9 +6,11 @@ import { Sidebar } from '@/components/shared/Sidebar'
 import { TopBar } from '@/components/shared/TopBar'
 import { MobileMenuProvider } from '@/components/shared/mobile-menu-provider'
 import { LayoutContent } from '@/components/shared/LayoutContent'
+import { useLanguage } from '@/components/language-provider'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const { t } = useLanguage()
   const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!authorized) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-sm text-gray-400">Loading...</div>
+        <div className="animate-pulse text-sm text-gray-400">{t('common.loading')}</div>
       </div>
     )
   }

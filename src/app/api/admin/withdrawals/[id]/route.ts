@@ -44,6 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const now = new Date()
     const requestObjectId = request._id
+    const adminId = body.adminId ? (Number(body.adminId) || body.adminId) : undefined
 
     if (action === 'approve') {
       const user = await User.findById(request.userId)
@@ -57,7 +58,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
       await col.updateOne(
         { _id: requestObjectId },
-        { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now } }
+        { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
       )
 
       await User.updateOne(
@@ -73,7 +74,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         userId: request.userId,
         balance: newBalance,
         previousBalance: oldBalance,
-        source: 3,
+        source: 4,
         recordedAt: now,
         updatedAt: now,
         archivedAt: null,
@@ -88,7 +89,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         balanceAfter: newBalance,
         type: 1,
         simCardId: null,
-        note: note || 'Withdrawal approved',
+        note: note || `Withdrawal approved (${withdrawalAmount.toLocaleString()} DA)`,
         recordedAt: now,
         updatedAt: now,
         archivedAt: null,
@@ -101,7 +102,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (action === 'reject') {
       await col.updateOne(
         { _id: requestObjectId },
-        { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now } }
+        { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
       )
 
       return Response.json({ ok: true })

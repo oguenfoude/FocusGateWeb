@@ -34,8 +34,11 @@ export async function GET(req: NextRequest) {
       archivedAt: null,
     }).sort({ receivedAt: -1 }).limit(50).lean()
 
+    const simMap = new Map(sims.map(s => [String(s._id), s]))
+
     const formatted = records.map(sms => {
       const type = classifySms(sms.senderNumber ?? '', sms.content ?? '')
+      const sim = simMap.get(String(sms.simCardId))
       return {
         id: String(sms._id),
         sender: sms.senderNumber,
@@ -43,7 +46,8 @@ export async function GET(req: NextRequest) {
         receivedAt: sms.receivedAt,
         type,
         typeLabel: smsTypeLabel(type),
-        isOffer: type === 'offer'
+        isOffer: type === 'offer',
+        simPhoneNumber: sim?.phoneNumber ?? null,
       }
     })
 

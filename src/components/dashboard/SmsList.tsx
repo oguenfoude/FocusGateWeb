@@ -1,11 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import { formatDistanceToNow } from 'date-fns'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Info } from 'lucide-react'
+import { Info, MessageSquare, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
-import { formatShortDate } from '@/lib/date-utils'
+import { formatShortDate, formatTimeAgo } from '@/lib/date-utils'
 
 interface SmsItemType {
   id: string
@@ -15,6 +14,7 @@ interface SmsItemType {
   typeLabel?: string
   content?: string
   receivedAt?: string
+  simPhoneNumber?: number | null
 }
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
@@ -38,14 +38,44 @@ export function SmsList({ userId }: { userId: string }) {
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.sender')}</th>
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.type')}</th>
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.content')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('sms.sim')}</th>
                 <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('dashboardSms.date')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {isLoading && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-gray-400 animate-pulse">{t('dashboardSms.loading')}</td></tr>}
-              {error && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-red-500">{t('dashboardSms.failedToLoad')}</td></tr>}
+              {isLoading && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <Loader2 className="h-6 w-6 text-emerald-500 animate-spin" />
+                      <p className="text-gray-400 font-medium animate-pulse text-sm">{t('dashboardSms.loading')}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {error && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+                        <Inbox className="h-6 w-6" />
+                      </div>
+                      <p className="text-red-500 font-medium text-sm">{t('dashboardSms.failedToLoad')}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
               {!isLoading && !error && (!data || !Array.isArray(data) || data.length === 0) && (
-                <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-gray-400">{t('dashboardSms.noRecords')}</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-400">
+                        <MessageSquare className="h-6 w-6" />
+                      </div>
+                      <p className="text-gray-500 text-sm font-medium">{t('dashboardSms.noRecords')}</p>
+                    </div>
+                  </td>
+                </tr>
               )}
               {!isLoading && !error && Array.isArray(data) && data.map((sms: SmsItemType) => (
                 <tr key={sms.id} className="table-row-hover">
@@ -69,8 +99,11 @@ export function SmsList({ userId }: { userId: string }) {
                     )}
                   </td>
                   <td className="px-5 py-4 text-xs text-gray-600 max-w-xl whitespace-pre-wrap">{sms.content}</td>
+                  <td className="px-5 py-4">
+                    <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.unknown')}</span>
+                  </td>
                   <td className="px-5 py-4 text-end">
-                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</div>
+                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</div>
                     <div className="text-[10px] text-gray-400 font-medium mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
                   </td>
                 </tr>
@@ -82,13 +115,25 @@ export function SmsList({ userId }: { userId: string }) {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-3">
-        {isLoading && <div className="card card-body p-6 text-center text-gray-400 animate-pulse text-xs">{t('common.loading')}</div>}
-        {error && <div className="card card-body p-6 text-center text-red-500 text-xs">{t('common.error')}</div>}
+        {isLoading && (
+          <div className="card card-body p-12 flex flex-col items-center justify-center space-y-4">
+            <Loader2 className="h-8 w-8 text-emerald-500 animate-spin" />
+            <p className="text-gray-400 font-medium animate-pulse text-sm">{t('common.loading')}</p>
+          </div>
+        )}
+        {error && (
+          <div className="card card-body p-12 flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+              <Inbox className="h-6 w-6" />
+            </div>
+            <p className="text-red-500 font-medium text-sm">{t('common.error')}</p>
+          </div>
+        )}
         {!isLoading && !error && Array.isArray(data) && data.length > 0 && data.map((sms: SmsItemType) => (
           <div key={sms.id} className="card card-body p-4 page-enter delay-100">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-gray-900">{sms.sender}</span>
-              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatDistanceToNow(new Date(sms.receivedAt), { addSuffix: true }) : '-'}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
             </div>
             <div className="mb-2">
               {sms.isOffer ? (
@@ -102,10 +147,18 @@ export function SmsList({ userId }: { userId: string }) {
               )}
             </div>
             {sms.content && <p className="text-xs text-gray-600 line-clamp-3 whitespace-pre-wrap">{sms.content}</p>}
+            <div className="mt-2">
+              <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.unknown')}</span>
+            </div>
           </div>
         ))}
         {!isLoading && !error && (!data || data.length === 0) && (
-          <div className="card card-body p-8 text-center text-gray-400 text-xs">{t('dashboardSms.noRecords')}</div>
+          <div className="flex flex-col items-center justify-center py-12 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-400">
+              <MessageSquare className="h-6 w-6" />
+            </div>
+            <p className="text-gray-500 text-sm font-medium">{t('dashboardSms.noRecords')}</p>
+          </div>
         )}
       </div>
     </div>

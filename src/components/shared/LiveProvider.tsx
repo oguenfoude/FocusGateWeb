@@ -39,7 +39,7 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
 
         if (event === 'balance_warning') {
           toast.warning(`${t('warnings.title')}`, {
-            description: `${t('warnings.balance')}: ${data.balance.toLocaleString()} DA — ${BALANCE_WARN_THRESHOLD.toLocaleString()} DA`,
+            description: `${t('warnings.balance')}: ${data.balance.toLocaleString()} ${t('common.da')} — ${BALANCE_WARN_THRESHOLD.toLocaleString()} ${t('common.da')}`,
             duration: 10000,
           })
         }

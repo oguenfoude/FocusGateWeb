@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
-import { User } from '@/lib/models/User'
+import mongoose from 'mongoose'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,11 +15,15 @@ export async function POST(req: NextRequest) {
 
     await connectDB()
 
-    // Plain text matching for passwords as per AGENTS.md rule
-    const user = await User.findOne({
+    const db = mongoose.connection.db
+    if (!db) {
+      return Response.json({ error: 'Database connection not established' }, { status: 500 })
+    }
+
+    const user = await db.collection('users').findOne({
       username: username.trim(),
       archivedAt: null,
-    }).lean()
+    }) as { _id?: unknown, password?: string, isActive?: boolean, role?: number } | null
 
     if (!user || user.password !== password) {
       return Response.json({ error: 'Invalid username or password' }, { status: 401 })
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     return Response.json({
       ok: true,
-      userId: String(user._id),
+      userId: user._id?.toString(),
       role: user.role,
     })
   } catch (err) {

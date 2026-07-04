@@ -61,13 +61,13 @@ export async function POST(req: NextRequest) {
 
     const now = new Date()
 
-    const deductResult = await User.findOneAndUpdate(
-      { _id: Number(userId) || userId, balance: { $gte: amount }, archivedAt: null },
-      { $inc: { balance: -amount }, $set: { updatedAt: now } },
-      { new: true }
-    ).lean()
+    const user = await User.findById(Number(userId) || userId).lean()
+    if (!user || user.archivedAt) {
+      return Response.json({ error: 'User not found or archived' }, { status: 404 })
+    }
 
-    if (!deductResult) {
+    const userBalance = toNum(user.balance)
+    if (amount > userBalance) {
       return Response.json({ error: 'Amount exceeds available balance' }, { status: 400 })
     }
 
@@ -78,10 +78,6 @@ export async function POST(req: NextRequest) {
     }).lean()
 
     if (pending) {
-      await User.findOneAndUpdate(
-        { _id: Number(userId) || userId },
-        { $inc: { balance: amount }, $set: { updatedAt: new Date() } }
-      )
       return Response.json({ error: 'You already have a pending withdrawal request.' }, { status: 409 })
     }
 

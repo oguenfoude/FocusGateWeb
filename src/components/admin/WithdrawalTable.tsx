@@ -3,19 +3,9 @@
 import useSWR from 'swr'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Search, Info } from 'lucide-react'
+import { Search, Info, X, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { formatShortDate } from '@/lib/date-utils'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 
 interface WithdrawalRequestType {
   _id: string
@@ -25,8 +15,11 @@ interface WithdrawalRequestType {
   }
   amount: number
   status: number
+  requestedAt?: string
   updatedAt?: string
+  processedAt?: string
   note?: string
+  adminNote?: string
 }
 
 type TabType = 'all' | 'pending' | 'approved' | 'rejected'
@@ -52,6 +45,7 @@ export function WithdrawalTable() {
     request: null
   })
   const [isProcessing, setIsProcessing] = useState(false)
+  const [adminNote, setAdminNote] = useState('')
 
   const handleAction = async () => {
     if (!confirmDialog.request || !confirmDialog.action) return
@@ -61,7 +55,7 @@ export function WithdrawalTable() {
       const res = await fetch(`/api/admin/withdrawals/${confirmDialog.request._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: confirmDialog.action })
+        body: JSON.stringify({ action: confirmDialog.action, note: adminNote || undefined })
       })
 
       const json = await res.json()
@@ -78,6 +72,7 @@ export function WithdrawalTable() {
     } finally {
       setIsProcessing(false)
       setConfirmDialog({ isOpen: false, action: null, request: null })
+      setAdminNote('')
     }
   }
 
@@ -147,7 +142,8 @@ export function WithdrawalTable() {
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.amount')}</th>
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.status')}</th>
                 <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.requestedAt')}</th>
-                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.note')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.processedAt')}</th>
+                <th className="px-5 py-4 text-start text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.adminNote')}</th>
                 <th className="px-5 py-4 text-end text-[11px] font-bold text-gray-400 uppercase tracking-widest">{t('withdrawals.actions')}</th>
               </tr>
             </thead>
@@ -165,8 +161,9 @@ export function WithdrawalTable() {
                     <td className="px-5 py-4 text-xs">
                       {req.status === 0 ? <span className="badge badge-warning"><span className="pulse-dot" />{t('withdrawals.pending')}</span> : req.status === 1 ? <span className="badge badge-success">{t('withdrawals.approved')}</span> : <span className="badge badge-danger">{t('withdrawals.rejected')}</span>}
                     </td>
-                    <td className="px-5 py-4 text-xs text-gray-500 font-medium">{req.updatedAt ? formatShortDate(req.updatedAt, locale) : '-'}</td>
-                    <td className="px-5 py-4 text-xs text-gray-600 max-w-[200px] truncate" title={req.note}>{req.note || '-'}</td>
+                    <td className="px-5 py-4 text-xs text-gray-500 font-medium">{req.requestedAt ? formatShortDate(req.requestedAt, locale) : '-'}</td>
+                    <td className="px-5 py-4 text-xs text-gray-500 font-medium">{req.processedAt ? formatShortDate(req.processedAt, locale) : '-'}</td>
+                    <td className="px-5 py-4 text-xs text-gray-600 max-w-[200px] truncate" title={req.adminNote || req.note}>{req.adminNote || req.note || '-'}</td>
                     <td className="px-5 py-4 text-end">
                       {req.status === 0 && (
                         <div className="flex justify-end gap-1.5">
@@ -178,7 +175,7 @@ export function WithdrawalTable() {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan={6} className="px-5 py-12 text-center text-gray-400 text-xs"><Info className="h-6 w-6 mx-auto mb-2 text-gray-300" />{t('withdrawals.noRequestsFound')}</td></tr>
+                <tr><td colSpan={7} className="px-5 py-12 text-center text-gray-400 text-xs"><Info className="h-6 w-6 mx-auto mb-2 text-gray-300" />{t('withdrawals.noRequestsFound')}</td></tr>
               )}
             </tbody>
           </table>
@@ -212,26 +209,43 @@ export function WithdrawalTable() {
         )}
       </div>
 
-      <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && setConfirmDialog({ isOpen: false, action: null, request: null })}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('withdrawals.confirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {confirmDialog.action === 'approve' ? t('withdrawals.confirmApproveBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' }) : t('withdrawals.confirmRejectBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isProcessing}>{t('withdrawals.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => { e.preventDefault(); handleAction() }}
-              disabled={isProcessing}
-              className={confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}
-            >
-              {isProcessing ? t('withdrawals.processing') : t('withdrawals.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Confirm Modal */}
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay page-enter">
+          <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-xl overflow-hidden delay-100 flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="font-bold text-gray-900">{t('withdrawals.confirmTitle')}</h3>
+              <button onClick={() => setConfirmDialog({ isOpen: false, action: null, request: null })} className="text-gray-400 hover:text-gray-600 transition-colors bg-white rounded-full p-1 hover:bg-gray-100">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleAction(); }} className="p-6 space-y-5">
+              <div className="text-sm text-gray-600">
+                {confirmDialog.action === 'approve' ? t('withdrawals.confirmApproveBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' }) : t('withdrawals.confirmRejectBody', { amount: confirmDialog.request?.amount.toLocaleString() || '0', username: confirmDialog.request?.userId?.username || 'Unknown' })}
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t('withdrawals.noteLabel')}</label>
+                <textarea
+                  value={adminNote}
+                  onChange={(e) => setAdminNote(e.target.value)}
+                  placeholder={t('withdrawals.noteLabel')}
+                  rows={2}
+                  className="input w-full resize-none"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setConfirmDialog({ isOpen: false, action: null, request: null })} className="btn btn-outline" disabled={isProcessing}>
+                  {t('withdrawals.cancel')}
+                </button>
+                <button type="submit" disabled={isProcessing} className={`btn shadow-md ${confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'btn-primary'}`}>
+                  {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
+                  {t('withdrawals.confirm')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

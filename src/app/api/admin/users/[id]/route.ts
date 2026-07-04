@@ -39,10 +39,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       SimCard.find({ modemId: { $in: modemIds }, archivedAt: null }).lean(),
     ])
     const simMap = new Map(sims.map(s => [s.modemId, s]))
-    const populatedAssignments = modems.map(m => ({
-      modem: { ...m, _id: String(m._id) },
-      sim: simMap.get(m._id) ?? null
-    }))
+    const populatedAssignments = modems.map(m => {
+      const modemData = { ...m }
+      delete modemData.comPort
+      return {
+        modem: { ...modemData, _id: String(m._id) },
+        sim: simMap.get(m._id) ?? null
+      }
+    })
 
     const simIds = sims.map(s => s._id)
 
@@ -109,6 +113,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return Response.json({ error: 'User not found' }, { status: 404 })
     }
 
+    if (action === 'restore') {
+      const userObj = await User.findById(userId).lean()
+      if (userObj) {
+        await User.updateOne({ _id: userId }, { $set: { archivedAt: null, updatedAt: new Date() } })
+        return Response.json({ ok: true })
+      }
+      return Response.json({ error: 'User not found' }, { status: 404 })
+    }
+
     if (action === 'assign') {
       const { modemId } = body
       const parsedModemId = Number(modemId) || modemId
@@ -118,9 +131,27 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       }
 
       const UserModem = (await import('@/lib/models/UserModem')).UserModem
-      const existing = await UserModem.findOne({ userId, modemId: parsedModemId, removedAt: null, archivedAt: null })
-      if (existing) {
+
+      // Check active assignment for this user
+      const active = await UserModem.findOne({ userId, modemId: parsedModemId, removedAt: null, archivedAt: null })
+      if (active) {
         return Response.json({ error: 'Modem is already assigned to this user' }, { status: 409 })
+      }
+
+      // Check if modem is actively assigned to a DIFFERENT user
+      const otherUser = await UserModem.findOne({ modemId: parsedModemId, removedAt: null, archivedAt: null, userId: { $ne: userId } })
+      if (otherUser) {
+        return Response.json({ error: 'Modem is already assigned to another user' }, { status: 409 })
+      }
+
+      // Reactivate soft-deleted record (mirrors .NET IgnoreQueryFilters logic)
+      const deleted = await UserModem.findOne({ userId, modemId: parsedModemId, archivedAt: null, removedAt: { $ne: null } })
+      if (deleted) {
+        await UserModem.updateOne(
+          { _id: deleted._id },
+          { $set: { removedAt: null, updatedAt: new Date() } }
+        )
+        return Response.json({ ok: true })
       }
 
       const now = new Date()

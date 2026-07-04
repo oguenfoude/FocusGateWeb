@@ -1,10 +1,10 @@
 'use client'
 
 import useSWR from 'swr'
-import { formatDistanceToNow } from 'date-fns'
+import { CircleDollarSign, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
-import { getUserBalanceTypeLabel } from '@/lib/balance-utils'
-import { formatShortDate } from '@/lib/date-utils'
+import { getUserBalanceTypeLabelKey } from '@/lib/balance-utils'
+import { formatShortDate, formatTimeAgo } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -41,33 +41,62 @@ export function HistoryList({ userId }: { userId: string }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {isLoading && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-gray-400 animate-pulse">{t('history.loading')}</td></tr>}
-              {error && <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-red-500">{t('history.failedToLoad')}</td></tr>}
+              {isLoading && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <Loader2 className="h-6 w-6 text-emerald-500 animate-spin" />
+                      <p className="text-gray-400 font-medium animate-pulse text-sm">{t('history.loading')}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {error && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+                        <Inbox className="h-6 w-6" />
+                      </div>
+                      <p className="text-red-500 font-medium text-sm">{t('history.failedToLoad')}</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
               {!isLoading && !error && (!data || !Array.isArray(data) || data.length === 0) && (
-                <tr><td colSpan={4} className="px-5 py-8 text-center text-xs text-gray-400">{t('history.noHistoryEvents')}</td></tr>
+                <tr>
+                  <td colSpan={4} className="px-5 py-16 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-400">
+                        <CircleDollarSign className="h-6 w-6" />
+                      </div>
+                      <p className="text-gray-500 text-sm font-medium">{t('history.noHistoryEvents')}</p>
+                    </div>
+                  </td>
+                </tr>
               )}
               {!isLoading && !error && Array.isArray(data) && data.map((h: HistoryItemType) => {
                 const dateStr = h.recordedAt || h.updatedAt
                 const displayDate = dateStr ? new Date(dateStr) : null
-                const typeLabel = getUserBalanceTypeLabel(h.type)
+                const typeLabelKey = getUserBalanceTypeLabelKey(h.type)
                 const isCredit = h.type === 0
                 const displayAmount = Math.abs(h.amount)
 
                 return (
-                  <tr key={h._id} className="table-row-hover">
+                   <tr key={h._id} className="table-row-hover">
                     <td className="px-5 py-4 text-gray-900 text-xs font-semibold max-w-[250px] truncate">
-                      {h.note || typeLabel}
+                      {h.note || t(typeLabelKey)}
                     </td>
                     <td className="px-5 py-4">
                       <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs shadow-sm`}>
-                        {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} DA
+                        {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} {t('common.da')}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-gray-600 text-xs font-bold">
-                      {h.balanceAfter?.toLocaleString()} DA
+                      {h.balanceAfter?.toLocaleString()} {t('common.da')}
                     </td>
                     <td className="px-5 py-4 text-end">
-                      <div className="text-gray-500 font-medium text-xs">{displayDate ? formatDistanceToNow(displayDate, { addSuffix: true }) : '-'}</div>
+                      <div className="text-gray-500 font-medium text-xs">{displayDate ? formatTimeAgo(displayDate, locale) : '-'}</div>
                       <div className="text-[10px] text-gray-400 font-medium mt-1">{displayDate ? formatShortDate(displayDate, locale) : ''}</div>
                     </td>
                   </tr>
@@ -80,12 +109,24 @@ export function HistoryList({ userId }: { userId: string }) {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-3">
-        {isLoading && <div className="card card-body p-6 text-center text-gray-400 animate-pulse text-xs">{t('common.loading')}</div>}
-        {error && <div className="card card-body p-6 text-center text-red-500 text-xs">{t('common.error')}</div>}
+        {isLoading && (
+          <div className="card card-body p-12 flex flex-col items-center justify-center space-y-4">
+            <Loader2 className="h-8 w-8 text-emerald-500 animate-spin" />
+            <p className="text-gray-400 font-medium animate-pulse text-sm">{t('common.loading')}</p>
+          </div>
+        )}
+        {error && (
+          <div className="card card-body p-12 flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+              <Inbox className="h-6 w-6" />
+            </div>
+            <p className="text-red-500 font-medium text-sm">{t('common.error')}</p>
+          </div>
+        )}
         {!isLoading && !error && Array.isArray(data) && data.length > 0 && data.map((h: HistoryItemType) => {
           const dateStr = h.recordedAt || h.updatedAt
           const displayDate = dateStr ? new Date(dateStr) : null
-          const typeLabel = getUserBalanceTypeLabel(h.type)
+          const typeLabelKey = getUserBalanceTypeLabelKey(h.type)
           const isCredit = h.type === 0
           const displayAmount = Math.abs(h.amount)
 
@@ -93,19 +134,24 @@ export function HistoryList({ userId }: { userId: string }) {
             <div key={h._id} className="card card-body p-4 page-enter delay-100">
               <div className="flex items-center justify-between mb-2">
                 <span className={`badge ${isCredit ? 'badge-success' : 'badge-danger'} font-bold text-xs`}>
-                  {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} DA
+                  {isCredit ? '+' : '-'}{displayAmount.toLocaleString()} {t('common.da')}
                 </span>
-                <span className="text-[11px] text-gray-400 font-medium">{displayDate ? formatDistanceToNow(displayDate, { addSuffix: true }) : '-'}</span>
+                <span className="text-[11px] text-gray-400 font-medium">{displayDate ? formatTimeAgo(displayDate, locale) : '-'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-900 font-semibold">{h.note || typeLabel}</span>
-                <span className="text-[10px] text-gray-500 font-bold">{t('users.detail.walletBalance')}: {h.balanceAfter?.toLocaleString()} DA</span>
+                <span className="text-xs text-gray-900 font-semibold">{h.note || t(typeLabelKey)}</span>
+                <span className="text-[10px] text-gray-500 font-bold">{t('users.detail.walletBalance')}: {h.balanceAfter?.toLocaleString()} {t('common.da')}</span>
               </div>
             </div>
           )
         })}
         {!isLoading && !error && (!data || data.length === 0) && (
-          <div className="card card-body p-8 text-center text-gray-400 text-xs">{t('history.noHistoryFound')}</div>
+          <div className="flex flex-col items-center justify-center py-12 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-400">
+              <CircleDollarSign className="h-6 w-6" />
+            </div>
+            <p className="text-gray-500 text-sm font-medium">{t('history.noHistoryFound')}</p>
+          </div>
         )}
       </div>
     </div>

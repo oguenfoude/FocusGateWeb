@@ -114,7 +114,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="card card-body p-6 delay-100">
+      <div className="card card-body p-6 page-enter delay-100">
         <div className="flex items-center gap-3 mb-5">
           <div className="p-2 bg-brand-50 rounded-lg">
             <User className="h-5 w-5 text-brand-500" />
