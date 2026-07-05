@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       .limit(200)
       .lean()
 
-    const simIds = [...new Set(records.map(r => String(r.simCardId)))]
+    const simIds = [...new Set(records.map(r => r.simCardId))]
     const sims = await SimCard.find({ _id: { $in: simIds } }).lean()
     const simToModem = new Map(sims.map(s => [String(s._id), String(s.modemId)]))
 

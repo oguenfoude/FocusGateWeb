@@ -201,7 +201,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                   </div>
                    <div>
                     <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.brandModel')}</dt>
-                    <dd className="text-sm font-medium mt-1">{modem.brand} {modem.model}</dd>
+                    <dd className="text-sm font-medium mt-1">{getModemBrand(Number(modem.brand))} {modem.model}</dd>
                   </div>
                   <div>
                     <dt className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{t('modemDetail.created')}</dt>

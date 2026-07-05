@@ -12,7 +12,7 @@ export const revalidate = 0
 
 async function getDashboardData() {
   const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
-  const onlineIdSet = new Set(onlineModemIds.map(m => String(m._id)))
+  const onlineIdSet = new Set(onlineModemIds.map(m => m._id))
 
   const [modemsTotal, modemsOnline, simCount, simBalanceAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
@@ -31,7 +31,7 @@ async function getDashboardData() {
   const totalSimBalance = simBalanceAggr.length > 0 ? toNum(simBalanceAggr[0].total) : 0
   const totalUserBalance = userBalanceAggr.length > 0 ? toNum(userBalanceAggr[0].total) : 0
 
-  const simIds = [...new Set(recentSmsRaw.map(s => String(s.simCardId)))]
+  const simIds = [...new Set(recentSmsRaw.map(s => s.simCardId))]
   const sims = simIds.length > 0 ? await SimCard.find({ _id: { $in: simIds } }).lean() : []
   const simMap = new Map(sims.map(s => [String(s._id), s]))
 
