@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FlixiDz",
+    "name": "flexiDZ",
     "adminTitle": "لوحة الإدارة",
     "userTitle": "لوحة المستخدم"
   },
@@ -22,7 +22,7 @@
     "logout": "تسجيل الخروج",
     "username": "اسم المستخدم",
     "password": "كلمة المرور",
-    "loginTitle": "FlixiDz",
+    "loginTitle": "flexiDZ",
     "loginSubtitle": "نظام إدارة البوابة",
     "loginButton": "تسجيل الدخول إلى حسابك",
     "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة"

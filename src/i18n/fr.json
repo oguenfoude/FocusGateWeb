@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FlixiDz",
+    "name": "flexiDZ",
     "adminTitle": "Portail d'Administration",
     "userTitle": "Tableau de bord"
   },
@@ -22,7 +22,7 @@
     "logout": "Se déconnecter",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
-    "loginTitle": "FlixiDz",
+    "loginTitle": "flexiDZ",
     "loginSubtitle": "Système de gestion de passerelle",
     "loginButton": "Se connecter à votre compte",
     "loginError": "Nom d'utilisateur ou mot de passe invalide"

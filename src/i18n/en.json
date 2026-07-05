@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FlixiDz",
+    "name": "flexiDZ",
     "adminTitle": "Administration Portal",
     "userTitle": "User Dashboard"
   },
@@ -22,7 +22,7 @@
     "logout": "Sign Out",
     "username": "Username",
     "password": "Password",
-    "loginTitle": "FlixiDz",
+    "loginTitle": "flexiDZ",
     "loginSubtitle": "Gateway Management System",
     "loginButton": "Sign in to your account",
     "loginError": "Invalid username or password"

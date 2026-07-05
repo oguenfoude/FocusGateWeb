@@ -8,8 +8,8 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'FlixiDz Dashboard',
-  description: 'Manage FlixiDz USB Modem SMS Gateway',
+  title: 'flexiDZ Dashboard',
+  description: 'Manage flexiDZ USB Modem SMS Gateway',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
