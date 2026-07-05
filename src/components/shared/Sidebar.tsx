@@ -15,7 +15,6 @@ import {
   History,
   AlertTriangle,
   RadioTower,
-  Settings,
   X,
   LogOut,
 } from 'lucide-react'
@@ -58,7 +57,6 @@ export function Sidebar() {
     { href: '/admin/sms', label: t('nav.sms'), icon: MessageSquare },
     { href: '/admin/withdrawals', label: t('nav.withdrawals'), icon: Banknote },
     { href: '/admin/warnings', label: t('nav.warnings'), icon: AlertTriangle },
-    { href: '/admin/settings', label: t('nav.settings'), icon: Settings },
   ]
 
   const dashboardLinks = [
