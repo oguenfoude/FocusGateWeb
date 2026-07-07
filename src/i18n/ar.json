@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FocusGate",
+    "name": "Alaafi",
     "adminTitle": "لوحة الإدارة",
     "userTitle": "لوحة المستخدم"
   },
@@ -22,7 +22,7 @@
     "logout": "تسجيل الخروج",
     "username": "اسم المستخدم",
     "password": "كلمة المرور",
-    "loginTitle": "FocusGate",
+    "loginTitle": "Alaafi",
     "loginSubtitle": "نظام إدارة البوابة",
     "loginButton": "تسجيل الدخول إلى حسابك",
     "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة"
@@ -168,6 +168,7 @@
     "actions": "الإجراءات",
     "archive": "أرشفة",
     "restore": "استعادة",
+    "credit": "إضافة رصيد للمستخدم",
     "noUsers": "لم يتم العثور على مستخدمين مطابقين",
     "count": "{{count}} مستخدمين",
     "user": "مستخدم",
@@ -287,6 +288,7 @@
     "requestedAt": "تاريخ الطلب",
     "processedAt": "تاريخ المعالجة",
     "confirmTitle": "هل أنت متأكد تماماً؟",
+    "noteLabel": "ملاحظة المدير (اختياري)",
     "confirmApproveBody": "سيقوم هذا الإجراء بموافقة على طلب سحب مبلغ {{amount}} DA للمستخدم {{username}}.",
     "confirmRejectBody": "سيقوم هذا الإجراء برفض طلب سحب مبلغ {{amount}} DA للمستخدم {{username}}.",
     "processing": "جارٍ المعالجة...",
