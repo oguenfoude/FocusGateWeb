@@ -14,7 +14,6 @@ const ROUTE_TITLES: Record<string, string> = {
   '/admin/sms': 'nav.sms',
   '/admin/withdrawals': 'nav.withdrawals',
   '/admin/warnings': 'nav.warnings',
-  '/admin/settings': 'nav.settings',
   '/dashboard': 'nav.dashboard',
   '/dashboard/sims': 'nav.mySims',
   '/dashboard/sms': 'nav.mySms',
