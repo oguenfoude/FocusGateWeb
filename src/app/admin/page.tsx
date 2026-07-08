@@ -11,15 +11,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData() {
-  const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
-  const onlineIdSet = new Set(onlineModemIds.map(m => String(m._id)))
-
-  const [modemsTotal, modemsOnline, simCount, simBalanceAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
+  const simFilter = { isActive: true, archivedAt: null, $or: [{ phoneNumber: { $gt: 0 } }, { balance: { $gt: 0 } }] }
+  const [modemsTotal, modemsOnline, simCount, simBalanceAllAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
     Modem.countDocuments({ status: 4, archivedAt: null }),
-    SimCard.countDocuments({ isActive: true, archivedAt: null, modemId: { $in: [...onlineIdSet] } }),
+    SimCard.countDocuments(simFilter),
     SimCard.aggregate([
-      { $match: { isActive: true, archivedAt: null, modemId: { $in: [...onlineIdSet] } } },
+      { $match: simFilter },
       { $group: { _id: null, total: { $sum: '$balance' } } },
     ]),
     User.countDocuments({ role: { $ne: 0 }, archivedAt: null }),
@@ -28,7 +26,7 @@ async function getDashboardData() {
     SmsRecord.find({ archivedAt: null }).sort({ receivedAt: -1 }).limit(20).lean(),
   ])
 
-  const totalSimBalance = simBalanceAggr.length > 0 ? toNum(simBalanceAggr[0].total) : 0
+  const totalSimBalance = simBalanceAllAggr.length > 0 ? toNum(simBalanceAllAggr[0].total) : 0
   const totalUserBalance = userBalanceAggr.length > 0 ? toNum(userBalanceAggr[0].total) : 0
 
   const simIds = [...new Set(recentSmsRaw.map(s => String(s.simCardId)))]
