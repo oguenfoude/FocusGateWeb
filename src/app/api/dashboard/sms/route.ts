@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     const records = await SmsRecord.find({
       simCardId: { $in: simIds },
-      senderNumber: { $regex: /mobilis/i },
+      senderNumber: { $regex: /mobilis|610/i },
       archivedAt: null,
     }).sort({ receivedAt: -1 }).limit(50).lean()
 

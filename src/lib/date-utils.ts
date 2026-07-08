@@ -1,34 +1,21 @@
 import { Locale } from '@/lib/i18n'
 
-const localeMap: Record<Locale, string> = {
-  en: 'en-US',
-  fr: 'fr-FR',
-  ar: 'ar-DZ',
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function formatDate(date: Date | string, _locale?: Locale): string {
+  const d = typeof date === 'string' ? new Date(date) : date
+  if (isNaN(d.getTime())) return '-'
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yyyy = d.getFullYear()
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`
 }
 
-export function formatDate(date: Date | string, locale: Locale): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  const loc = localeMap[locale] || 'en-US'
-  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
+export function formatShortDate(date: Date | string, locale?: Locale): string {
+  return formatDate(date, locale)
 }
 
-export function formatShortDate(date: Date | string, locale: Locale): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  const loc = localeMap[locale] || 'en-US'
-  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
-}
-
-export function formatTimeAgo(date: Date | string, locale: Locale): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  const now = Date.now()
-  const diffMs = now - d.getTime()
-  const diffMin = Math.floor(diffMs / 60000)
-  const diffHr = Math.floor(diffMs / 3600000)
-  const diffDay = Math.floor(diffMs / 86400000)
-
-  if (diffMin < 1) return locale === 'ar' ? 'الآن' : 'just now'
-  if (diffMin < 60) return locale === 'ar' ? `منذ ${diffMin} دقيقة` : locale === 'fr' ? `il y a ${diffMin} min` : `${diffMin}m ago`
-  if (diffHr < 24) return locale === 'ar' ? `منذ ${diffHr} ساعة` : locale === 'fr' ? `il y a ${diffHr}h` : `${diffHr}h ago`
-  if (diffDay < 7) return locale === 'ar' ? `منذ ${diffDay} يوم` : locale === 'fr' ? `il y a ${diffDay}j` : `${diffDay}d ago`
-  return formatDate(d, locale)
+export function formatTimeAgo(date: Date | string, locale?: Locale): string {
+  return formatDate(date, locale)
 }

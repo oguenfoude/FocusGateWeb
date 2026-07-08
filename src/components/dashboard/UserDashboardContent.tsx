@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
 import { RadioTower, Wallet, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
+import { formatDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -209,7 +210,6 @@ export function UserDashboardContent({ userId }: { userId: string }) {
             <tbody className="divide-y divide-gray-100">
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
-                  const date = new Date(sms.receivedAt)
                   const senderStr = sms.senderNumber || t('common.unknown')
                   const initials = senderStr.length >= 2 ? senderStr.slice(-2) : senderStr
                   const simCard = sms.simCardId
@@ -217,8 +217,7 @@ export function UserDashboardContent({ userId }: { userId: string }) {
                   return (
                     <tr key={sms._id.toString()} className="table-row-hover">
                       <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap font-medium">
-                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {formatDate(sms.receivedAt, locale)}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
@@ -254,7 +253,6 @@ export function UserDashboardContent({ userId }: { userId: string }) {
           <div className="lg:hidden space-y-3 p-4">
             {data.recentSms.length > 0 ? (
               data.recentSms.map((sms) => {
-                const date = new Date(sms.receivedAt)
                 const senderStr = sms.senderNumber || t('common.unknown')
                 const simCard = sms.simCardId
 
@@ -263,8 +261,7 @@ export function UserDashboardContent({ userId }: { userId: string }) {
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-xs text-gray-900">{senderStr}</span>
                       <span className="text-[11px] text-gray-400 font-medium">
-                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {formatDate(sms.receivedAt, locale)}
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>
