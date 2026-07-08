@@ -11,13 +11,16 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData() {
-  const simFilter = { isActive: true, archivedAt: null, $or: [{ phoneNumber: { $gt: 0 } }, { balance: { $gt: 0 } }] }
+  const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
+  const onlineModemIdList = onlineModemIds.map(m => m._id)
+
+  const onlineSimFilter = { isActive: true, archivedAt: null, modemId: { $in: onlineModemIdList } }
   const [modemsTotal, modemsOnline, simCount, simBalanceAllAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
     Modem.countDocuments({ status: 4, archivedAt: null }),
-    SimCard.countDocuments(simFilter),
+    SimCard.countDocuments(onlineSimFilter),
     SimCard.aggregate([
-      { $match: simFilter },
+      { $match: onlineSimFilter },
       { $group: { _id: null, total: { $sum: '$balance' } } },
     ]),
     User.countDocuments({ role: { $ne: 0 }, archivedAt: null }),
