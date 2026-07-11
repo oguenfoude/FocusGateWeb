@@ -1,20 +1,24 @@
 import { Locale } from '@/lib/i18n'
 
-function toLocalDate(date: Date | string): Date {
+const ALGERIA_TZ = 'Africa/Algiers'
+
+function toAlgeriaDate(date: Date | string): Date {
   const d = typeof date === 'string' ? new Date(date) : date
   return d
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function formatDate(date: Date | string, _locale?: Locale): string {
-  const d = toLocalDate(date)
+  const d = toAlgeriaDate(date)
   if (isNaN(d.getTime())) return '-'
-  const dd = String(d.getDate()).padStart(2, '0')
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const yyyy = d.getFullYear()
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mi = String(d.getMinutes()).padStart(2, '0')
-  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`
+  return d.toLocaleString('en-GB', {
+    timeZone: ALGERIA_TZ,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
 }
 
 export function formatShortDate(date: Date | string, locale?: Locale): string {
