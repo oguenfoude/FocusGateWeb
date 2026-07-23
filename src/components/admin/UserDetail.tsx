@@ -6,7 +6,7 @@ import { ArrowUpRight, ArrowDownRight, Smartphone, X, Plus, Loader2, CircleDolla
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
-import { formatDate, formatShortDate, formatTimeAgo } from '@/lib/date-utils'
+import { formatDate } from '@/lib/date-utils'
 
 interface UserBalanceHistoryItem {
   _id: string
@@ -393,7 +393,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium">{h.note || '-'}</td>
                       <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
-                        {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
+                        {h.updatedAt ? formatDate(h.updatedAt, locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -424,7 +424,7 @@ export function UserDetail({ userId }: { userId: string }) {
                             {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                           </span>
                         </div>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatDate(h.updatedAt, locale) : '-'}</span>
                       </div>
                       <p className="text-sm font-medium text-gray-600 mt-2">{h.note || '-'}</p>
                     </div>
@@ -467,7 +467,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       <td className="px-5 py-3 text-sm font-medium text-gray-700">{sourceLabel(h.source, t)}</td>
                       <td className="px-5 py-3 font-bold text-sm text-gray-900">{h.balance?.toLocaleString(loc)} DA</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400">
-                        {h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}
+                        {h.updatedAt ? formatDate(new Date(h.updatedAt), locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -493,7 +493,7 @@ export function UserDetail({ userId }: { userId: string }) {
                         <span className={`text-sm font-bold px-2 py-1 rounded-md ${(h.delta ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                           {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString(loc)} DA
                         </span>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatDate(new Date(h.updatedAt), locale) : '-'}</span>
                       </div>
                       <div className="flex flex-col gap-1 mt-2 p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-sm">
@@ -541,7 +541,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium leading-relaxed max-w-md truncate" title={sms.content}>{sms.content}</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400 whitespace-nowrap">
-                        {sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}
+                        {sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -569,7 +569,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </div>
                       <p className="text-sm font-medium text-gray-600 mb-3 bg-gray-50 p-3 rounded-lg leading-relaxed">{sms.content}</p>
                       <div className="text-end">
-                        <span className="text-[11px] font-medium text-gray-400">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</span>
                       </div>
                     </div>
                   ))

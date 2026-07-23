@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Info, MessageSquare, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
-import { formatShortDate, formatTimeAgo } from '@/lib/date-utils'
+import { formatDate } from '@/lib/date-utils'
 
 interface SmsItemType {
   id: string
@@ -103,8 +103,7 @@ export function SmsList({ userId }: { userId: string }) {
                     <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.unknown')}</span>
                   </td>
                   <td className="px-5 py-4 text-end">
-                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</div>
-                    <div className="text-[10px] text-gray-400 font-medium mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
+                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</div>
                   </td>
                 </tr>
               ))}
@@ -133,7 +132,7 @@ export function SmsList({ userId }: { userId: string }) {
           <div key={sms.id} className="card card-body p-4 page-enter delay-100">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-gray-900">{sms.sender}</span>
-              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</span>
             </div>
             <div className="mb-2">
               {sms.isOffer ? (
