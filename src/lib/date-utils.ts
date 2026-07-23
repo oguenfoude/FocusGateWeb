@@ -1,7 +1,5 @@
 import { Locale } from '@/lib/i18n'
 
-const ALGERIA_TZ = 'Africa/Algiers'
-
 function asDate(date: Date | string): Date {
   const d = typeof date === 'string' ? new Date(date) : date
   return d
@@ -17,7 +15,6 @@ export function formatDate(date: Date | string, locale?: Locale): string {
   const d = asDate(date)
   if (isNaN(d.getTime())) return '-'
   return d.toLocaleString(localeToIntl(locale), {
-    timeZone: ALGERIA_TZ,
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -31,7 +28,6 @@ export function formatShortDate(date: Date | string, locale?: Locale): string {
   const d = asDate(date)
   if (isNaN(d.getTime())) return '-'
   return d.toLocaleDateString(localeToIntl(locale), {
-    timeZone: ALGERIA_TZ,
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
