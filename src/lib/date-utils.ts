@@ -9,13 +9,13 @@ const localeMap: Record<Locale, string> = {
 export function formatDate(date: Date | string, locale: Locale): string {
   const d = typeof date === 'string' ? new Date(date) : date
   const loc = localeMap[locale] || 'en-US'
-  return d.toLocaleDateString(loc, { timeZone: 'Africa/Algiers', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
+  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 export function formatShortDate(date: Date | string, locale: Locale): string {
   const d = typeof date === 'string' ? new Date(date) : date
   const loc = localeMap[locale] || 'en-US'
-  return d.toLocaleDateString(loc, { timeZone: 'Africa/Algiers', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 export function formatTimeAgo(date: Date | string, locale: Locale): string {
