@@ -3,8 +3,15 @@ import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
 import { toNum } from '@/lib/number-utils'
+import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
+
+const createUserSchema = z.object({
+  username: z.string().trim().min(2).max(50).regex(/^[a-zA-Z0-9_.-]+$/, 'Username may only contain letters, numbers, underscore, dot, or dash'),
+  password: z.string().min(4).max(128),
+  displayName: z.string().trim().max(100).optional(),
+})
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,11 +52,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { username, password, displayName } = body
-
-    if (!username || !password) {
-      return Response.json({ error: 'Username and Password are required' }, { status: 400 })
+    const parsed = createUserSchema.safeParse(body)
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0]
+      return Response.json({ error: issue?.message ?? 'Invalid input' }, { status: 400 })
     }
+    const { username, password, displayName } = parsed.data
 
     await connectDB()
 

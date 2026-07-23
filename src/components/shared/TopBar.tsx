@@ -22,20 +22,23 @@ const ROUTE_TITLES: Record<string, string> = {
 }
 
 export function TopBar() {
-  const { t, locale } = useLanguage()
+  const { t } = useLanguage()
   const pathname = usePathname()
   const { toggle } = useMobileMenu()
   const userId = useUserId()
   const [time, setTime] = useState('')
 
   useEffect(() => {
-    const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }
-    const loc = localeMap[locale] || 'en-US'
-    const tick = () => setTime(new Date().toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false }))
+    const tick = () => setTime(new Date().toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Africa/Algiers',
+    }))
     tick()
     const interval = setInterval(tick, 60000)
     return () => clearInterval(interval)
-  }, [locale])
+  }, [])
 
   let titleKey = ROUTE_TITLES[pathname]
   if (!titleKey) {
