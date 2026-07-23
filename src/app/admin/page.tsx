@@ -14,13 +14,18 @@ async function getDashboardData() {
   const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
   const onlineModemIdList = onlineModemIds.map(m => m._id)
 
-  const onlineSimFilter = { isActive: true, archivedAt: null, modemId: { $in: onlineModemIdList } }
+  const simFilter = { 
+    isActive: true, 
+    archivedAt: null, 
+    modemId: { $in: onlineModemIdList },
+    $or: [{ phoneNumber: { $gt: 0 } }, { balance: { $gt: 0 } }] 
+  }
   const [modemsTotal, modemsOnline, simCount, simBalanceAllAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
     Modem.countDocuments({ status: 4, archivedAt: null }),
-    SimCard.countDocuments(onlineSimFilter),
+    SimCard.countDocuments(simFilter),
     SimCard.aggregate([
-      { $match: onlineSimFilter },
+      { $match: simFilter },
       { $group: { _id: null, total: { $sum: '$balance' } } },
     ]),
     User.countDocuments({ role: { $ne: 0 }, archivedAt: null }),
