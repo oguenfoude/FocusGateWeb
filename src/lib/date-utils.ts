@@ -1,71 +1,41 @@
 import { Locale } from '@/lib/i18n'
 
-function asDate(date: Date | string): Date {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return d
+const localeMap: Record<string, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  ar: 'ar-DZ',
 }
 
-function localeToIntl(locale?: Locale): string {
-  if (locale === 'fr') return 'fr-FR'
-  if (locale === 'ar') return 'ar-DZ'
-  return 'en-GB'
+function parseAndAdjustDate(date: Date | string): Date {
+  const d = typeof date === 'string' ? new Date(date) : new Date(date.getTime())
+  if (isNaN(d.getTime())) return new Date()
+  // Add 1 hour (3600000 ms) to adjust web display to Algeria local time (UTC+1)
+  return new Date(d.getTime() + 3600_000)
 }
 
 export function formatDate(date: Date | string, locale?: Locale): string {
-  const d = asDate(date)
-  if (isNaN(d.getTime())) return '-'
-  return d.toLocaleString(localeToIntl(locale), {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  const d = parseAndAdjustDate(date)
+  const loc = localeMap[locale || 'en'] || 'en-US'
+  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 export function formatShortDate(date: Date | string, locale?: Locale): string {
-  const d = asDate(date)
-  if (isNaN(d.getTime())) return '-'
-  return d.toLocaleDateString(localeToIntl(locale), {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+  const d = parseAndAdjustDate(date)
+  const loc = localeMap[locale || 'en'] || 'en-US'
+  return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 export function formatTimeAgo(date: Date | string, locale?: Locale): string {
-  const d = asDate(date)
-  if (isNaN(d.getTime())) return '-'
+  const d = parseAndAdjustDate(date)
+  const now = Date.now()
+  const diffMs = now - d.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffHr = Math.floor(diffMs / 3600000)
+  const diffDay = Math.floor(diffMs / 86400000)
 
-  const diffMs = Date.now() - d.getTime()
-  const diffSec = Math.floor(diffMs / 1000)
-  if (diffSec < 60) {
-    if (locale === 'fr') return "à l'instant"
-    if (locale === 'ar') return 'الآن'
-    return 'just now'
-  }
-
-  const diffMin = Math.floor(diffSec / 60)
-  if (diffMin < 60) {
-    if (locale === 'fr') return `il y a ${diffMin} min`
-    if (locale === 'ar') return `قبل ${diffMin} دقيقة`
-    return `${diffMin}m ago`
-  }
-
-  const diffHr = Math.floor(diffMin / 60)
-  if (diffHr < 24) {
-    if (locale === 'fr') return `il y a ${diffHr}h`
-    if (locale === 'ar') return `قبل ${diffHr} ساعة`
-    return `${diffHr}h ago`
-  }
-
-  const diffDay = Math.floor(diffHr / 24)
-  if (diffDay < 7) {
-    if (locale === 'fr') return `il y a ${diffDay}j`
-    if (locale === 'ar') return `قبل ${diffDay} يوم`
-    return `${diffDay}d ago`
-  }
-
+  if (diffMin < 1) return locale === 'ar' ? 'الآن' : 'just now'
+  if (diffMin < 60) return locale === 'ar' ? `منذ ${diffMin} دقيقة` : locale === 'fr' ? `il y a ${diffMin} min` : `${diffMin}m ago`
+  if (diffHr < 24) return locale === 'ar' ? `منذ ${diffHr} ساعة` : locale === 'fr' ? `il y a ${diffHr}h` : `${diffHr}h ago`
+  if (diffDay < 7) return locale === 'ar' ? `منذ ${diffDay} يوم` : locale === 'fr' ? `il y a ${diffDay}j` : `${diffDay}d ago`
   return formatShortDate(date, locale)
 }
