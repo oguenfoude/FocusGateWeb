@@ -56,6 +56,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
   const modemId = resolvedParams.id
   const router = useRouter()
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [activeTab, setActiveTab] = useState<'info' | 'balance' | 'sms'>('info')
   const [isUnassigning, setIsUnassigning] = useState(false)
 
@@ -145,7 +146,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
           {sim && (
             <div className="md:text-end">
               <p className="text-2xl font-bold text-brand-600">
-                {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                {sim.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
               </p>
               <p className="text-xs font-mono text-gray-400 mt-0.5">IMEI: {modem.imei}</p>
             </div>
@@ -239,7 +240,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex justify-between items-center">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.balance')}</dt>
                         <dd className="text-lg font-bold text-brand-600">
-                          {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                          {sim.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                         </dd>
                       </div>
                       <div className="flex justify-between">
@@ -327,7 +328,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between">
                           <span className="font-bold text-sm text-gray-900">
-                            {b.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                            {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                           </span>
                           <span className="text-gray-400 text-[11px]">
                             {b.recordedAt ? formatShortDate(b.recordedAt, locale) : '-'}
@@ -337,7 +338,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                           {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}{' '}
                           {b.previousBalance !== null && (
                             <span className="text-gray-300">
-                              &middot; {t('modemDetail.was')} {b.previousBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                              &middot; {t('modemDetail.was')} {b.previousBalance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                             </span>
                           )}
                         </p>
