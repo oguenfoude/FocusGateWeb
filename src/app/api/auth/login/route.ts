@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!user.isActive) {
-      return Response.json({ error: 'Account is inactive' }, { status: 403 })
+      return Response.json({ error: 'Invalid username or password' }, { status: 401 })
     }
 
     return Response.json({

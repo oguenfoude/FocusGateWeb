@@ -56,54 +56,77 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       const withdrawalAmount = toNum(request.amount)
       const newBalance = Math.max(0, oldBalance - withdrawalAmount)
 
-      await col.updateOne(
-        { _id: requestObjectId },
-        { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
-      )
+      const session = await mongoose.connection.startSession()
+      try {
+        await session.withTransaction(async () => {
+          await col.updateOne(
+            { _id: requestObjectId },
+            { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
+            { session }
+          )
 
-      await User.updateOne(
-        { _id: request.userId },
-        { $set: { balance: newBalance, updatedAt: now } }
-      )
+          await User.updateOne(
+            { _id: request.userId },
+            { $set: { balance: newBalance, updatedAt: now } },
+            { session }
+          )
 
-      const BalanceHistory = (await import('@/lib/models/BalanceHistory')).BalanceHistory
-      await BalanceHistory.create({
-        _id: nextId(),
-        simCardId: null,
-        modemId: null,
-        userId: request.userId,
-        balance: newBalance,
-        previousBalance: oldBalance,
-        source: 4,
-        recordedAt: now,
-        updatedAt: now,
-        archivedAt: null,
-        machineId: 'web',
-      })
+          const BalanceHistory = (await import('@/lib/models/BalanceHistory')).BalanceHistory
+          await BalanceHistory.create(
+            [{
+              _id: nextId(),
+              simCardId: null,
+              modemId: null,
+              userId: request.userId,
+              balance: newBalance,
+              previousBalance: oldBalance,
+              source: 4,
+              recordedAt: now,
+              updatedAt: now,
+              archivedAt: null,
+              machineId: 'web',
+            }],
+            { session }
+          )
 
-      const UserBalanceHistory = (await import('@/lib/models/UserBalanceHistory')).UserBalanceHistory
-      await UserBalanceHistory.create({
-        _id: nextId(),
-        userId: request.userId,
-        amount: -withdrawalAmount,
-        balanceAfter: newBalance,
-        type: 1,
-        simCardId: null,
-        note: note || `Withdrawal approved (${withdrawalAmount.toLocaleString()} DA)`,
-        recordedAt: now,
-        updatedAt: now,
-        archivedAt: null,
-        machineId: 'web',
-      })
+          const UserBalanceHistory = (await import('@/lib/models/UserBalanceHistory')).UserBalanceHistory
+          await UserBalanceHistory.create(
+            [{
+              _id: nextId(),
+              userId: request.userId,
+              amount: -withdrawalAmount,
+              balanceAfter: newBalance,
+              type: 1,
+              simCardId: null,
+              note: note || `Withdrawal approved (${withdrawalAmount.toLocaleString()} DA)`,
+              recordedAt: now,
+              updatedAt: now,
+              archivedAt: null,
+              machineId: 'web',
+            }],
+            { session }
+          )
+        })
+      } finally {
+        await session.endSession()
+      }
 
       return Response.json({ ok: true })
     }
 
     if (action === 'reject') {
-      await col.updateOne(
-        { _id: requestObjectId },
-        { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
-      )
+      const session = await mongoose.connection.startSession()
+      try {
+        await session.withTransaction(async () => {
+          await col.updateOne(
+            { _id: requestObjectId },
+            { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
+            { session }
+          )
+        })
+      } finally {
+        await session.endSession()
+      }
 
       return Response.json({ ok: true })
     }

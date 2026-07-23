@@ -260,7 +260,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex justify-between">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.lastSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
-                          {sim.lastSeen ? formatShortDate(sim.lastSeen, locale) : '-'}
+                          {sim.lastSeen ? formatDate(sim.lastSeen, locale) : '-'}
                         </dd>
                       </div>
                     </dl>
@@ -331,7 +331,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                             {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                           </span>
                           <span className="text-gray-400 text-[11px]">
-                            {b.recordedAt ? formatShortDate(b.recordedAt, locale) : '-'}
+                            #{b._id} &middot; {b.recordedAt ? formatDate(b.recordedAt, locale) : '-'}
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
@@ -379,7 +379,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                               <span className="text-sm font-semibold text-gray-900">{sms.senderNumber}</span>
                               <span className="text-[10px] text-gray-300">&middot;</span>
                               <span className="text-[11px] text-gray-400">
-                                {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
+                                {sms.receivedAt ? formatDate(sms.receivedAt, locale) : '-'}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed">{sms.content}</p>

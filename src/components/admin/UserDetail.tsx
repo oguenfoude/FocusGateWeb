@@ -84,7 +84,7 @@ export function UserDetail({ userId }: { userId: string }) {
   const [isWithdrawing, setIsWithdrawing] = useState(false)
 
   const { data, error, isLoading } = useSWR(`/api/admin/users/${userId}`, fetcher)
-  const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher)
+  const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher, { revalidateOnFocus: false })
   const freeModems = allModems?.filter((m) => !m.assignedTo) || []
 
   if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('common.loading')}</div>
