@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Search, User, Copy, Inbox } from 'lucide-react'
 import { getModemBrand } from '@/lib/modem-utils'
 import { useLanguage } from '@/components/language-provider'
-import { formatTimeAgo } from '@/lib/date-utils'
+import { formatDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -44,7 +44,7 @@ export function ModemTable() {
   const lastSeenOf = (modem: ModemData): string | null => modem.simLastSeen ?? modem.updatedAt
   const formatLastSeen = (modem: ModemData) => {
     const ts = lastSeenOf(modem);
-    return ts ? formatTimeAgo(new Date(ts), locale) : t('modems.never');
+    return ts ? formatDate(new Date(ts), locale) : t('modems.never');
   };
 
   const counts = {
