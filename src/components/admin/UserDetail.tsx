@@ -6,7 +6,7 @@ import { ArrowUpRight, ArrowDownRight, Smartphone, X, Plus, Loader2, CircleDolla
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
-import { formatDate } from '@/lib/date-utils'
+import { formatDate, formatShortDate } from '@/lib/date-utils'
 
 interface UserBalanceHistoryItem {
   _id: string
@@ -84,7 +84,7 @@ export function UserDetail({ userId }: { userId: string }) {
   const [isWithdrawing, setIsWithdrawing] = useState(false)
 
   const { data, error, isLoading } = useSWR(`/api/admin/users/${userId}`, fetcher)
-  const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher, { revalidateOnFocus: false })
+  const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher)
   const freeModems = allModems?.filter((m) => !m.assignedTo) || []
 
   if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('common.loading')}</div>
@@ -393,7 +393,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium">{h.note || '-'}</td>
                       <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
-                        {h.updatedAt ? formatDate(h.updatedAt, locale) : '-'}
+                        {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -424,7 +424,7 @@ export function UserDetail({ userId }: { userId: string }) {
                             {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                           </span>
                         </div>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatDate(h.updatedAt, locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
                       </div>
                       <p className="text-sm font-medium text-gray-600 mt-2">{h.note || '-'}</p>
                     </div>

@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Info, MessageSquare, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
-import { formatDate } from '@/lib/date-utils'
+import { formatShortDate, formatDate } from '@/lib/date-utils'
 
 interface SmsItemType {
   id: string
@@ -104,6 +104,7 @@ export function SmsList({ userId }: { userId: string }) {
                   </td>
                   <td className="px-5 py-4 text-end">
                     <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</div>
+                    <div className="text-[10px] text-gray-400 font-medium mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
                   </td>
                 </tr>
               ))}
