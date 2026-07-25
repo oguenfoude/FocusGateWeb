@@ -31,7 +31,7 @@ export function ModemTable() {
   const { t, locale } = useLanguage()
   const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState<TabType>('all')
+  const [activeTab, setActiveTab] = useState<TabType>('online')
 
   const { data, error, isLoading } = useSWR<ModemData[]>('/api/admin/modems', fetcher, {
     refreshInterval: 30000,
