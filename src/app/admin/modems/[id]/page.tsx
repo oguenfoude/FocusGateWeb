@@ -327,20 +327,17 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between">
-                          <span className="font-bold text-sm text-gray-900">
-                            {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
+                          <span className={`text-sm font-bold px-2 py-0.5 rounded-md ${b.delta >= 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}>
+                            {b.delta >= 0 ? '+' : ''}{b.delta.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                           </span>
                           <span className="text-gray-400 text-[11px]">
                             #{b._id} &middot; {b.recordedAt ? formatDate(b.recordedAt, locale) : '-'}
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}{' '}
-                          {b.previousBalance !== null && (
-                            <span className="text-gray-300">
-                              &middot; {t('modemDetail.was')} {b.previousBalance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
-                            </span>
-                          )}
+                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}
+                          {' · '}
+                          {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                         </p>
                       </div>
                     </div>
