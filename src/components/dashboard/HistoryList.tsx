@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { CircleDollarSign, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { getUserBalanceTypeLabelKey } from '@/lib/balance-utils'
-import { formatDate } from '@/lib/date-utils'
+import { formatShortDate, formatDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -98,6 +98,7 @@ export function HistoryList({ userId }: { userId: string }) {
                     </td>
                     <td className="px-5 py-4 text-end">
                       <div className="text-gray-500 font-medium text-xs">{displayDate ? formatDate(displayDate, locale) : '-'}</div>
+                      <div className="text-[10px] text-gray-400 font-medium mt-1">{displayDate ? formatShortDate(displayDate, locale) : ''}</div>
                     </td>
                   </tr>
                 )
