@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Anyone can list a user's assigned SIMs/balances by userId.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'

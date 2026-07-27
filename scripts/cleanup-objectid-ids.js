@@ -1,21 +1,27 @@
 /**
  * One-time cleanup script: Delete documents with ObjectId _id from MongoDB.
- * 
+ *
  * The .NET gateway expects _id as Int64 (Number), but some documents
  * were created with MongoDB auto-generated ObjectId _id. This script
  * deletes them so the .NET gateway can re-push correct data.
- * 
- * Usage: node scripts/cleanup-objectid-ids.js
- * 
- * Requires MONGODB_URI environment variable or update the URI below.
+ *
+ * Usage:  MONGODB_URI=... node scripts/cleanup-objectid-ids.js
+ *
+ * Requires the MONGODB_URI environment variable. NEVER hardcode credentials here.
  */
 
 const { MongoClient } = require('mongodb');
 
-const MONGODB_URI = process.env.MONGODB_URI ||
-  'mongodb://admin:admin@ac-8knjxta-shard-00-00.ldndrwe.mongodb.net:27017,ac-8knjxta-shard-00-01.ldndrwe.mongodb.net:27017,ac-8knjxta-shard-00-02.ldndrwe.mongodb.net:27017/alaafi?ssl=true&replicaSet=atlas-qo2jcu-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0';
+if (!process.env.MONGODB_URI) {
+  console.error('ERROR: MONGODB_URI environment variable is required.');
+  console.error('Example (PowerShell):');
+  console.error('  $env:MONGODB_URI = "mongodb+srv://user:pass@cluster.example.net/db"; node scripts/cleanup-objectid-ids.js');
+  process.exit(1);
+}
 
-const DATABASE_NAME = 'alaafi';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+const DATABASE_NAME = process.env.MONGODB_DB || 'flixiDz';
 
 // Only clean collections that may have ObjectId _id contamination
 const COLLECTIONS_TO_CLEAN = [
@@ -39,8 +45,6 @@ async function cleanup() {
     for (const collectionName of COLLECTIONS_TO_CLEAN) {
       const collection = db.collection(collectionName);
 
-      // Find documents where _id is an ObjectId (BSON type 7)
-      // ObjectId instances have a _bsontype property
       const objectIdDocs = await collection.find({
         _id: { $type: 'objectId' }
       }).toArray();
@@ -52,7 +56,6 @@ async function cleanup() {
 
       console.log(`  ${collectionName}: Found ${objectIdDocs.length} documents with ObjectId _id`);
 
-      // Delete them
       const result = await collection.deleteMany({
         _id: { $type: 'objectId' }
       });

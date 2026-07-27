@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import useSWR from 'swr'
 import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
@@ -39,12 +38,6 @@ export function UserDashboardContent({ userId }: { userId: string }) {
     fetcher,
     { refreshInterval: 30000 }
   )
-
-  useEffect(() => {
-    if (userId) {
-      try { localStorage.setItem('userId', userId) } catch {}
-    }
-  }, [userId])
 
   const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }
   const loc = localeMap[locale] || 'en-US'

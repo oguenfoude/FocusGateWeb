@@ -1,3 +1,7 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Any caller can read a user's full dashboard overview by knowing
+//   their userId — modems, balance, pending withdrawals, recent SMS.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'

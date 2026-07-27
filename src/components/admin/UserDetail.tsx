@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { formatDate, formatShortDate } from '@/lib/date-utils'
+import { toNum } from '@/lib/number-utils'
+import { useEscape } from '@/hooks/use-escape'
 
 interface UserBalanceHistoryItem {
   _id: string
@@ -82,6 +84,8 @@ export function UserDetail({ userId }: { userId: string }) {
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [withdrawNote, setWithdrawNote] = useState('')
   const [isWithdrawing, setIsWithdrawing] = useState(false)
+
+  useEscape(() => { setIsCreditModalOpen(false); setIsWithdrawModalOpen(false); }, isCreditModalOpen || isWithdrawModalOpen)
 
   const { data, error, isLoading } = useSWR(`/api/admin/users/${userId}`, fetcher)
   const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher)
@@ -184,7 +188,7 @@ export function UserDetail({ userId }: { userId: string }) {
       toast.error(t('users.detail.invalidAmount'))
       return
     }
-    const userBalance = Number(user.balance) || 0
+    const userBalance = toNum(user.balance)
     if (amt > userBalance) {
       toast.error(t('withdraw.amountExceeds'))
       return
@@ -589,10 +593,10 @@ export function UserDetail({ userId }: { userId: string }) {
 
       {/* Credit User Modal */}
       {isCreditModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="credit-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h4 className="font-bold text-gray-900 flex items-center gap-2">
+              <h4 id="credit-title" className="font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-md bg-brand-50 flex items-center justify-center text-brand-600">
                   <Plus className="w-4 h-4" />
                 </div>
@@ -627,10 +631,10 @@ export function UserDetail({ userId }: { userId: string }) {
 
       {/* Create Withdrawal Modal */}
       {isWithdrawModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="withdraw-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h4 className="font-bold text-gray-900 flex items-center gap-2">
+              <h4 id="withdraw-title" className="font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center text-amber-600">
                   <CircleDollarSign className="w-4 h-4" />
                 </div>
@@ -642,7 +646,7 @@ export function UserDetail({ userId }: { userId: string }) {
               <div className="p-6 space-y-5">
                 <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 mb-6">
                   <p className="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">{t('withdraw.availableBalance')}</p>
-                  <p className="text-2xl font-extrabold text-amber-700">{(Number(user.balance) || 0).toLocaleString(loc)} DA</p>
+                  <p className="text-2xl font-extrabold text-amber-700">{toNum(user.balance).toLocaleString(loc)} DA</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">{t('withdraw.amountLabel')}</label>

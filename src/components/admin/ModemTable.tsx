@@ -7,6 +7,7 @@ import { Search, User, Copy, Inbox } from 'lucide-react'
 import { getModemBrand } from '@/lib/modem-utils'
 import { useLanguage } from '@/components/language-provider'
 import { formatDate } from '@/lib/date-utils'
+import { toNum } from '@/lib/number-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -148,7 +149,7 @@ export function ModemTable() {
                     <td className="px-6 py-4 font-bold text-sm">
                       {modem.balance != null ? (
                         <span className={modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}>
-                          {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
+                          {toNum(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                           {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                         </span>
                       ) : '-'}
@@ -220,7 +221,7 @@ export function ModemTable() {
                 <p className={`font-bold text-sm ${modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}`}>
                   {modem.balance != null ? (
                     <>
-                      {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
+                      {toNum(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                       {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                     </>
                   ) : '-'}
