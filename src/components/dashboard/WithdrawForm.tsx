@@ -97,25 +97,27 @@ export function WithdrawForm({ userId }: { userId: string }) {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-sm font-medium text-gray-700">{t('withdraw.amountLabel')}</Label>
-                <input 
-                  id="amount" 
-                  type="number" 
+                <input
+                  id="amount"
+                  type="number"
                   placeholder={t('withdraw.amountPlaceholder')}
                   className="input"
+                  aria-describedby={errors.amount ? 'amount-error' : undefined}
                   {...register('amount', { valueAsNumber: true })}
                 />
-                {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
+                {errors.amount && <p id="amount-error" className="text-sm text-red-500" role="alert">{errors.amount.message}</p>}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="note" className="text-sm font-medium text-gray-700">{t('withdraw.noteLabel')}</Label>
-                <textarea 
-                  id="note" 
+                <textarea
+                  id="note"
                   placeholder={t('withdraw.notePlaceholder')}
                   className="input min-h-[100px]"
+                  aria-describedby={errors.note ? 'note-error' : undefined}
                   {...register('note')}
                 />
-                {errors.note && <p className="text-sm text-red-500">{errors.note.message}</p>}
+                {errors.note && <p id="note-error" className="text-sm text-red-500" role="alert">{errors.note.message}</p>}
               </div>
               
               <button type="submit" className="btn btn-primary w-full justify-center shadow-md" disabled={isSubmitting}>
