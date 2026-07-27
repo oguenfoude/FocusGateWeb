@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   PATCH enables any caller to approve or reject withdrawals, mutating
+//   user balances. CRITICAL. See AGENTS.md > Open web TODOs.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'

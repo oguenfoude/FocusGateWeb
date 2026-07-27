@@ -18,5 +18,11 @@ const WithdrawalRequestSchema = new Schema({
 
 WithdrawalRequestSchema.index({ status: 1, archivedAt: 1 })
 WithdrawalRequestSchema.index({ userId: 1, archivedAt: 1 })
+// Partial unique index — at most one Pending (status=0) withdrawal per non-archived user.
+// Prevents the read-then-create race in /api/dashboard/withdraw POST.
+WithdrawalRequestSchema.index(
+  { userId: 1 },
+  { unique: true, partialFilterExpression: { status: 0, archivedAt: null }, name: 'uniq_pending_per_user' }
+)
 
 export const WithdrawalRequest = mongoose.models.WithdrawalRequest || mongoose.model('WithdrawalRequest', WithdrawalRequestSchema)
