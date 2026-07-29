@@ -79,7 +79,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           previousBalance: prevBal,
           delta: prevBal != null ? bal - prevBal : bal,
         }
-      }).filter(b => b.previousBalance != null ? b.balance > b.previousBalance : b.balance > 0)
+      })
 
       smsCount = count
       smsRecords = sms.map(s => ({ ...s, _id: String(s._id) }))

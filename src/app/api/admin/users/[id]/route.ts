@@ -221,6 +221,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if (!trimmed) {
           return Response.json({ error: 'Username cannot be empty' }, { status: 400 })
         }
+        if (!/^[a-zA-Z0-9_.-]+$/.test(trimmed)) {
+          return Response.json({ error: 'Username may only contain letters, numbers, underscore, dot, or dash' }, { status: 400 })
+        }
         const existing = await User.findOne({ username: trimmed, _id: { $ne: userId } }).lean()
         if (existing) {
           return Response.json({ error: 'Username already exists' }, { status: 409 })
@@ -261,7 +264,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       const now = new Date()
       const updated = await User.findOneAndUpdate(
         { _id: userId, archivedAt: null },
-        { $inc: { balance: creditAmount }, $set: { updatedAt: now } },
+        { $inc: { balance: creditAmount }, $set: { updatedAt: now, balanceUpdatedAt: now } },
         { new: true }
       )
       if (!updated) {
