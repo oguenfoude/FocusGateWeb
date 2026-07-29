@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     const amt = Number(amount)
-    if (!amt || amt <= 0) {
+    if (!Number.isFinite(amt) || amt <= 0) {
       return Response.json({ error: 'Amount must be a positive number' }, { status: 400 })
     }
 

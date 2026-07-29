@@ -22,55 +22,39 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await connectDB()
 
-    // Use raw MongoDB collection to avoid Mongoose Number cast precision loss on large IDs
     const db = mongoose.connection.db!
     const col = db.collection('withdrawalrequests')
 
-    // Try Number first (handles most IDs), then fall back to string match for oversized IDs
     const numId = Number(id)
-    let request = await col.findOne({ _id: numId } as Record<string, unknown>)
-    if (!request && id !== String(numId)) {
-      // Oversized ID: precision was lost in Number conversion — try string-based matching
-      request = await col.findOne({ _id: id } as Record<string, unknown>)
+    if (!Number.isFinite(numId) || numId <= 0) {
+      return Response.json({ error: 'Invalid withdrawal ID' }, { status: 400 })
     }
-    if (!request) {
-      return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
-    }
-
-    if (request.archivedAt !== null && request.archivedAt !== undefined) {
-      return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
-    }
-
-    if (request.status !== 0) {
-      return Response.json({ error: 'Request is already processed' }, { status: 400 })
-    }
-
     const now = new Date()
-    const requestObjectId = request._id
     const adminId = body.adminId ? (Number(body.adminId) || body.adminId) : undefined
 
     if (action === 'approve') {
-      const user = await User.findById(request.userId)
-      if (!user) {
-        return Response.json({ error: 'User not found' }, { status: 404 })
-      }
-
-      const oldBalance = toNum(user.balance)
-      const withdrawalAmount = toNum(request.amount)
-      const newBalance = Math.max(0, oldBalance - withdrawalAmount)
-
       const session = await mongoose.connection.startSession()
+      let approvedDoc: Record<string, unknown> | null = null
       try {
         await session.withTransaction(async () => {
-          await col.updateOne(
-            { _id: requestObjectId },
+          approvedDoc = await col.findOneAndUpdate(
+            { _id: numId, status: 0, archivedAt: null } as Record<string, unknown>,
             { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
-            { session }
+            { returnDocument: 'after', session }
           )
 
+          if (!approvedDoc) return
+
+          const user = await User.findById(approvedDoc.userId).session(session)
+          if (!user) return
+
+          const oldBalance = toNum(user.balance)
+          const withdrawalAmount = toNum(approvedDoc.amount)
+          const newBalance = Math.max(0, oldBalance - withdrawalAmount)
+
           await User.updateOne(
-            { _id: request.userId },
-            { $set: { balance: newBalance, updatedAt: now } },
+            { _id: approvedDoc.userId },
+            { $set: { balance: newBalance, updatedAt: now, balanceUpdatedAt: now } },
             { session }
           )
 
@@ -80,7 +64,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
               _id: nextId(),
               simCardId: null,
               modemId: null,
-              userId: request.userId,
+              userId: approvedDoc.userId,
               balance: newBalance,
               previousBalance: oldBalance,
               source: 4,
@@ -96,7 +80,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           await UserBalanceHistory.create(
             [{
               _id: nextId(),
-              userId: request.userId,
+              userId: approvedDoc.userId,
               amount: -withdrawalAmount,
               balanceAfter: newBalance,
               type: 1,
@@ -114,21 +98,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         await session.endSession()
       }
 
+      if (!approvedDoc) {
+        return Response.json({ ok: true, message: 'Already processed' })
+      }
+
       return Response.json({ ok: true })
     }
 
     if (action === 'reject') {
       const session = await mongoose.connection.startSession()
+      let rejectedDoc: Record<string, unknown> | null = null
       try {
         await session.withTransaction(async () => {
-          await col.updateOne(
-            { _id: requestObjectId },
+          rejectedDoc = await col.findOneAndUpdate(
+            { _id: numId, status: 0, archivedAt: null } as Record<string, unknown>,
             { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
-            { session }
+            { returnDocument: 'after', session }
           )
         })
       } finally {
         await session.endSession()
+      }
+
+      if (!rejectedDoc) {
+        return Response.json({ ok: true, message: 'Already processed' })
       }
 
       return Response.json({ ok: true })

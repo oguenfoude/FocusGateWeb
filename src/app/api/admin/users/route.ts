@@ -72,19 +72,28 @@ export async function POST(req: NextRequest) {
     const now = new Date()
     const userId = nextId()
 
-    await User.create({
-      _id: userId,
-      username,
-      password,
-      displayName: displayName || username,
-      role: 1,
-      isActive: true,
-      balance: 0,
-      machineId: 'web',
-      createdAt: now,
-      updatedAt: now,
-      archivedAt: null,
-    })
+    try {
+      await User.create({
+        _id: userId,
+        username,
+        password,
+        displayName: displayName || username,
+        role: 1,
+        isActive: true,
+        balance: 0,
+        balanceUpdatedAt: now,
+        machineId: 'web',
+        createdAt: now,
+        updatedAt: now,
+        archivedAt: null,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (msg.includes('E11000') || msg.includes('duplicate key')) {
+        return Response.json({ error: 'Username already exists' }, { status: 409 })
+      }
+      throw err
+    }
 
     return Response.json({ ok: true })
   } catch (err) {

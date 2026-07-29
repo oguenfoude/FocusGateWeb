@@ -8,6 +8,7 @@ const UserSchema = new Schema({
   role: { type: Number, required: true },
   isActive: { type: Boolean, default: true },
   balance: { type: Number, default: 0 },
+  balanceUpdatedAt: { type: Date, default: null },
   machineId: { type: String, default: '' },
   createdAt: { type: Date },
   updatedAt: { type: Date },

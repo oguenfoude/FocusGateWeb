@@ -65,9 +65,14 @@ export async function POST(req: NextRequest) {
     const now = new Date()
     const numericUserId = Number(userId) || userId
 
-    const user = await User.findOne({ _id: numericUserId, archivedAt: null }).select('archivedAt').lean()
+    const user = await User.findOne({ _id: numericUserId, archivedAt: null }).select('archivedAt balance').lean()
     if (!user) {
       return Response.json({ error: 'User not found or archived' }, { status: 404 })
+    }
+
+    const userBalance = toNum(user.balance)
+    if (amount > userBalance) {
+      return Response.json({ error: 'Insufficient balance' }, { status: 400 })
     }
 
     try {
