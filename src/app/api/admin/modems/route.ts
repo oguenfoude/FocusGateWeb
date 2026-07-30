@@ -20,6 +20,9 @@ export async function GET() {
   try {
     await connectDB()
 
+    // Match ASP.NET staleness: online = status==4 AND updatedAt within 10 minutes
+    const staleThreshold = new Date(Date.now() - 10 * 60 * 1000)
+
     const [modems, sims, userModems, users] = await Promise.all([
       Modem.find({ archivedAt: null }).lean(),
       SimCard.find({ isActive: true, archivedAt: null }).lean(),
@@ -36,7 +39,7 @@ export async function GET() {
       return {
         ...stripComPort(m),
         _id: String(m._id),
-        isOnline: m.status === 4,
+        isOnline: m.status === 4 && m.updatedAt != null && new Date(m.updatedAt) >= staleThreshold,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,
         balance: toNum(rawBalance),
         simLastSeen: simMap.get(m._id)?.lastSeen ?? null,

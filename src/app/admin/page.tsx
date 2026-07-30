@@ -11,7 +11,10 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function getDashboardData() {
-  const onlineModemIds = await Modem.find({ status: 4, archivedAt: null }).select('_id').lean()
+  // Match ASP.NET staleness: modem is "online" only if status==4 AND updatedAt within 10 minutes
+  const staleThreshold = new Date(Date.now() - 10 * 60 * 1000)
+  const onlineModemFilter = { status: 4, archivedAt: null, updatedAt: { $gte: staleThreshold } }
+  const onlineModemIds = await Modem.find(onlineModemFilter).select('_id').lean()
   const onlineModemIdList = onlineModemIds.map(m => m._id)
 
   const simFilter = { 
@@ -22,7 +25,7 @@ async function getDashboardData() {
   }
   const [modemsTotal, modemsOnline, simCount, simBalanceAllAggr, userCount, userBalanceAggr, pendingWithdrawals, recentSmsRaw] = await Promise.all([
     Modem.countDocuments({ archivedAt: null }),
-    Modem.countDocuments({ status: 4, archivedAt: null }),
+    Modem.countDocuments(onlineModemFilter),
     SimCard.countDocuments(simFilter),
     SimCard.aggregate([
       { $match: simFilter },
