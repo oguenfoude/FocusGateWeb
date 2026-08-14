@@ -45,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const [assignments, userBalanceHistories, withdrawals] = await Promise.all([
       UserModem.find({ userId: user._id, removedAt: null, archivedAt: null }).lean(),
       UserBalanceHistory.find({ userId: user._id, archivedAt: null })
-        .sort({ updatedAt: -1 }).limit(50).lean(),
+        .sort({ recordedAt: -1 }).limit(50).lean(),
       WithdrawalRequest.find({ userId: user._id, archivedAt: null })
         .sort({ updatedAt: -1 }).lean(),
     ])
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const balanceHistories = simIds.length > 0
       ? await BalanceHistory.find({ simCardId: { $in: simIds }, archivedAt: null })
-          .sort({ updatedAt: -1 }).limit(20).lean()
+          .sort({ recordedAt: -1 }).limit(20).lean()
       : []
 
     const smsRecords = await SmsRecord.find({ simCardId: { $in: simIds }, archivedAt: null })
