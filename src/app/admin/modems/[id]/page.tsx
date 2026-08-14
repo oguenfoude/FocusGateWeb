@@ -7,7 +7,7 @@ import { ArrowLeft, RadioTower, Info, History, MessageSquare, Clock, X } from 'l
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { getModemBrand } from '@/lib/modem-utils'
-import { formatDate, formatShortDate } from '@/lib/date-utils'
+import { formatDate } from '@/lib/date-utils'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
@@ -335,7 +335,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}
+                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : b.source === 5 ? 'MeetMob' : t('modemDetail.other')}
                           {' · '}
                           {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                         </p>

@@ -15,7 +15,7 @@ interface UserBalanceHistoryItem {
   type: number
   amount: number
   note?: string
-  updatedAt?: string
+  recordedAt?: string
 }
 
 interface BalanceHistoryItem {
@@ -24,7 +24,7 @@ interface BalanceHistoryItem {
   delta: number
   source: number
   balance: number
-  updatedAt?: string
+  recordedAt?: string
 }
 
 interface SmsRecordItem {
@@ -65,7 +65,9 @@ function sourceLabel(source: number, t: (key: string) => string): string {
     case 0: return t('modemDetail.ussdCheck')
     case 1: return t('modemDetail.smsCredit')
     case 2: return t('modemDetail.settlement')
+    case 3: return t('modemDetail.other')
     case 4: return t('modemDetail.withdrawal')
+    case 5: return 'MeetMob'
     default: return t('modemDetail.other')
   }
 }
@@ -396,9 +398,9 @@ export function UserDetail({ userId }: { userId: string }) {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium">{h.note || '-'}</td>
-                      <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
-                        {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
-                      </td>
+                        <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
+                         {h.recordedAt ? formatShortDate(h.recordedAt, locale) : '-'}
+                       </td>
                     </tr>
                   ))}
                   {userBalanceHistories.length === 0 && (
@@ -428,7 +430,7 @@ export function UserDetail({ userId }: { userId: string }) {
                             {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                           </span>
                         </div>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.recordedAt ? formatShortDate(h.recordedAt, locale) : '-'}</span>
                       </div>
                       <p className="text-sm font-medium text-gray-600 mt-2">{h.note || '-'}</p>
                     </div>
@@ -471,7 +473,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       <td className="px-5 py-3 text-sm font-medium text-gray-700">{sourceLabel(h.source, t)}</td>
                       <td className="px-5 py-3 font-bold text-sm text-gray-900">{h.balance?.toLocaleString(loc)} DA</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400">
-                        {h.updatedAt ? formatDate(new Date(h.updatedAt), locale) : '-'}
+                        {h.recordedAt ? formatDate(new Date(h.recordedAt), locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -497,7 +499,7 @@ export function UserDetail({ userId }: { userId: string }) {
                         <span className={`text-sm font-bold px-2 py-1 rounded-md ${(h.delta ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                           {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString(loc)} DA
                         </span>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatDate(new Date(h.updatedAt), locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.recordedAt ? formatDate(new Date(h.recordedAt), locale) : '-'}</span>
                       </div>
                       <div className="flex flex-col gap-1 mt-2 p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-sm">
