@@ -66,7 +66,7 @@ export async function GET(request: Request) {
 
     const recentSmsRaw = await SmsRecord.find({
       simCardId: { $in: simCardIds },
-      senderNumber: { $regex: /mobilis|77111|7711|610|meetmob/i },
+      senderNumber: { $regex: /mobilis|77111|7711|610|600|666|meetmob/i },
       archivedAt: null
     })
       .sort({ receivedAt: -1 })
@@ -89,7 +89,7 @@ export async function GET(request: Request) {
         senderNumber: sms.senderNumber as string | undefined,
         content: sms.content as string | undefined,
         simCardId: sc ? {
-          phoneNumber: Number(sc.phoneNumber) || undefined,
+          phoneNumber: toNum(sc.phoneNumber) || undefined,
           modemId: modem ? { imei: modem.imei as string | undefined } : undefined,
         } : undefined,
       }

@@ -25,7 +25,8 @@
     "loginTitle": "flexiDZ",
     "loginSubtitle": "Gateway Management System",
     "loginButton": "Sign in to your account",
-    "loginError": "Invalid username or password"
+    "loginError": "Invalid username or password",
+    "signedInSuccess": "Signed in successfully!"
   },
   "dashboard": {
     "overview": "Overview of your gateway",
@@ -256,6 +257,7 @@
       "otp": "OTP / Code",
       "offer": "Promo / Offer",
       "recharge": "Recharge",
+      "balance": "Balance",
       "transfer": "Transfer",
       "info": "General Info"
     }
@@ -420,7 +422,14 @@
     "failedToLoad": "Failed to load data.",
     "notFound": "Page Not Found",
     "notFoundDesc": "The page you are looking for does not exist.",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "unexpectedError": "Unexpected error",
+    "tryAgain": "Try again",
+    "adminPanelError": "Admin panel error",
+    "dashboardError": "Dashboard error",
+    "notAvailable": "N/A",
+    "failedToSubmit": "Failed to submit request",
+    "created": "Created"
   },
   "balanceSource": {
     "0": "USSD Check",

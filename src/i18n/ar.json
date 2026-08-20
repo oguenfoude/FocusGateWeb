@@ -25,7 +25,8 @@
     "loginTitle": "flexiDZ",
     "loginSubtitle": "نظام إدارة البوابة",
     "loginButton": "تسجيل الدخول إلى حسابك",
-    "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة"
+    "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "signedInSuccess": "تم تسجيل الدخول بنجاح!"
   },
   "dashboard": {
     "overview": "نظرة عامة على البوابة",
@@ -257,6 +258,7 @@
       "otp": "OTP / رمز",
       "offer": "عرض / ترويج",
       "recharge": "شحن",
+      "balance": "رصيد",
       "transfer": "تحويل",
       "info": "معلومات عامة"
     }
@@ -421,7 +423,14 @@
     "failedToLoad": "فشل تحميل البيانات.",
     "notFound": "الصفحة غير موجودة",
     "notFoundDesc": "الصفحة التي تبحث عنها غير موجودة.",
-    "goHome": "الذهاب للرئيسية"
+    "goHome": "الذهاب للرئيسية",
+    "unexpectedError": "خطأ غير متوقع",
+    "tryAgain": "حاول مرة أخرى",
+    "adminPanelError": "خطأ في لوحة الإدارة",
+    "dashboardError": "خطأ في لوحة التحكم",
+    "notAvailable": "غير متاح",
+    "failedToSubmit": "فشل في إرسال الطلب",
+    "created": "أنشأ"
   },
   "balanceSource": {
     "0": "فحص USSD",

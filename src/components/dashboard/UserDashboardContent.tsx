@@ -36,7 +36,7 @@ export function UserDashboardContent({ userId }: { userId: string }) {
   const { data, error, isLoading } = useSWR<DashboardData>(
     userId ? `/api/dashboard/overview?userId=${userId}` : null,
     fetcher,
-    { refreshInterval: 30000 }
+    { refreshInterval: 15000, revalidateOnFocus: true, revalidateOnReconnect: true }
   )
 
   const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }

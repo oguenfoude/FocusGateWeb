@@ -50,7 +50,7 @@ export function WithdrawForm({ userId }: { userId: string }) {
       const json = await res.json()
       
       if (!res.ok) {
-        throw new Error(json.error || 'Failed to submit request')
+        throw new Error(json.error || t('common.failedToSubmit'))
       }
       
       toast.success(t('withdraw.requestSubmitted'))
