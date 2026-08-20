@@ -85,7 +85,7 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
                         {sms.content}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || 'N/A'}</span>
+                        <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.notAvailable')}</span>
                       </td>
                     </tr>
                   )
@@ -114,7 +114,7 @@ export function AdminDashboardContent({ data }: { data: DashboardData }) {
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>
-                    <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || 'N/A'}</span>
+                    <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.notAvailable')}</span>
                   </div>
                 )
               })

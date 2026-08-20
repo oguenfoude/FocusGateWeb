@@ -42,7 +42,7 @@ export default function LoginPage() {
         throw new Error(data.error || t('auth.loginError'))
       }
 
-      toast.success('Signed in successfully!')
+      toast.success(t('auth.signedInSuccess'))
       setUserId(data.userId)
       localStorage.setItem('role', String(data.role))
       

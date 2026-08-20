@@ -25,7 +25,8 @@
     "loginTitle": "Alaafi",
     "loginSubtitle": "Système de gestion de passerelle",
     "loginButton": "Se connecter à votre compte",
-    "loginError": "Nom d'utilisateur ou mot de passe invalide"
+    "loginError": "Nom d'utilisateur ou mot de passe invalide",
+    "signedInSuccess": "Connexion réussie !"
   },
   "dashboard": {
     "overview": "Aperçu de votre passerelle",
@@ -257,6 +258,7 @@
       "otp": "OTP / Code",
       "offer": "Promo / Offre",
       "recharge": "Recharge",
+      "balance": "Solde",
       "transfer": "Transfert",
       "info": "Info Générale"
     }
@@ -421,7 +423,14 @@
     "failedToLoad": "Échec du chargement des données.",
     "notFound": "Page Non Trouvée",
     "notFoundDesc": "La page que vous recherchez n'existe pas.",
-    "goHome": "Retour à l'accueil"
+    "goHome": "Retour à l'accueil",
+    "unexpectedError": "Erreur inattendue",
+    "tryAgain": "Réessayer",
+    "adminPanelError": "Erreur du panneau d'administration",
+    "dashboardError": "Erreur du tableau de bord",
+    "notAvailable": "N/A",
+    "failedToSubmit": "Échec de la soumission de la demande",
+    "created": "Créé"
   },
   "balanceSource": {
     "0": "Vérification USSD",

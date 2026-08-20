@@ -139,7 +139,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
+                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : t('common.notAvailable')}
               </p>
             </div>
           </div>

@@ -238,7 +238,7 @@ export function UserDetail({ userId }: { userId: string }) {
                 {user.role === 0 ? <span className="badge badge-purple shadow-sm">{t('users.detail.admin')}</span> : <span className="badge badge-gray shadow-sm">{t('users.detail.user')}</span>}
                 {user.archivedAt && <span className="badge badge-gray shadow-sm">{t('users.archived')}</span>}
               </div>
-              <p className="text-sm text-gray-500 font-medium mt-1">@{user.username} &middot; Created {user.createdAt ? formatDate(user.createdAt, locale) : '-'}</p>
+              <p className="text-sm text-gray-500 font-medium mt-1">@{user.username} &middot; {t('common.created')} {user.createdAt ? formatDate(user.createdAt, locale) : '-'}</p>
             </div>
           </div>
           <div className="sm:text-end flex flex-col sm:items-end gap-3">
