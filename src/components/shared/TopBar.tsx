@@ -27,6 +27,14 @@ export function TopBar() {
   const { toggle } = useMobileMenu()
   const userId = useUserId()
   const [time, setTime] = useState('')
+  const [displayName, setDisplayName] = useState('')
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('username')
+      if (stored) setDisplayName(stored)
+    } catch {}
+  }, [])
 
   useEffect(() => {
     const tick = () => setTime(new Date().toLocaleTimeString('en-GB', {
@@ -69,7 +77,7 @@ export function TopBar() {
             {time || '--:--'}
           </div>
           <div className="w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-[0_2px_8px_rgba(20,184,166,0.3)] ring-2 ring-white">
-            {userId ? userId.toString().slice(-1).toUpperCase() : 'A'}
+            {displayName ? displayName[0].toUpperCase() : 'U'}
           </div>
         </div>
       </div>

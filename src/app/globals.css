@@ -203,6 +203,8 @@
     color: #64748b;
     backdrop-filter: blur(8px);
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .filter-pill:hover {
     background: rgba(255,255,255,0.9);
@@ -248,6 +250,17 @@
   .delay-100 { animation-delay: 100ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
+
+  /* Horizontal scroll container for filter pills on mobile */
+  .filter-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .filter-scroll::-webkit-scrollbar { display: none; }
 }
 
 /* Scrollbar styling */

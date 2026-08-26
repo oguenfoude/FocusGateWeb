@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useLanguage } from '@/components/language-provider'
 import { useMobileMenu } from '@/components/shared/mobile-menu-provider'
 import { Locale } from '@/lib/i18n'
@@ -38,6 +38,7 @@ function subscribe(callback: () => void) {
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
   const rtl = isRTL
@@ -46,9 +47,13 @@ export function Sidebar() {
     () => getLocalStorage('userId'),
     () => null,
   )
+  const localStorageRole = useSyncExternalStore(
+    subscribe,
+    () => getLocalStorage('role'),
+    () => null,
+  )
 
-  const isAdmin = pathname.startsWith('/admin') ||
-    (!pathname.startsWith('/dashboard') && !localStorageUserId)
+  const isAdmin = localStorageRole === '0' || pathname.startsWith('/admin')
 
   const adminLinks = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },
@@ -73,8 +78,9 @@ export function Sidebar() {
     try {
       localStorage.removeItem('userId')
       localStorage.removeItem('role')
+      localStorage.removeItem('username')
     } catch {}
-    window.location.href = '/login'
+    router.push('/login')
   }
 
   const sidebarContent = (
