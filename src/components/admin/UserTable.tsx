@@ -7,9 +7,7 @@ import { Search, Plus, Trash2, Eye, X, Loader2, Edit2, RotateCcw } from 'lucide-
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { useEscape } from '@/hooks/use-escape'
-
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface UserRowType {
   _id: string

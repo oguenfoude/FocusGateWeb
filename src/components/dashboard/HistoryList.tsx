@@ -5,8 +5,7 @@ import { CircleDollarSign, Loader2, Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { getUserBalanceTypeLabelKey } from '@/lib/balance-utils'
 import { formatShortDate, formatDate } from '@/lib/date-utils'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface HistoryItemType {
   _id: string

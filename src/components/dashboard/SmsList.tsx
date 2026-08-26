@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Info, MessageSquare, Loader2, Inbox, Bell } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { formatShortDate, formatDate } from '@/lib/date-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface SmsItemType {
   id: string
@@ -17,8 +18,6 @@ interface SmsItemType {
   receivedAt?: string
   simPhoneNumber?: number | null
 }
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function SmsList({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()

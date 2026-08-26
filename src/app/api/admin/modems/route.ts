@@ -36,6 +36,7 @@ export async function GET() {
       return {
         ...stripComPort(m),
         _id: String(m._id),
+        imei: (m as any).iMEI || m.imei,
         isOnline: m.status === 4,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,
         balance: toNum(rawBalance),

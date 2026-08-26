@@ -8,8 +8,7 @@ import { getModemBrand } from '@/lib/modem-utils'
 import { useLanguage } from '@/components/language-provider'
 import { formatDate } from '@/lib/date-utils'
 import { toNum } from '@/lib/number-utils'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface ModemData {
   _id: string

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Inbox } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { formatDate } from '@/lib/date-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface ModemRowType {
   _id: string
@@ -19,8 +20,6 @@ interface SmsRowType {
   content?: string
   receivedAt?: string
 }
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function SmsTable() {
   const { t, locale } = useLanguage()

@@ -76,7 +76,7 @@ export async function GET(request: Request) {
     const simLookupMap = new Map(activeSims.map(s => [String(s._id), s]))
     const modemLookupIds = [...new Set(activeSims.map(s => s.modemId))]
     const modemLookupDocs = modemLookupIds.length > 0
-      ? await Modem.find({ _id: { $in: modemLookupIds } }).select('imei').lean()
+      ? await Modem.find({ _id: { $in: modemLookupIds } }).lean()
       : []
     const modemLookupMap = new Map(modemLookupDocs.map(m => [String(m._id), m]))
 
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
         content: sms.content as string | undefined,
         simCardId: sc ? {
           phoneNumber: toNum(sc.phoneNumber) || undefined,
-          modemId: modem ? { imei: modem.imei as string | undefined } : undefined,
+          modemId: modem ? { imei: ((modem as any).iMEI || modem.imei) as string | undefined } : undefined,
         } : undefined,
       }
     })

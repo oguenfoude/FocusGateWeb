@@ -5,8 +5,7 @@ import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
 import { RadioTower, Wallet, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
 import { formatDate } from '@/lib/date-utils'
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface SmsWithRelations {
   _id: { toString(): string }
@@ -33,11 +32,21 @@ interface DashboardData {
 export function UserDashboardContent({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
 
-  const { data, error, isLoading } = useSWR<DashboardData>(
+  const { data: rawData, error, isLoading } = useSWR<DashboardData>(
     userId ? `/api/dashboard/overview?userId=${userId}` : null,
     fetcher,
     { refreshInterval: 15000, revalidateOnFocus: true, revalidateOnReconnect: true }
   )
+
+  // Normalize API payload so partial/error responses can never crash rendering
+  const data: DashboardData = {
+    totalModems: Number(rawData?.totalModems ?? 0),
+    onlineModems: Number(rawData?.onlineModems ?? 0),
+    balance: Number(rawData?.balance ?? 0),
+    totalCredits: Number(rawData?.totalCredits ?? 0),
+    pendingAmount: Number(rawData?.pendingAmount ?? 0),
+    recentSms: Array.isArray(rawData?.recentSms) ? rawData.recentSms : [],
+  }
 
   const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }
   const loc = localeMap[locale] || 'en-US'

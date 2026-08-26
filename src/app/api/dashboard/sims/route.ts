@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       const sim = simMap.get(m._id) ?? null
       return {
         modemId: String(m._id),
-        imei: m.imei,
+        imei: (m as any).iMEI || m.imei,
         brand: m.brand,
         model: m.model,
         isOnline: m.status === 4,

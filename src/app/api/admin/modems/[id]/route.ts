@@ -85,7 +85,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       smsRecords = sms.map(s => ({ ...s, _id: String(s._id) }))
 
       return Response.json({
-        modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
+        modem: { ...stripComPort(modem), _id: String(modem._id), imei: (modem as any).iMEI || modem.imei, isOnline },
         sim: { ...sim, _id: String(sim._id), balance: toNum(sim.balance) },
         assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
         balanceHistory,
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const assignedUser = await assignedUserPromise
 
     return Response.json({
-      modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
+      modem: { ...stripComPort(modem), _id: String(modem._id), imei: (modem as any).iMEI || modem.imei, isOnline },
       sim: null,
       assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
       balanceHistory,

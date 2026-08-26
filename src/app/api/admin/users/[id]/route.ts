@@ -60,7 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       const modemData = { ...m }
       delete modemData.comPort
       return {
-        modem: { ...modemData, _id: String(m._id) },
+        modem: { ...modemData, _id: String(m._id), imei: (m as any).iMEI || m.imei },
         sim: simMap.get(m._id) ?? null
       }
     })

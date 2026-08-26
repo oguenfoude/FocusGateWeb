@@ -7,6 +7,7 @@ import { Search, Info, X, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { formatShortDate } from '@/lib/date-utils'
 import { useEscape } from '@/hooks/use-escape'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface WithdrawalRequestType {
   _id: string
@@ -24,8 +25,6 @@ interface WithdrawalRequestType {
 }
 
 type TabType = 'all' | 'pending' | 'approved' | 'rejected'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawalTable() {
   const { t, locale } = useLanguage()
