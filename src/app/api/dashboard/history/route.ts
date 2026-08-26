@@ -1,8 +1,7 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   Any caller can list a user's balance history by knowing their userId.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
+import { requireAuth, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { UserBalanceHistory } from '@/lib/models/UserBalanceHistory'
 import { toNum } from '@/lib/number-utils'
 
@@ -10,16 +9,22 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
-    if (!userId) {
-      return Response.json({ error: 'userId required' }, { status: 400 })
+    if (!checkRateLimit(req, 'dashboard', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAuth(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     await connectDB()
 
     const histories = await UserBalanceHistory.find({
-      userId: Number(userId) || userId,
+      userId: auth.userId,
       archivedAt: null,
     }).sort({ recordedAt: -1 }).limit(100).lean()
 

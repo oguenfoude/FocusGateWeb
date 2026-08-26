@@ -1,17 +1,28 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   PATCH enables any caller to approve or reject withdrawals, mutating
-//   user balances. CRITICAL. See AGENTS.md > Open web TODOs.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
 import { toNum } from '@/lib/number-utils'
 import mongoose from 'mongoose'
+import { requireAdmin, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = await params
     const body = await req.json()
     const { action, note } = body

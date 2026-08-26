@@ -1,18 +1,28 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   Allows reading withdrawal requests by anyone; the POST also creates new
-//   withdrawal requests without auth.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import '@/lib/models/User' // required for populate
 import { toNum } from '@/lib/number-utils'
 import { nextId } from '@/lib/id-generator'
+import { requireAdmin, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    if (!checkRateLimit(request, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(request)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
 
     const all = await WithdrawalRequest.find({ archivedAt: null })
@@ -43,6 +53,18 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
 
     const body = await req.json()

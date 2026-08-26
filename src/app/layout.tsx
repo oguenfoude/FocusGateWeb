@@ -7,8 +7,8 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Alaafi Dashboard',
-  description: 'Manage Alaafi USB Modem SMS Gateway',
+  title: `${process.env.NEXT_PUBLIC_BRAND_NAME || 'FocusGate'} Dashboard`,
+  description: `Manage ${process.env.NEXT_PUBLIC_BRAND_NAME || 'FocusGate'} USB Modem SMS Gateway`,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

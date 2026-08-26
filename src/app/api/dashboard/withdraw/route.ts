@@ -1,8 +1,7 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   POST creates withdrawal requests on behalf of any userId passed in.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
+import { requireAuth, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
@@ -12,28 +11,33 @@ import { z } from 'zod'
 export const dynamic = 'force-dynamic'
 
 const schema = z.object({
-  userId: z.union([z.number(), z.string()]),
   amount: z.number().positive().max(1_000_000),
   note: z.string().max(500).optional(),
 })
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
-    if (!userId) {
-      return Response.json({ error: 'userId required' }, { status: 400 })
+    if (!checkRateLimit(req, 'dashboard', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAuth(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     await connectDB()
 
-    const user = await User.findById(Number(userId) || userId).lean()
+    const user = await User.findById(auth.userId).lean()
     if (!user) {
       return Response.json({ error: 'User not found' }, { status: 404 })
     }
 
     const pending = await WithdrawalRequest.findOne({
-      userId: Number(userId) || userId,
+      userId: auth.userId,
       status: 0,
       archivedAt: null
     }).lean()
@@ -51,6 +55,18 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!checkRateLimit(req, 'dashboard', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAuth(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await req.json()
     const parsed = schema.safeParse(body)
 
@@ -58,12 +74,12 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid input data' }, { status: 400 })
     }
 
-    const { userId, amount, note } = parsed.data
+    const { amount, note } = parsed.data
 
     await connectDB()
 
     const now = new Date()
-    const numericUserId = Number(userId) || userId
+    const numericUserId = auth.userId
 
     const user = await User.findOne({ _id: numericUserId, archivedAt: null }).select('archivedAt balance').lean()
     if (!user) {

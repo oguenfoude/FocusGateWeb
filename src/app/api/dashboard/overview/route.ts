@@ -1,9 +1,7 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   Any caller can read a user's full dashboard overview by knowing
-//   their userId — modems, balance, pending withdrawals, recent SMS.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
+import { requireAuth, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
 import { UserModem } from '@/lib/models/UserModem'
@@ -18,16 +16,21 @@ export const revalidate = 0
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
+    if (!checkRateLimit(request as any, 'dashboard', 60, 60_000)) {
+      return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+    let auth
+    try {
+      auth = await requireAuth(request as any)
+    } catch (e) {
+      if (e instanceof AuthError) return NextResponse.json({ error: e.message }, { status: e.status })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     await connectDB()
 
-    const numericUserId = Number(userId) || userId
+    const numericUserId = auth.userId
 
     const assignments = await UserModem.find({
       userId: numericUserId,

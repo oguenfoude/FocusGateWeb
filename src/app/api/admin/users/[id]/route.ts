@@ -1,12 +1,11 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   POST actions expose admin credit, password changes, modems assign/unassign.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import mongoose from 'mongoose'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
 import { toNum, toNumOrNull } from '@/lib/number-utils'
+import { requireAdmin, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +25,18 @@ async function findUserByLegacySafeId(id: string) {
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
 
     const resolvedParams = await params
@@ -113,6 +124,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
 
     const resolvedParams = await params

@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Alaafi",
+    "name": "FocusGate",
     "adminTitle": "Portail d'Administration",
     "userTitle": "Tableau de bord"
   },
@@ -22,7 +22,7 @@
     "logout": "Se déconnecter",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
-    "loginTitle": "Alaafi",
+    "loginTitle": "FocusGate",
     "loginSubtitle": "Système de gestion de passerelle",
     "loginButton": "Se connecter à votre compte",
     "loginError": "Nom d'utilisateur ou mot de passe invalide",

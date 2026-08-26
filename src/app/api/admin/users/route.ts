@@ -1,12 +1,11 @@
-// TODO-AUTH: This route is currently UNAUTHENTICATED.
-//   Allows reading and creating user accounts (including admin) by anyone.
-//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
 import { toNum } from '@/lib/number-utils'
 import { z } from 'zod'
+import { requireAdmin, AuthError } from '@/lib/api-auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +17,18 @@ const createUserSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     await connectDB()
 
     const { searchParams } = new URL(req.url)
@@ -54,6 +65,18 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!checkRateLimit(req, 'admin', 60, 60_000)) {
+      return Response.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
+    }
+
+    let auth
+    try {
+      auth = await requireAdmin(req)
+    } catch (e) {
+      if (e instanceof AuthError) return Response.json({ error: e.message }, { status: e.status })
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await req.json()
     const parsed = createUserSchema.safeParse(body)
     if (!parsed.success) {
