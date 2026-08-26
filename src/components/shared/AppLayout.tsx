@@ -7,6 +7,7 @@ import { TopBar } from '@/components/shared/TopBar'
 import { MobileMenuProvider } from '@/components/shared/mobile-menu-provider'
 import { LayoutContent } from '@/components/shared/LayoutContent'
 import { useLanguage } from '@/components/language-provider'
+import { useUserId } from '@/components/user-id-provider'
 import { Loader2 } from 'lucide-react'
 
 interface AppLayoutProps {
@@ -17,10 +18,10 @@ interface AppLayoutProps {
 export function AppLayout({ children, requireAdmin = false }: AppLayoutProps) {
   const router = useRouter()
   const { t } = useLanguage()
+  const userId = useUserId()
   const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
     const role = localStorage.getItem('role')
     if (!userId || (requireAdmin && role !== '0')) {
       router.push('/login')
@@ -28,7 +29,7 @@ export function AppLayout({ children, requireAdmin = false }: AppLayoutProps) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setAuthorized(true)
     }
-  }, [router, requireAdmin])
+  }, [userId, router, requireAdmin])
 
   if (!authorized) {
     return (

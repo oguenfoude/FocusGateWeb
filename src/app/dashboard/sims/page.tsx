@@ -5,9 +5,8 @@ import { SimCardItem } from '@/components/dashboard/SimCard'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { useLanguage } from '@/components/language-provider'
 import { useUserId } from '@/components/user-id-provider'
+import { fetcher } from '@/lib/swr-fetcher'
 import { Inbox, Smartphone } from 'lucide-react'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 interface SimCardData {
   modemId: string
