@@ -8,8 +8,7 @@ import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { getModemBrand } from '@/lib/modem-utils'
 import { formatDate } from '@/lib/date-utils'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface ModemDetailData {
   modem: {
@@ -64,10 +63,10 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
     refreshInterval: 30000,
   })
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">{t('modemDetail.loading')}</div>
+  if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('modemDetail.loading')}</div>
   if (error || (data && 'error' in data)) {
     return (
-      <div className="p-8 text-center text-destructive">
+      <div className="p-8 text-center text-red-500">
         <p>{t('modemDetail.loadError')}</p>
         <button onClick={() => router.push('/admin/modems')} className="btn btn-outline btn-sm mt-4">
           {t('modemDetail.backToModems')}

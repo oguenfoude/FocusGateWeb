@@ -242,7 +242,7 @@ export function WithdrawalTable() {
                 <button type="button" onClick={() => setConfirmDialog({ isOpen: false, action: null, request: null })} className="btn btn-outline" disabled={isProcessing}>
                   {t('withdrawals.cancel')}
                 </button>
-                <button type="submit" disabled={isProcessing} className={`btn shadow-md ${confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'btn-primary'}`}>
+                <button type="submit" disabled={isProcessing} className={`btn shadow-md ${confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
                   {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
                   {t('withdrawals.confirm')}
                 </button>

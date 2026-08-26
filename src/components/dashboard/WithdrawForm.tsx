@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
 import { useLanguage } from '@/components/language-provider'
+import { fetcher } from '@/lib/swr-fetcher'
 
 const schema = z.object({
   amount: z.number().positive().max(1000000),
@@ -16,8 +17,6 @@ const schema = z.object({
 })
 
 type FormData = z.infer<typeof schema>
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawForm({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
@@ -64,8 +63,8 @@ export function WithdrawForm({ userId }: { userId: string }) {
     }
   }
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">{t('withdraw.loadingWallet')}</div>
-  if (error || data?.error) return <div className="p-8 text-center text-destructive">{t('withdraw.failedToLoadWallet')}</div>
+  if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('withdraw.loadingWallet')}</div>
+  if (error || data?.error) return <div className="p-8 text-center text-red-500">{t('withdraw.failedToLoadWallet')}</div>
 
   return (
     <div className="grid gap-6 md:grid-cols-2 max-w-4xl">

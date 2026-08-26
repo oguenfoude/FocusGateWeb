@@ -9,6 +9,7 @@ import { useLanguage } from '@/components/language-provider'
 import { formatDate, formatShortDate } from '@/lib/date-utils'
 import { toNum } from '@/lib/number-utils'
 import { useEscape } from '@/hooks/use-escape'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface UserBalanceHistoryItem {
   _id: string
@@ -57,8 +58,6 @@ interface ModemItem {
   phoneNumber?: number | null
   assignedTo?: string | null
 }
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 function sourceLabel(source: number, t: (key: string) => string): string {
   switch (source) {
