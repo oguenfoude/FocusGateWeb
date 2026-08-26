@@ -7,9 +7,8 @@ import { ArrowLeft, RadioTower, Info, History, MessageSquare, Clock, X } from 'l
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
 import { getModemBrand } from '@/lib/modem-utils'
-import { formatDate, formatShortDate } from '@/lib/date-utils'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { formatDate } from '@/lib/date-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface ModemDetailData {
   modem: {
@@ -56,6 +55,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
   const modemId = resolvedParams.id
   const router = useRouter()
   const { t, locale } = useLanguage()
+  const loc = locale === 'fr' ? 'fr-FR' : locale === 'ar' ? 'ar-DZ' : 'en-US'
   const [activeTab, setActiveTab] = useState<'info' | 'balance' | 'sms'>('info')
   const [isUnassigning, setIsUnassigning] = useState(false)
 
@@ -63,10 +63,10 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
     refreshInterval: 30000,
   })
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">{t('modemDetail.loading')}</div>
+  if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('modemDetail.loading')}</div>
   if (error || (data && 'error' in data)) {
     return (
-      <div className="p-8 text-center text-destructive">
+      <div className="p-8 text-center text-red-500">
         <p>{t('modemDetail.loadError')}</p>
         <button onClick={() => router.push('/admin/modems')} className="btn btn-outline btn-sm mt-4">
           {t('modemDetail.backToModems')}
@@ -138,14 +138,14 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                 )}
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : 'N/A'}
+                {getModemBrand(modem.brand != null ? Number(modem.brand) : null)} {modem.model} &middot; {modem.machineId ? modem.machineId.slice(0, 8) : t('common.notAvailable')}
               </p>
             </div>
           </div>
           {sim && (
             <div className="md:text-end">
               <p className="text-2xl font-bold text-brand-600">
-                {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                {sim.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
               </p>
               <p className="text-xs font-mono text-gray-400 mt-0.5">IMEI: {modem.imei}</p>
             </div>
@@ -239,7 +239,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex justify-between items-center">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.balance')}</dt>
                         <dd className="text-lg font-bold text-brand-600">
-                          {sim.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                          {sim.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                         </dd>
                       </div>
                       <div className="flex justify-between">
@@ -259,7 +259,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex justify-between">
                         <dt className="text-gray-400 font-medium">{t('modemDetail.lastSeen')}</dt>
                         <dd className="text-xs text-gray-600 font-medium">
-                          {sim.lastSeen ? formatShortDate(sim.lastSeen, locale) : '-'}
+                          {sim.lastSeen ? formatDate(sim.lastSeen, locale) : '-'}
                         </dd>
                       </div>
                     </dl>
@@ -327,16 +327,16 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline justify-between">
                           <span className={`text-sm font-bold px-2 py-0.5 rounded-md ${b.delta >= 0 ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}>
-                            {b.delta >= 0 ? '+' : ''}{b.delta.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                            {b.delta >= 0 ? '+' : ''}{b.delta.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                           </span>
                           <span className="text-gray-400 text-[11px]">
-                            {b.recordedAt ? formatShortDate(b.recordedAt, locale) : '-'}
+                            #{b._id} &middot; {b.recordedAt ? formatDate(b.recordedAt, locale) : '-'}
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">
-                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : t('modemDetail.other')}
+                          {b.source === 0 ? t('modemDetail.ussdCheck') : b.source === 1 ? t('modemDetail.smsCredit') : b.source === 2 ? t('modemDetail.settlement') : b.source === 3 || b.source === 4 ? t('modemDetail.withdrawal') : b.source === 5 ? 'MeetMob' : t('modemDetail.other')}
                           {' · '}
-                          {b.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} DA
+                          {b.balance.toLocaleString(loc, { minimumFractionDigits: 2 })} {t('common.da')}
                         </p>
                       </div>
                     </div>
@@ -375,7 +375,7 @@ export default function AdminModemDetailPage({ params }: { params: Promise<{ id:
                               <span className="text-sm font-semibold text-gray-900">{sms.senderNumber}</span>
                               <span className="text-[10px] text-gray-300">&middot;</span>
                               <span className="text-[11px] text-gray-400">
-                                {sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : '-'}
+                                {sms.receivedAt ? formatDate(sms.receivedAt, locale) : '-'}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed">{sms.content}</p>

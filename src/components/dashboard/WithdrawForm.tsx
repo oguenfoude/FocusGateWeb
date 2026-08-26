@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
 import { useLanguage } from '@/components/language-provider'
+import { fetcher } from '@/lib/swr-fetcher'
 
 const schema = z.object({
   amount: z.number().positive().max(1000000),
@@ -16,8 +17,6 @@ const schema = z.object({
 })
 
 type FormData = z.infer<typeof schema>
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawForm({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
@@ -50,7 +49,7 @@ export function WithdrawForm({ userId }: { userId: string }) {
       const json = await res.json()
       
       if (!res.ok) {
-        throw new Error(json.error || 'Failed to submit request')
+        throw new Error(json.error || t('common.failedToSubmit'))
       }
       
       toast.success(t('withdraw.requestSubmitted'))
@@ -64,8 +63,8 @@ export function WithdrawForm({ userId }: { userId: string }) {
     }
   }
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse">{t('withdraw.loadingWallet')}</div>
-  if (error || data?.error) return <div className="p-8 text-center text-destructive">{t('withdraw.failedToLoadWallet')}</div>
+  if (isLoading) return <div className="p-8 text-center text-gray-400 animate-pulse">{t('withdraw.loadingWallet')}</div>
+  if (error || data?.error) return <div className="p-8 text-center text-red-500">{t('withdraw.failedToLoadWallet')}</div>
 
   return (
     <div className="grid gap-6 md:grid-cols-2 max-w-4xl">
@@ -97,25 +96,27 @@ export function WithdrawForm({ userId }: { userId: string }) {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="amount" className="text-sm font-medium text-gray-700">{t('withdraw.amountLabel')}</Label>
-                <input 
-                  id="amount" 
-                  type="number" 
+                <input
+                  id="amount"
+                  type="number"
                   placeholder={t('withdraw.amountPlaceholder')}
                   className="input"
+                  aria-describedby={errors.amount ? 'amount-error' : undefined}
                   {...register('amount', { valueAsNumber: true })}
                 />
-                {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
+                {errors.amount && <p id="amount-error" className="text-sm text-red-500" role="alert">{errors.amount.message}</p>}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="note" className="text-sm font-medium text-gray-700">{t('withdraw.noteLabel')}</Label>
-                <textarea 
-                  id="note" 
+                <textarea
+                  id="note"
                   placeholder={t('withdraw.notePlaceholder')}
                   className="input min-h-[100px]"
+                  aria-describedby={errors.note ? 'note-error' : undefined}
                   {...register('note')}
                 />
-                {errors.note && <p className="text-sm text-red-500">{errors.note.message}</p>}
+                {errors.note && <p id="note-error" className="text-sm text-red-500" role="alert">{errors.note.message}</p>}
               </div>
               
               <button type="submit" className="btn btn-primary w-full justify-center shadow-md" disabled={isSubmitting}>

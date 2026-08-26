@@ -1,3 +1,7 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Allows reading withdrawal requests by anyone; the POST also creates new
+//   withdrawal requests without auth.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
@@ -49,7 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     const amt = Number(amount)
-    if (!amt || amt <= 0) {
+    if (!Number.isFinite(amt) || amt <= 0) {
       return Response.json({ error: 'Amount must be a positive number' }, { status: 400 })
     }
 

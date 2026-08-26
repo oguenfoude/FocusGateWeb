@@ -1,10 +1,12 @@
 'use client'
 
+import { useEffect, useRef, useState, useCallback } from 'react'
 import useSWR from 'swr'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Info, MessageSquare, Loader2, Inbox } from 'lucide-react'
+import { Info, MessageSquare, Loader2, Inbox, Bell } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
-import { formatShortDate, formatTimeAgo } from '@/lib/date-utils'
+import { formatShortDate, formatDate } from '@/lib/date-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface SmsItemType {
   id: string
@@ -17,18 +19,57 @@ interface SmsItemType {
   simPhoneNumber?: number | null
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json())
-
 export function SmsList({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
+  const prevCountRef = useRef(0)
+  const [newSmsToast, setNewSmsToast] = useState<{ sender: string; count: number } | null>(null)
+
   const { data, error, isLoading } = useSWR(
     userId ? `/api/dashboard/sms?userId=${userId}` : null,
     fetcher,
-    { refreshInterval: 30000 }
+    { refreshInterval: 15000, revalidateOnFocus: true, revalidateOnReconnect: true }
   )
+
+  const currentCount = Array.isArray(data) ? data.length : 0
+
+  const showNotification = useCallback((sender: string, count: number) => {
+    setNewSmsToast({ sender, count })
+    setTimeout(() => setNewSmsToast(null), 5000)
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('New SMS received', {
+        body: count > 1 ? `${count} new messages` : `From: ${sender}`,
+        icon: '/favicon.ico',
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (prevCountRef.current > 0 && currentCount > prevCountRef.current) {
+      const diff = currentCount - prevCountRef.current
+      const newest = Array.isArray(data) && data.length > 0 ? data[0] : null
+      showNotification(newest?.sender || 'Unknown', diff)
+    }
+    prevCountRef.current = currentCount
+  }, [currentCount, data, showNotification])
 
   return (
     <div className="space-y-4">
+      {newSmsToast && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-700 font-medium animate-in fade-in slide-in-from-top-2 duration-300">
+          <Bell className="h-4 w-4 text-emerald-500" />
+          <span>
+            {newSmsToast.count > 1
+              ? `${newSmsToast.count} new SMS`
+              : `New SMS from ${newSmsToast.sender}`}
+          </span>
+        </div>
+      )}
       {/* Desktop Table */}
       <div className="hidden lg:block card page-enter delay-100">
         <div className="overflow-x-auto">
@@ -90,6 +131,8 @@ export function SmsList({ userId }: { userId: string }) {
                           <TooltipContent><p>{t('dashboardSms.promoTooltip')}</p></TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                    ) : sms.type === 'balance' ? (
+                      <span className="badge badge-success">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     ) : sms.type === 'recharge' ? (
                       <span className="badge badge-info">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
                     ) : sms.type === 'transfer' ? (
@@ -103,7 +146,7 @@ export function SmsList({ userId }: { userId: string }) {
                     <span className="badge badge-gray font-mono text-[10px]">{sms.simPhoneNumber || t('common.unknown')}</span>
                   </td>
                   <td className="px-5 py-4 text-end">
-                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</div>
+                    <div className="text-gray-500 font-medium text-xs">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</div>
                     <div className="text-[10px] text-gray-400 font-medium mt-1">{sms.receivedAt ? formatShortDate(sms.receivedAt, locale) : ''}</div>
                   </td>
                 </tr>
@@ -133,11 +176,13 @@ export function SmsList({ userId }: { userId: string }) {
           <div key={sms.id} className="card card-body p-4 page-enter delay-100">
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-gray-900">{sms.sender}</span>
-              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
+              <span className="text-[11px] text-gray-400 font-medium">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</span>
             </div>
             <div className="mb-2">
               {sms.isOffer ? (
                 <span className="badge badge-warning">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
+              ) : sms.type === 'balance' ? (
+                <span className="badge badge-success">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               ) : sms.type === 'recharge' ? (
                 <span className="badge badge-info">{sms.typeLabel ? t(sms.typeLabel) : ''}</span>
               ) : sms.type === 'transfer' ? (

@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   PATCH enables any caller to approve or reject withdrawals, mutating
+//   user balances. CRITICAL. See AGENTS.md > Open web TODOs.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
@@ -19,91 +22,107 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await connectDB()
 
-    // Use raw MongoDB collection to avoid Mongoose Number cast precision loss on large IDs
     const db = mongoose.connection.db!
     const col = db.collection('withdrawalrequests')
 
-    // Try Number first (handles most IDs), then fall back to string match for oversized IDs
     const numId = Number(id)
-    let request = await col.findOne({ _id: numId } as Record<string, unknown>)
-    if (!request && id !== String(numId)) {
-      // Oversized ID: precision was lost in Number conversion — try string-based matching
-      request = await col.findOne({ _id: id } as Record<string, unknown>)
+    if (!Number.isFinite(numId) || numId <= 0) {
+      return Response.json({ error: 'Invalid withdrawal ID' }, { status: 400 })
     }
-    if (!request) {
-      return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
-    }
-
-    if (request.archivedAt !== null && request.archivedAt !== undefined) {
-      return Response.json({ error: 'Withdrawal request not found' }, { status: 404 })
-    }
-
-    if (request.status !== 0) {
-      return Response.json({ error: 'Request is already processed' }, { status: 400 })
-    }
-
     const now = new Date()
-    const requestObjectId = request._id
     const adminId = body.adminId ? (Number(body.adminId) || body.adminId) : undefined
 
     if (action === 'approve') {
-      const user = await User.findById(request.userId)
-      if (!user) {
-        return Response.json({ error: 'User not found' }, { status: 404 })
+      const session = await mongoose.connection.startSession()
+      let approvedDoc: Record<string, unknown> | null = null
+      try {
+        await session.withTransaction(async () => {
+          approvedDoc = await col.findOneAndUpdate(
+            { _id: numId, status: 0, archivedAt: null } as Record<string, unknown>,
+            { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
+            { returnDocument: 'after', session }
+          )
+
+          if (!approvedDoc) return
+
+          const user = await User.findById(approvedDoc.userId).session(session)
+          if (!user) return
+
+          const oldBalance = toNum(user.balance)
+          const withdrawalAmount = toNum(approvedDoc.amount)
+          const newBalance = Math.max(0, oldBalance - withdrawalAmount)
+
+          await User.updateOne(
+            { _id: approvedDoc.userId },
+            { $set: { balance: newBalance, updatedAt: now, balanceUpdatedAt: now } },
+            { session }
+          )
+
+          const BalanceHistory = (await import('@/lib/models/BalanceHistory')).BalanceHistory
+          await BalanceHistory.create(
+            [{
+              _id: nextId(),
+              simCardId: null,
+              modemId: null,
+              userId: approvedDoc.userId,
+              balance: newBalance,
+              previousBalance: oldBalance,
+              source: 4,
+              recordedAt: now,
+              updatedAt: now,
+              archivedAt: null,
+              machineId: 'web',
+            }],
+            { session }
+          )
+
+          const UserBalanceHistory = (await import('@/lib/models/UserBalanceHistory')).UserBalanceHistory
+          await UserBalanceHistory.create(
+            [{
+              _id: nextId(),
+              userId: approvedDoc.userId,
+              amount: -withdrawalAmount,
+              balanceAfter: newBalance,
+              type: 1,
+              simCardId: null,
+              note: note || `Withdrawal approved (${withdrawalAmount.toLocaleString()} DA)`,
+              recordedAt: now,
+              updatedAt: now,
+              archivedAt: null,
+              machineId: 'web',
+            }],
+            { session }
+          )
+        })
+      } finally {
+        await session.endSession()
       }
 
-      const oldBalance = toNum(user.balance)
-      const withdrawalAmount = toNum(request.amount)
-      const newBalance = Math.max(0, oldBalance - withdrawalAmount)
-
-      await col.updateOne(
-        { _id: requestObjectId },
-        { $set: { status: 1, processedAt: now, adminNote: note || 'Withdrawal approved', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
-      )
-
-      await User.updateOne(
-        { _id: request.userId },
-        { $set: { balance: newBalance, updatedAt: now } }
-      )
-
-      const BalanceHistory = (await import('@/lib/models/BalanceHistory')).BalanceHistory
-      await BalanceHistory.create({
-        _id: nextId(),
-        simCardId: null,
-        modemId: null,
-        userId: request.userId,
-        balance: newBalance,
-        previousBalance: oldBalance,
-        source: 4,
-        recordedAt: now,
-        updatedAt: now,
-        archivedAt: null,
-        machineId: 'web',
-      })
-
-      const UserBalanceHistory = (await import('@/lib/models/UserBalanceHistory')).UserBalanceHistory
-      await UserBalanceHistory.create({
-        _id: nextId(),
-        userId: request.userId,
-        amount: -withdrawalAmount,
-        balanceAfter: newBalance,
-        type: 1,
-        simCardId: null,
-        note: note || `Withdrawal approved (${withdrawalAmount.toLocaleString()} DA)`,
-        recordedAt: now,
-        updatedAt: now,
-        archivedAt: null,
-        machineId: 'web',
-      })
+      if (!approvedDoc) {
+        return Response.json({ ok: true, message: 'Already processed' })
+      }
 
       return Response.json({ ok: true })
     }
 
     if (action === 'reject') {
-      await col.updateOne(
-        { _id: requestObjectId },
-        { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } }
-      )
+      const session = await mongoose.connection.startSession()
+      let rejectedDoc: Record<string, unknown> | null = null
+      try {
+        await session.withTransaction(async () => {
+          rejectedDoc = await col.findOneAndUpdate(
+            { _id: numId, status: 0, archivedAt: null } as Record<string, unknown>,
+            { $set: { status: 2, processedAt: now, adminNote: note || 'Withdrawal rejected', updatedAt: now, ...(adminId !== undefined ? { processedByAdminId: adminId } : {}) } },
+            { returnDocument: 'after', session }
+          )
+        })
+      } finally {
+        await session.endSession()
+      }
+
+      if (!rejectedDoc) {
+        return Response.json({ ok: true, message: 'Already processed' })
+      }
 
       return Response.json({ ok: true })
     }

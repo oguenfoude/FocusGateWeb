@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation'
 import { Search, User, Copy, Inbox } from 'lucide-react'
 import { getModemBrand } from '@/lib/modem-utils'
 import { useLanguage } from '@/components/language-provider'
-import { formatTimeAgo } from '@/lib/date-utils'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { formatDate } from '@/lib/date-utils'
+import { toNum } from '@/lib/number-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface ModemData {
   _id: string
@@ -44,7 +44,7 @@ export function ModemTable() {
   const lastSeenOf = (modem: ModemData): string | null => modem.simLastSeen ?? modem.updatedAt
   const formatLastSeen = (modem: ModemData) => {
     const ts = lastSeenOf(modem);
-    return ts ? formatTimeAgo(new Date(ts), locale) : t('modems.never');
+    return ts ? formatDate(new Date(ts), locale) : t('modems.never');
   };
 
   const counts = {
@@ -148,7 +148,7 @@ export function ModemTable() {
                     <td className="px-6 py-4 font-bold text-sm">
                       {modem.balance != null ? (
                         <span className={modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}>
-                          {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
+                          {toNum(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                           {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                         </span>
                       ) : '-'}
@@ -220,7 +220,7 @@ export function ModemTable() {
                 <p className={`font-bold text-sm ${modem.isOnline ? 'text-emerald-600' : 'text-gray-400'}`}>
                   {modem.balance != null ? (
                     <>
-                      {Number(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
+                      {toNum(modem.balance).toLocaleString(loc, { minimumFractionDigits: 2 })} DA
                       {!modem.isOnline && <span className="text-[10px] font-normal ml-1">({t('modems.lastKnown')})</span>}
                     </>
                   ) : '-'}

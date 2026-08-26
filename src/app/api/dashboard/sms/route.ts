@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Anyone can list a user's incoming SMS (incl. recharge records) by userId.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { SmsRecord } from '@/lib/models/SmsRecord'
@@ -30,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     const records = await SmsRecord.find({
       simCardId: { $in: simIds },
-      senderNumber: { $regex: /mobilis/i },
+      senderNumber: { $regex: /mobilis|77111|7711|610|600|666|meetmob/i },
       archivedAt: null,
     }).sort({ receivedAt: -1 }).limit(50).lean()
 

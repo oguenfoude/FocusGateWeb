@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/components/language-provider'
 import { Info } from 'lucide-react'
-import { formatTimeAgo } from '@/lib/date-utils'
+import { formatDate } from '@/lib/date-utils'
 
 interface SimCardProps {
   phoneNumber: number | null
@@ -43,7 +43,7 @@ export function SimCardItem({ phoneNumber, isOnline, lastSeen }: SimCardProps) {
       </div>
       <div className="pt-4 border-t border-gray-200/50 text-xs text-gray-400 flex justify-between uppercase tracking-widest font-bold mt-auto relative z-10">
         <span>{t('simCard.lastSeen')}</span>
-        <span>{lastSeen ? formatTimeAgo(new Date(lastSeen), locale) : t('simCard.never')}</span>
+        <span>{lastSeen ? formatDate(new Date(lastSeen), locale) : t('simCard.never')}</span>
       </div>
     </div>
   )

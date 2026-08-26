@@ -6,14 +6,17 @@ import { ArrowUpRight, ArrowDownRight, Smartphone, X, Plus, Loader2, CircleDolla
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
-import { formatDate, formatShortDate, formatTimeAgo } from '@/lib/date-utils'
+import { formatDate, formatShortDate } from '@/lib/date-utils'
+import { toNum } from '@/lib/number-utils'
+import { useEscape } from '@/hooks/use-escape'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface UserBalanceHistoryItem {
   _id: string
   type: number
   amount: number
   note?: string
-  updatedAt?: string
+  recordedAt?: string
 }
 
 interface BalanceHistoryItem {
@@ -22,7 +25,7 @@ interface BalanceHistoryItem {
   delta: number
   source: number
   balance: number
-  updatedAt?: string
+  recordedAt?: string
 }
 
 interface SmsRecordItem {
@@ -56,14 +59,14 @@ interface ModemItem {
   assignedTo?: string | null
 }
 
-const fetcher = (url: string) => fetch(url).then(r => r.json())
-
 function sourceLabel(source: number, t: (key: string) => string): string {
   switch (source) {
     case 0: return t('modemDetail.ussdCheck')
     case 1: return t('modemDetail.smsCredit')
     case 2: return t('modemDetail.settlement')
+    case 3: return t('modemDetail.other')
     case 4: return t('modemDetail.withdrawal')
+    case 5: return 'MeetMob'
     default: return t('modemDetail.other')
   }
 }
@@ -82,6 +85,8 @@ export function UserDetail({ userId }: { userId: string }) {
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [withdrawNote, setWithdrawNote] = useState('')
   const [isWithdrawing, setIsWithdrawing] = useState(false)
+
+  useEscape(() => { setIsCreditModalOpen(false); setIsWithdrawModalOpen(false); }, isCreditModalOpen || isWithdrawModalOpen)
 
   const { data, error, isLoading } = useSWR(`/api/admin/users/${userId}`, fetcher)
   const { data: allModems } = useSWR<ModemItem[]>('/api/admin/modems', fetcher)
@@ -184,7 +189,7 @@ export function UserDetail({ userId }: { userId: string }) {
       toast.error(t('users.detail.invalidAmount'))
       return
     }
-    const userBalance = Number(user.balance) || 0
+    const userBalance = toNum(user.balance)
     if (amt > userBalance) {
       toast.error(t('withdraw.amountExceeds'))
       return
@@ -232,7 +237,7 @@ export function UserDetail({ userId }: { userId: string }) {
                 {user.role === 0 ? <span className="badge badge-purple shadow-sm">{t('users.detail.admin')}</span> : <span className="badge badge-gray shadow-sm">{t('users.detail.user')}</span>}
                 {user.archivedAt && <span className="badge badge-gray shadow-sm">{t('users.archived')}</span>}
               </div>
-              <p className="text-sm text-gray-500 font-medium mt-1">@{user.username} &middot; Created {user.createdAt ? formatDate(user.createdAt, locale) : '-'}</p>
+              <p className="text-sm text-gray-500 font-medium mt-1">@{user.username} &middot; {t('common.created')} {user.createdAt ? formatDate(user.createdAt, locale) : '-'}</p>
             </div>
           </div>
           <div className="sm:text-end flex flex-col sm:items-end gap-3">
@@ -392,9 +397,9 @@ export function UserDetail({ userId }: { userId: string }) {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium">{h.note || '-'}</td>
-                      <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
-                        {h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}
-                      </td>
+                        <td className="px-5 py-3 text-sm text-end text-gray-400 font-medium">
+                         {h.recordedAt ? formatShortDate(h.recordedAt, locale) : '-'}
+                       </td>
                     </tr>
                   ))}
                   {userBalanceHistories.length === 0 && (
@@ -424,7 +429,7 @@ export function UserDetail({ userId }: { userId: string }) {
                             {h.type === 0 ? '+' : '-'}{Math.abs(h.amount).toLocaleString(loc)} DA
                           </span>
                         </div>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatShortDate(h.updatedAt, locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.recordedAt ? formatShortDate(h.recordedAt, locale) : '-'}</span>
                       </div>
                       <p className="text-sm font-medium text-gray-600 mt-2">{h.note || '-'}</p>
                     </div>
@@ -467,7 +472,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       <td className="px-5 py-3 text-sm font-medium text-gray-700">{sourceLabel(h.source, t)}</td>
                       <td className="px-5 py-3 font-bold text-sm text-gray-900">{h.balance?.toLocaleString(loc)} DA</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400">
-                        {h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}
+                        {h.recordedAt ? formatDate(new Date(h.recordedAt), locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -493,7 +498,7 @@ export function UserDetail({ userId }: { userId: string }) {
                         <span className={`text-sm font-bold px-2 py-1 rounded-md ${(h.delta ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                           {(h.delta ?? 0) >= 0 ? '+' : ''}{h.delta?.toLocaleString(loc)} DA
                         </span>
-                        <span className="text-[11px] font-medium text-gray-400">{h.updatedAt ? formatTimeAgo(new Date(h.updatedAt), locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{h.recordedAt ? formatDate(new Date(h.recordedAt), locale) : '-'}</span>
                       </div>
                       <div className="flex flex-col gap-1 mt-2 p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between text-sm">
@@ -541,7 +546,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </td>
                       <td className="px-5 py-3 text-sm text-gray-600 font-medium leading-relaxed max-w-md truncate" title={sms.content}>{sms.content}</td>
                       <td className="px-5 py-3 text-end text-sm font-medium text-gray-400 whitespace-nowrap">
-                        {sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}
+                        {sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -569,7 +574,7 @@ export function UserDetail({ userId }: { userId: string }) {
                       </div>
                       <p className="text-sm font-medium text-gray-600 mb-3 bg-gray-50 p-3 rounded-lg leading-relaxed">{sms.content}</p>
                       <div className="text-end">
-                        <span className="text-[11px] font-medium text-gray-400">{sms.receivedAt ? formatTimeAgo(new Date(sms.receivedAt), locale) : '-'}</span>
+                        <span className="text-[11px] font-medium text-gray-400">{sms.receivedAt ? formatDate(new Date(sms.receivedAt), locale) : '-'}</span>
                       </div>
                     </div>
                   ))
@@ -589,10 +594,10 @@ export function UserDetail({ userId }: { userId: string }) {
 
       {/* Credit User Modal */}
       {isCreditModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="credit-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h4 className="font-bold text-gray-900 flex items-center gap-2">
+              <h4 id="credit-title" className="font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-md bg-brand-50 flex items-center justify-center text-brand-600">
                   <Plus className="w-4 h-4" />
                 </div>
@@ -627,10 +632,10 @@ export function UserDetail({ userId }: { userId: string }) {
 
       {/* Create Withdrawal Modal */}
       {isWithdrawModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="withdraw-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h4 className="font-bold text-gray-900 flex items-center gap-2">
+              <h4 id="withdraw-title" className="font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-md bg-amber-50 flex items-center justify-center text-amber-600">
                   <CircleDollarSign className="w-4 h-4" />
                 </div>
@@ -642,7 +647,7 @@ export function UserDetail({ userId }: { userId: string }) {
               <div className="p-6 space-y-5">
                 <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100/50 mb-6">
                   <p className="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">{t('withdraw.availableBalance')}</p>
-                  <p className="text-2xl font-extrabold text-amber-700">{(Number(user.balance) || 0).toLocaleString(loc)} DA</p>
+                  <p className="text-2xl font-extrabold text-amber-700">{toNum(user.balance).toLocaleString(loc)} DA</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">{t('withdraw.amountLabel')}</label>

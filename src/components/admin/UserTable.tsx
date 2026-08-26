@@ -6,9 +6,8 @@ import { useState } from 'react'
 import { Search, Plus, Trash2, Eye, X, Loader2, Edit2, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import { useLanguage } from '@/components/language-provider'
-
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+import { useEscape } from '@/hooks/use-escape'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface UserRowType {
   _id: string
@@ -37,6 +36,8 @@ export function UserTable() {
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [editDisplayName, setEditDisplayName] = useState('')
   const [editPassword, setEditPassword] = useState('')
+
+  useEscape(() => { setIsModalOpen(false); setIsEditModalOpen(false); }, isModalOpen || isEditModalOpen)
 
   const { data, error, isLoading } = useSWR<UserRowType[]>(
     `/api/admin/users?showArchived=${showArchived}`,
@@ -356,10 +357,10 @@ export function UserTable() {
 
       {/* Add User Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="add-user-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl">
             <div className="card-header flex items-center justify-between border-b">
-              <h4 className="font-bold text-gray-900">{t('users.createUser')}</h4>
+              <h4 id="add-user-title" className="font-bold text-gray-900">{t('users.createUser')}</h4>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateUser}>
@@ -390,10 +391,10 @@ export function UserTable() {
 
       {/* Edit User Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div role="dialog" aria-modal="true" aria-labelledby="edit-user-title" className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md bg-white shadow-2xl">
             <div className="card-header flex items-center justify-between border-b">
-              <h4 className="font-bold text-gray-900">{t('users.editUser')}</h4>
+              <h4 id="edit-user-title" className="font-bold text-gray-900">{t('users.editUser')}</h4>
               <button onClick={() => setIsEditModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleEditUserSubmit}>

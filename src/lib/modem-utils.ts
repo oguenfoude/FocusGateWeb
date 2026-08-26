@@ -7,6 +7,8 @@ export const MODEM_BRANDS: Record<number, string> = {
   5: 'Sierra Wireless',
   6: 'Ericsson',
   7: 'MediaTek',
+  8: 'Alaafi',
+  9: 'FlexiDZ',
   99: 'Other',
 }
 

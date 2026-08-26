@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FocusGate",
+    "name": "Alaafi",
     "adminTitle": "Portail d'Administration",
     "userTitle": "Tableau de bord"
   },
@@ -22,10 +22,11 @@
     "logout": "Se déconnecter",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
-    "loginTitle": "FocusGate",
+    "loginTitle": "Alaafi",
     "loginSubtitle": "Système de gestion de passerelle",
     "loginButton": "Se connecter à votre compte",
-    "loginError": "Nom d'utilisateur ou mot de passe invalide"
+    "loginError": "Nom d'utilisateur ou mot de passe invalide",
+    "signedInSuccess": "Connexion réussie !"
   },
   "dashboard": {
     "overview": "Aperçu de votre passerelle",
@@ -139,7 +140,7 @@
     "smsMessages": "Messages SMS",
     "total": "total",
     "noSmsRecords": "Aucun enregistrement SMS trouvé.",
-    "showingOf": "Affichage de 20 sur {count}",
+    "showingOf": "Affichage de 20 sur {{count}}",
     "editUser": "Modifier l'utilisateur",
     "newPasswordOptional": "Nouveau mot de passe (optionnel)",
     "leaveBlank": "Laisser vide pour garder le mot de passe actuel",
@@ -168,6 +169,7 @@
     "actions": "Actions",
     "archive": "Archiver",
     "restore": "Restaurer",
+    "credit": "Créditer l'utilisateur",
     "noUsers": "Aucun utilisateur trouvé correspondant à vos critères",
     "count": "{{count}} Utilisateurs",
     "user": "Utilisateur",
@@ -256,6 +258,7 @@
       "otp": "OTP / Code",
       "offer": "Promo / Offre",
       "recharge": "Recharge",
+      "balance": "Solde",
       "transfer": "Transfert",
       "info": "Info Générale"
     }
@@ -287,6 +290,7 @@
     "requestedAt": "Demandé le",
     "processedAt": "Traité le",
     "confirmTitle": "Êtes-vous absolument sûr ?",
+    "noteLabel": "Note admin (Optionnel)",
     "confirmApproveBody": "Cette action va APPROUVER la demande de retrait de {{amount}} DA pour l'utilisateur {{username}}.",
     "confirmRejectBody": "Cette action va REJETER la demande de retrait de {{amount}} DA pour l'utilisateur {{username}}.",
     "processing": "Traitement...",
@@ -412,13 +416,21 @@
     "da": "DA",
     "search": "Rechercher...",
     "archived": "Archivé",
+    "balance": "Solde",
     "view": "Voir",
     "unknown": "Inconnu",
     "pleaseLogIn": "Veuillez vous connecter pour continuer.",
     "failedToLoad": "Échec du chargement des données.",
     "notFound": "Page Non Trouvée",
     "notFoundDesc": "La page que vous recherchez n'existe pas.",
-    "goHome": "Retour à l'accueil"
+    "goHome": "Retour à l'accueil",
+    "unexpectedError": "Erreur inattendue",
+    "tryAgain": "Réessayer",
+    "adminPanelError": "Erreur du panneau d'administration",
+    "dashboardError": "Erreur du tableau de bord",
+    "notAvailable": "N/A",
+    "failedToSubmit": "Échec de la soumission de la demande",
+    "created": "Créé"
   },
   "balanceSource": {
     "0": "Vérification USSD",

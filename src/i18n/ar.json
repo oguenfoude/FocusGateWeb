@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "FocusGate",
+    "name": "Alaafi",
     "adminTitle": "لوحة الإدارة",
     "userTitle": "لوحة المستخدم"
   },
@@ -22,10 +22,11 @@
     "logout": "تسجيل الخروج",
     "username": "اسم المستخدم",
     "password": "كلمة المرور",
-    "loginTitle": "FocusGate",
+    "loginTitle": "Alaafi",
     "loginSubtitle": "نظام إدارة البوابة",
     "loginButton": "تسجيل الدخول إلى حسابك",
-    "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة"
+    "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "signedInSuccess": "تم تسجيل الدخول بنجاح!"
   },
   "dashboard": {
     "overview": "نظرة عامة على البوابة",
@@ -139,7 +140,7 @@
     "smsMessages": "رسائل SMS",
     "total": "إجمالي",
     "noSmsRecords": "لم يتم العثور على سجلات رسائل.",
-    "showingOf": "عرض 20 من {count}",
+    "showingOf": "عرض 20 من {{count}}",
     "editUser": "تعديل المستخدم",
     "newPasswordOptional": "كلمة المرور الجديدة (اختياري)",
     "leaveBlank": "اتركه فارغاً للحفاظ على كلمة المرور الحالية",
@@ -168,6 +169,7 @@
     "actions": "الإجراءات",
     "archive": "أرشفة",
     "restore": "استعادة",
+    "credit": "إضافة رصيد للمستخدم",
     "noUsers": "لم يتم العثور على مستخدمين مطابقين",
     "count": "{{count}} مستخدمين",
     "user": "مستخدم",
@@ -256,6 +258,7 @@
       "otp": "OTP / رمز",
       "offer": "عرض / ترويج",
       "recharge": "شحن",
+      "balance": "رصيد",
       "transfer": "تحويل",
       "info": "معلومات عامة"
     }
@@ -287,6 +290,7 @@
     "requestedAt": "تاريخ الطلب",
     "processedAt": "تاريخ المعالجة",
     "confirmTitle": "هل أنت متأكد تماماً؟",
+    "noteLabel": "ملاحظة المدير (اختياري)",
     "confirmApproveBody": "سيقوم هذا الإجراء بموافقة على طلب سحب مبلغ {{amount}} DA للمستخدم {{username}}.",
     "confirmRejectBody": "سيقوم هذا الإجراء برفض طلب سحب مبلغ {{amount}} DA للمستخدم {{username}}.",
     "processing": "جارٍ المعالجة...",
@@ -412,13 +416,21 @@
     "da": "DA",
     "search": "بحث...",
     "archived": "مؤرشف",
+    "balance": "الرصيد",
     "view": "عرض",
     "unknown": "غير معروف",
     "pleaseLogIn": "يرجى تسجيل الدخول للمتابعة.",
     "failedToLoad": "فشل تحميل البيانات.",
     "notFound": "الصفحة غير موجودة",
     "notFoundDesc": "الصفحة التي تبحث عنها غير موجودة.",
-    "goHome": "الذهاب للرئيسية"
+    "goHome": "الذهاب للرئيسية",
+    "unexpectedError": "خطأ غير متوقع",
+    "tryAgain": "حاول مرة أخرى",
+    "adminPanelError": "خطأ في لوحة الإدارة",
+    "dashboardError": "خطأ في لوحة التحكم",
+    "notAvailable": "غير متاح",
+    "failedToSubmit": "فشل في إرسال الطلب",
+    "created": "أنشأ"
   },
   "balanceSource": {
     "0": "فحص USSD",

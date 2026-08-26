@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   POST creates withdrawal requests on behalf of any userId passed in.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { WithdrawalRequest } from '@/lib/models/WithdrawalRequest'
@@ -60,38 +63,38 @@ export async function POST(req: NextRequest) {
     await connectDB()
 
     const now = new Date()
+    const numericUserId = Number(userId) || userId
 
-    const user = await User.findById(Number(userId) || userId).lean()
-    if (!user || user.archivedAt) {
+    const user = await User.findOne({ _id: numericUserId, archivedAt: null }).select('archivedAt balance').lean()
+    if (!user) {
       return Response.json({ error: 'User not found or archived' }, { status: 404 })
     }
 
     const userBalance = toNum(user.balance)
     if (amount > userBalance) {
-      return Response.json({ error: 'Amount exceeds available balance' }, { status: 400 })
+      return Response.json({ error: 'Insufficient balance' }, { status: 400 })
     }
 
-    const pending = await WithdrawalRequest.findOne({
-      userId: Number(userId) || userId,
-      status: 0,
-      archivedAt: null
-    }).lean()
-
-    if (pending) {
-      return Response.json({ error: 'You already have a pending withdrawal request.' }, { status: 409 })
+    try {
+      await WithdrawalRequest.create({
+        _id: nextId(),
+        userId: numericUserId,
+        amount,
+        note: note || null,
+        status: 0,
+        requestedAt: now,
+        machineId: 'web',
+        createdAt: now,
+        updatedAt: now,
+        archivedAt: null,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (msg.includes('E11000') || msg.includes('already exists') || msg.includes('duplicate key')) {
+        return Response.json({ error: 'You already have a pending withdrawal request.' }, { status: 409 })
+      }
+      throw err
     }
-
-    await WithdrawalRequest.create({
-      _id: nextId(),
-      userId: Number(userId) || userId,
-      amount,
-      note: note || null,
-      status: 0,
-      requestedAt: now,
-      machineId: 'web',
-      createdAt: now,
-      updatedAt: now,
-    })
 
     return Response.json({ ok: true })
   } catch (err) {

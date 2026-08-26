@@ -1,4 +1,8 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   POST enables any caller to unassign modems from users.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
+import mongoose from 'mongoose'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { toNum, toNumOrNull } from '@/lib/number-utils'
@@ -11,14 +15,25 @@ function stripComPort(obj: Record<string, unknown>): Record<string, unknown> {
   return result
 }
 
+async function findModemByLegacySafeId(id: string) {
+  const numId = Number(id)
+  let modem = await Modem.findOne({ _id: numId, archivedAt: null }).lean()
+  if (!modem && id !== String(numId)) {
+    const col = mongoose.connection.db!.collection('modems')
+    const raw = await col.findOne({ _id: id } as Record<string, unknown>)
+    if (raw && (raw.archivedAt === null || raw.archivedAt === undefined)) {
+      modem = raw as Awaited<typeof modem>
+    }
+  }
+  return modem
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB()
 
     const resolvedParams = await params
-    const id = Number(resolvedParams.id) || resolvedParams.id
-
-    const modem = await Modem.findOne({ _id: id, archivedAt: null }).lean()
+    const modem = await findModemByLegacySafeId(resolvedParams.id)
     if (!modem) {
       return Response.json({ error: 'Modem not found' }, { status: 404 })
     }
@@ -70,7 +85,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       smsRecords = sms.map(s => ({ ...s, _id: String(s._id) }))
 
       return Response.json({
-        modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
+        modem: { ...stripComPort(modem), _id: String(modem._id), imei: (modem as any).iMEI || modem.imei, isOnline },
         sim: { ...sim, _id: String(sim._id), balance: toNum(sim.balance) },
         assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
         balanceHistory,
@@ -82,7 +97,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const assignedUser = await assignedUserPromise
 
     return Response.json({
-      modem: { ...stripComPort(modem), _id: String(modem._id), isOnline },
+      modem: { ...stripComPort(modem), _id: String(modem._id), imei: (modem as any).iMEI || modem.imei, isOnline },
       sim: null,
       assignedUser: assignedUser ? { ...assignedUser, _id: String(assignedUser._id), balance: toNum(assignedUser.balance) } : null,
       balanceHistory,

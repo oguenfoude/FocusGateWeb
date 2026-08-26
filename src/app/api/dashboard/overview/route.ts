@@ -1,3 +1,7 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Any caller can read a user's full dashboard overview by knowing
+//   their userId — modems, balance, pending withdrawals, recent SMS.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
@@ -62,7 +66,7 @@ export async function GET(request: Request) {
 
     const recentSmsRaw = await SmsRecord.find({
       simCardId: { $in: simCardIds },
-      senderNumber: { $regex: /mobilis/i },
+      senderNumber: { $regex: /mobilis|77111|7711|610|600|666|meetmob/i },
       archivedAt: null
     })
       .sort({ receivedAt: -1 })
@@ -72,7 +76,7 @@ export async function GET(request: Request) {
     const simLookupMap = new Map(activeSims.map(s => [String(s._id), s]))
     const modemLookupIds = [...new Set(activeSims.map(s => s.modemId))]
     const modemLookupDocs = modemLookupIds.length > 0
-      ? await Modem.find({ _id: { $in: modemLookupIds } }).select('imei').lean()
+      ? await Modem.find({ _id: { $in: modemLookupIds } }).lean()
       : []
     const modemLookupMap = new Map(modemLookupDocs.map(m => [String(m._id), m]))
 
@@ -85,8 +89,8 @@ export async function GET(request: Request) {
         senderNumber: sms.senderNumber as string | undefined,
         content: sms.content as string | undefined,
         simCardId: sc ? {
-          phoneNumber: Number(sc.phoneNumber) || undefined,
-          modemId: modem ? { imei: modem.imei as string | undefined } : undefined,
+          phoneNumber: toNum(sc.phoneNumber) || undefined,
+          modemId: modem ? { imei: ((modem as any).iMEI || modem.imei) as string | undefined } : undefined,
         } : undefined,
       }
     })

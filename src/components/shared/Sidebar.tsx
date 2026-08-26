@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useLanguage } from '@/components/language-provider'
 import { useMobileMenu } from '@/components/shared/mobile-menu-provider'
 import { Locale } from '@/lib/i18n'
@@ -15,7 +15,6 @@ import {
   History,
   AlertTriangle,
   RadioTower,
-  Settings,
   X,
   LogOut,
 } from 'lucide-react'
@@ -39,6 +38,7 @@ function subscribe(callback: () => void) {
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { locale, setLocale, t, isRTL } = useLanguage()
   const { isOpen, close } = useMobileMenu()
   const rtl = isRTL
@@ -47,9 +47,13 @@ export function Sidebar() {
     () => getLocalStorage('userId'),
     () => null,
   )
+  const localStorageRole = useSyncExternalStore(
+    subscribe,
+    () => getLocalStorage('role'),
+    () => null,
+  )
 
-  const isAdmin = pathname.startsWith('/admin') ||
-    (!pathname.startsWith('/dashboard') && !localStorageUserId)
+  const isAdmin = localStorageRole === '0' || pathname.startsWith('/admin')
 
   const adminLinks = [
     { href: '/admin', label: t('nav.dashboard'), icon: LayoutDashboard },
@@ -58,7 +62,6 @@ export function Sidebar() {
     { href: '/admin/sms', label: t('nav.sms'), icon: MessageSquare },
     { href: '/admin/withdrawals', label: t('nav.withdrawals'), icon: Banknote },
     { href: '/admin/warnings', label: t('nav.warnings'), icon: AlertTriangle },
-    { href: '/admin/settings', label: t('nav.settings'), icon: Settings },
   ]
 
   const dashboardLinks = [
@@ -75,8 +78,9 @@ export function Sidebar() {
     try {
       localStorage.removeItem('userId')
       localStorage.removeItem('role')
+      localStorage.removeItem('username')
     } catch {}
-    window.location.href = '/login'
+    router.push('/login')
   }
 
   const sidebarContent = (
@@ -88,7 +92,7 @@ export function Sidebar() {
             <RadioTower className="text-white h-5 w-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-base font-bold tracking-tight">FocusGate</h1>
+            <h1 className="text-base font-bold tracking-tight">Alaafi</h1>
             <p className="text-[11px] text-slate-400 mt-0.5">{t('app.name')}</p>
           </div>
           {/* Close button on mobile */}

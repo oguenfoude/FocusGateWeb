@@ -1,4 +1,8 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   POST actions expose admin credit, password changes, modems assign/unassign.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { NextRequest } from 'next/server'
+import mongoose from 'mongoose'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models/User'
 import { nextId } from '@/lib/id-generator'
@@ -6,14 +10,27 @@ import { toNum, toNumOrNull } from '@/lib/number-utils'
 
 export const dynamic = 'force-dynamic'
 
+async function findUserByLegacySafeId(id: string) {
+  const numId = Number(id)
+  let user = await User.findOne({ _id: numId, archivedAt: null }).select('-password').lean()
+  if (!user && id !== String(numId)) {
+    const col = mongoose.connection.db!.collection('users')
+    const raw = await col.findOne({ _id: id } as Record<string, unknown>)
+    if (raw && (raw.archivedAt === null || raw.archivedAt === undefined)) {
+      delete (raw as Record<string, unknown>).password
+      user = raw as Awaited<typeof user>
+    }
+  }
+  return user
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB()
-    
-    const resolvedParams = await params
-    const userId = Number(resolvedParams.id) || resolvedParams.id
 
-    const user = await User.findOne({ _id: userId, archivedAt: null }).select('-password').lean()
+    const resolvedParams = await params
+
+    const user = await findUserByLegacySafeId(resolvedParams.id)
     if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
     const UserModem = (await import('@/lib/models/UserModem')).UserModem
@@ -28,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const [assignments, userBalanceHistories, withdrawals] = await Promise.all([
       UserModem.find({ userId: user._id, removedAt: null, archivedAt: null }).lean(),
       UserBalanceHistory.find({ userId: user._id, archivedAt: null })
-        .sort({ updatedAt: -1 }).limit(50).lean(),
+        .sort({ recordedAt: -1 }).limit(50).lean(),
       WithdrawalRequest.find({ userId: user._id, archivedAt: null })
         .sort({ updatedAt: -1 }).lean(),
     ])
@@ -43,7 +60,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       const modemData = { ...m }
       delete modemData.comPort
       return {
-        modem: { ...modemData, _id: String(m._id) },
+        modem: { ...modemData, _id: String(m._id), imei: (m as any).iMEI || m.imei },
         sim: simMap.get(m._id) ?? null
       }
     })
@@ -52,7 +69,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const balanceHistories = simIds.length > 0
       ? await BalanceHistory.find({ simCardId: { $in: simIds }, archivedAt: null })
-          .sort({ updatedAt: -1 }).limit(20).lean()
+          .sort({ recordedAt: -1 }).limit(20).lean()
       : []
 
     const smsRecords = await SmsRecord.find({ simCardId: { $in: simIds }, archivedAt: null })
@@ -204,6 +221,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if (!trimmed) {
           return Response.json({ error: 'Username cannot be empty' }, { status: 400 })
         }
+        if (!/^[a-zA-Z0-9_.-]+$/.test(trimmed)) {
+          return Response.json({ error: 'Username may only contain letters, numbers, underscore, dot, or dash' }, { status: 400 })
+        }
         const existing = await User.findOne({ username: trimmed, _id: { $ne: userId } }).lean()
         if (existing) {
           return Response.json({ error: 'Username already exists' }, { status: 409 })
@@ -227,38 +247,46 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (action === 'credit') {
       const { amount, note } = body
       const creditAmount = Number(amount)
-      if (!creditAmount || creditAmount <= 0) {
-        return Response.json({ error: 'Amount must be a positive number' }, { status: 400 })
+      const MAX_CREDIT_ABS = 1_000_000
+
+      if (!Number.isFinite(creditAmount) || creditAmount <= 0) {
+        return Response.json({ error: 'Amount must be a positive finite number' }, { status: 400 })
+      }
+      if (creditAmount > MAX_CREDIT_ABS) {
+        return Response.json({ error: `Amount exceeds maximum (${MAX_CREDIT_ABS})` }, { status: 400 })
       }
 
-      const userObj = await User.findById(userId)
+      const userObj = await User.findById(userId).select('archivedAt').lean()
       if (!userObj || userObj.archivedAt) {
         return Response.json({ error: 'User not found or archived' }, { status: 404 })
       }
 
-      const newBalance = toNum(userObj.balance) + creditAmount
-      userObj.balance = newBalance
-      userObj.updatedAt = new Date()
-      await userObj.save()
+      const now = new Date()
+      const updated = await User.findOneAndUpdate(
+        { _id: userId, archivedAt: null },
+        { $inc: { balance: creditAmount }, $set: { updatedAt: now, balanceUpdatedAt: now } },
+        { new: true }
+      )
+      if (!updated) {
+        return Response.json({ error: 'User not found or archived' }, { status: 404 })
+      }
 
       const UserBalanceHistory = (await import('@/lib/models/UserBalanceHistory')).UserBalanceHistory
-      const { nextId } = await import('@/lib/id-generator')
-      const historyId = nextId()
       await UserBalanceHistory.create({
-        _id: historyId,
+        _id: nextId(),
         userId,
         amount: creditAmount,
-        balanceAfter: newBalance,
+        balanceAfter: toNum(updated.balance),
         type: 0,
         note: note || 'Admin credit',
         simCardId: null,
-        recordedAt: new Date(),
-        updatedAt: new Date(),
+        recordedAt: now,
+        updatedAt: now,
         machineId: 'web',
         archivedAt: null,
       })
 
-      return Response.json({ ok: true, balance: newBalance })
+      return Response.json({ ok: true, balance: toNum(updated.balance) })
     }
 
     return Response.json({ error: 'Invalid action' }, { status: 400 })

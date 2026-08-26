@@ -1,3 +1,6 @@
+// TODO-AUTH: This route is currently UNAUTHENTICATED.
+//   Any caller with the URL can list modems, balances, and assigned users.
+//   See AGENTS.md > Open web TODOs. Auth deferral is by owner decision.
 import { connectDB } from '@/lib/mongodb'
 import { Modem } from '@/lib/models/Modem'
 import { SimCard } from '@/lib/models/SimCard'
@@ -33,6 +36,7 @@ export async function GET() {
       return {
         ...stripComPort(m),
         _id: String(m._id),
+        imei: (m as any).iMEI || m.imei,
         isOnline: m.status === 4,
         phoneNumber: simMap.get(m._id)?.phoneNumber ?? null,
         balance: toNum(rawBalance),

@@ -17,47 +17,6 @@ export function setLocale(locale: Locale) {
   document.documentElement.lang = locale
 }
 
-export function t(key: string, params?: Record<string, string | number>): string {
-  const locale = getLocale()
-  const keys = key.split('.')
-  let value: unknown = translations[locale]
-
-  for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = (value as Record<string, unknown>)[k]
-    } else {
-      value = undefined
-      break
-    }
-  }
-
-  if (typeof value !== 'string') {
-    // Fallback to English
-    value = undefined
-    let fallback: unknown = translations.en
-    for (const k of keys) {
-      if (fallback && typeof fallback === 'object' && k in fallback) {
-        fallback = (fallback as Record<string, unknown>)[k]
-      } else {
-        fallback = undefined
-        break
-      }
-    }
-    if (typeof fallback === 'string') value = fallback
-  }
-
-  if (typeof value !== 'string') return key
-
-  if (params) {
-    return Object.entries(params).reduce(
-      (str, [p, v]) => str.replace(new RegExp(`{{${p}}}`, 'g'), String(v)),
-      value
-    )
-  }
-
-  return value
-}
-
 export function isRTL(): boolean {
   return getLocale() === 'ar'
 }

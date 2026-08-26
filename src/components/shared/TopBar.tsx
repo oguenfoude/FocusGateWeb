@@ -14,7 +14,6 @@ const ROUTE_TITLES: Record<string, string> = {
   '/admin/sms': 'nav.sms',
   '/admin/withdrawals': 'nav.withdrawals',
   '/admin/warnings': 'nav.warnings',
-  '/admin/settings': 'nav.settings',
   '/dashboard': 'nav.dashboard',
   '/dashboard/sims': 'nav.mySims',
   '/dashboard/sms': 'nav.mySms',
@@ -28,9 +27,22 @@ export function TopBar() {
   const { toggle } = useMobileMenu()
   const userId = useUserId()
   const [time, setTime] = useState('')
+  const [displayName, setDisplayName] = useState('')
 
   useEffect(() => {
-    const tick = () => setTime(new Date().toLocaleTimeString())
+    try {
+      const stored = localStorage.getItem('username')
+      if (stored) setDisplayName(stored)
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    const tick = () => setTime(new Date().toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Africa/Algiers',
+    }))
     tick()
     const interval = setInterval(tick, 60000)
     return () => clearInterval(interval)
@@ -65,7 +77,7 @@ export function TopBar() {
             {time || '--:--'}
           </div>
           <div className="w-8 h-8 bg-gradient-to-br from-brand-400 to-brand-600 text-white rounded-full flex items-center justify-center text-sm font-bold uppercase tracking-wider shadow-[0_2px_8px_rgba(20,184,166,0.3)] ring-2 ring-white">
-            {userId ? userId.toString().slice(-1).toUpperCase() : 'A'}
+            {displayName ? displayName[0].toUpperCase() : 'U'}
           </div>
         </div>
       </div>

@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
 import useSWR from 'swr'
 import { useLanguage } from '@/components/language-provider'
 import Link from 'next/link'
 import { RadioTower, Wallet, Clock, Smartphone, MessageSquare, History, Banknote, ChevronRight, Inbox } from 'lucide-react'
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { formatDate } from '@/lib/date-utils'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface SmsWithRelations {
   _id: { toString(): string }
@@ -33,17 +32,21 @@ interface DashboardData {
 export function UserDashboardContent({ userId }: { userId: string }) {
   const { t, locale } = useLanguage()
 
-  const { data, error, isLoading } = useSWR<DashboardData>(
+  const { data: rawData, error, isLoading } = useSWR<DashboardData>(
     userId ? `/api/dashboard/overview?userId=${userId}` : null,
     fetcher,
-    { refreshInterval: 30000 }
+    { refreshInterval: 15000, revalidateOnFocus: true, revalidateOnReconnect: true }
   )
 
-  useEffect(() => {
-    if (userId) {
-      try { localStorage.setItem('userId', userId) } catch {}
-    }
-  }, [userId])
+  // Normalize API payload so partial/error responses can never crash rendering
+  const data: DashboardData = {
+    totalModems: Number(rawData?.totalModems ?? 0),
+    onlineModems: Number(rawData?.onlineModems ?? 0),
+    balance: Number(rawData?.balance ?? 0),
+    totalCredits: Number(rawData?.totalCredits ?? 0),
+    pendingAmount: Number(rawData?.pendingAmount ?? 0),
+    recentSms: Array.isArray(rawData?.recentSms) ? rawData.recentSms : [],
+  }
 
   const localeMap: Record<string, string> = { en: 'en-US', fr: 'fr-FR', ar: 'ar-DZ' }
   const loc = localeMap[locale] || 'en-US'
@@ -209,7 +212,6 @@ export function UserDashboardContent({ userId }: { userId: string }) {
             <tbody className="divide-y divide-gray-100">
               {data.recentSms.length > 0 ? (
                 data.recentSms.map((sms) => {
-                  const date = new Date(sms.receivedAt)
                   const senderStr = sms.senderNumber || t('common.unknown')
                   const initials = senderStr.length >= 2 ? senderStr.slice(-2) : senderStr
                   const simCard = sms.simCardId
@@ -217,8 +219,7 @@ export function UserDashboardContent({ userId }: { userId: string }) {
                   return (
                     <tr key={sms._id.toString()} className="table-row-hover">
                       <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap font-medium">
-                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {formatDate(sms.receivedAt, locale)}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
@@ -254,7 +255,6 @@ export function UserDashboardContent({ userId }: { userId: string }) {
           <div className="lg:hidden space-y-3 p-4">
             {data.recentSms.length > 0 ? (
               data.recentSms.map((sms) => {
-                const date = new Date(sms.receivedAt)
                 const senderStr = sms.senderNumber || t('common.unknown')
                 const simCard = sms.simCardId
 
@@ -263,8 +263,7 @@ export function UserDashboardContent({ userId }: { userId: string }) {
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-xs text-gray-900">{senderStr}</span>
                       <span className="text-[11px] text-gray-400 font-medium">
-                        {date.toLocaleDateString(loc, { month: 'short', day: '2-digit' })},{' '}
-                        {date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {formatDate(sms.receivedAt, locale)}
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 truncate mb-2">{sms.content}</p>

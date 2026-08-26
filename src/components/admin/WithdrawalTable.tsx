@@ -6,6 +6,8 @@ import { toast } from 'sonner'
 import { Search, Info, X, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/components/language-provider'
 import { formatShortDate } from '@/lib/date-utils'
+import { useEscape } from '@/hooks/use-escape'
+import { fetcher } from '@/lib/swr-fetcher'
 
 interface WithdrawalRequestType {
   _id: string
@@ -23,8 +25,6 @@ interface WithdrawalRequestType {
 }
 
 type TabType = 'all' | 'pending' | 'approved' | 'rejected'
-
-const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export function WithdrawalTable() {
   const { t, locale } = useLanguage()
@@ -47,6 +47,10 @@ export function WithdrawalTable() {
   })
   const [isProcessing, setIsProcessing] = useState(false)
   const [adminNote, setAdminNote] = useState('')
+
+  useEscape(() => {
+    if (!isProcessing) setConfirmDialog({ isOpen: false, action: null, request: null })
+  }, confirmDialog.isOpen)
 
   const handleAction = async () => {
     if (!confirmDialog.request || !confirmDialog.action) return
@@ -212,10 +216,10 @@ export function WithdrawalTable() {
 
       {/* Confirm Modal */}
       {confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay page-enter">
-          <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-xl overflow-hidden delay-100 flex flex-col">
+        <div role="dialog" aria-modal="true" aria-labelledby="withdrawal-confirm-title" className="fixed inset-0 z-50 flex items-center justify-center modal-overlay page-enter">
+          <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-xl overflow-hidden page-enter delay-100 flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-bold text-gray-900">{t('withdrawals.confirmTitle')}</h3>
+              <h3 id="withdrawal-confirm-title" className="font-bold text-gray-900">{t('withdrawals.confirmTitle')}</h3>
               <button onClick={() => setConfirmDialog({ isOpen: false, action: null, request: null })} className="text-gray-400 hover:text-gray-600 transition-colors bg-white rounded-full p-1 hover:bg-gray-100">
                 <X className="h-4 w-4" />
               </button>
@@ -238,7 +242,7 @@ export function WithdrawalTable() {
                 <button type="button" onClick={() => setConfirmDialog({ isOpen: false, action: null, request: null })} className="btn btn-outline" disabled={isProcessing}>
                   {t('withdrawals.cancel')}
                 </button>
-                <button type="submit" disabled={isProcessing} className={`btn shadow-md ${confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'btn-primary'}`}>
+                <button type="submit" disabled={isProcessing} className={`btn shadow-md ${confirmDialog.action === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
                   {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
                   {t('withdrawals.confirm')}
                 </button>
